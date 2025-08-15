@@ -4,7 +4,6 @@ import { useState, useEffect, useMemo } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import Loading from '@/components/Loading';
 import Image from "next/image"
 import {
   Mail,
@@ -31,7 +30,6 @@ import {
   Link,
   Search,
 } from "lucide-react"
-import * as LucideIcons from "lucide-react";
 
 // Translation data for Smail Yazidi
 const translations = {
@@ -159,7 +157,7 @@ const translations = {
     sport: "🏃 Sport",
     travel: "✈️ Voyage",
     coding: "💻 Codage",
-
+    // Remove: reading: "📚 Lecture",
 
     // Language levels
     native: "Bien",
@@ -318,19 +316,10 @@ sNoteDesc: "An application for securely storing and managing notes and passwords
 }
 
 export default function Portfolio() {
-   const [heroData, setHeroData] = useState<any>(null);
-     const [educationData, setEducationData] = useState<any>(null);
-    const [skillsData, setSkillsData] = useState<any>(null);
-  const [servicesData, setServicesData] = useState<any>(null);
-  const [heroLoading, setHeroLoading] = useState(true);
-  const [servicesLoading, setServicesLoading] = useState(true);
-  const [educationLoading, setEducationLoading] = useState(true);
-  const [skillsLoading, setSkillsLoading] = useState(true);
-
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [activeSection, setActiveSection] = useState("home")
   const [isDarkMode, setIsDarkMode] = useState(true)
-  const [currentLang, setCurrentLang] = useState<"fr" | "en">("fr")
+  const [currentLang, setCurrentLang] = useState<"en" | "fr">("en")
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [isSearchOpen, setIsSearchOpen] = useState(false)
@@ -353,64 +342,6 @@ export default function Portfolio() {
     setCurrentLang(lang)
     setIsLangMenuOpen(false)
   }
-
-
-
- useEffect(() => {
-    fetch("/api/hero")
-      .then((res) => res.json())
-      .then((data) => {
-        setHeroData(data);
-        setHeroLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching hero data:", err);
-        setHeroLoading(false);
-      });
-  }, []);
-
-  // Fetch services data
-  useEffect(() => {
-    fetch("/api/services")
-      .then((res) => res.json())
-      .then((data) => {
-        setServicesData(data);
-        setServicesLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching services data:", err);
-        setServicesLoading(false);
-      });
-  }, []);
-
-    // Fetch education data
-  useEffect(() => {
-    fetch("/api/education")
-      .then((res) => res.json())
-      .then((data) => {
-        setEducationData(data);
-        setEducationLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching education data:", err);
-        setEducationLoading(false);
-      });
-  }, []);
-
-
-    // Fetch education data
-  useEffect(() => {
-    fetch("/api/skills")
-      .then((res) => res.json())
-      .then((data) => {
-        setSkillsData(data);
-        setSkillsLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching education data:", err);
-        setSkillsLoading(false);
-      });
-  }, []);
 
   useEffect(() => {
     document.documentElement.lang = currentLang
@@ -537,7 +468,42 @@ export default function Portfolio() {
     ],
     [t],
   )
-
+  const skillsData = useMemo(
+    () => ({
+      programmingLanguages: [
+        { name: "PHP", desc: t.backendLanguage, icon: Code },
+        { name: "Python", desc: t.scriptingLanguage, icon: Code },
+        { name: "JavaScript", desc: t.scriptingLanguage, icon: Code },
+        { name: "Node.js", desc: t.backendRuntime, icon: Code },
+      ],
+      frameworksLibraries: [
+        { name: "Laravel", desc: t.phpFramework, icon: LayoutGrid },
+        { name: "React.js", desc: t.frontendFramework, icon: LayoutGrid },
+        { name: "Bootstrap", desc: t.cssFramework, icon: LayoutGrid },
+      ],
+      databases: [
+        { name: "MySQL", desc: t.relationalDatabase, icon: Database },
+        { name: "MongoDB", desc: t.nosqlDatabase, icon: Database },
+      ],
+      otherTechnicalSkills: [
+        { name: t.technicalAnalysis, desc: t.understandingSystemsNeeds, icon: Star },
+        { name: t.webAppDevelopment, desc: t.buildingFunctionalWebApps, icon: Star },
+        { name: t.webProjectManagement, desc: t.organizingLeadingWebProjects, icon: Star },
+        { name: t.versionControlGit, desc: t.managingCodeVersions, icon: Star },
+      ],
+      softSkills: [
+        { name: t.teamwork, desc: t.workingWellWithOthers, icon: Users },
+        { name: t.effectiveCommunication, desc: t.sharingIdeasClearly, icon: Users },
+        { name: t.problemSolving, desc: t.findingSmartSolutions, icon: Users },
+        { name: t.timeManagement, desc: t.usingTimeWisely, icon: Users },
+        { name: t.adaptability, desc: t.adjustingToChange, icon: Users },
+        { name: t.criticalThinking, desc: t.analyzingReasoning, icon: Users },
+        { name: t.creativity, desc: t.thinkingOutsideTheBox, icon: Users },
+        { name: "Initiative", desc: t.takingActionIndependently, icon: Users },
+      ],
+    }),
+    [t],
+  )
 
   const projectsData = useMemo(
     () => [
@@ -685,14 +651,6 @@ export default function Portfolio() {
     }
   }, [searchTerm, skillsData])
 
-
-
-const getIcon = (iconName?: string) => {
-  if (!iconName) return null; // لو مافي أي اسم أيقونة، رجع null
-  const pascalCase = iconName.charAt(0).toUpperCase() + iconName.slice(1);
-  return LucideIcons[pascalCase] || null; // لو الأيقونة مش موجودة، رجع null
-};
-
   const filteredProjectsData = useMemo(() => {
     if (!searchTerm) return projectsData
     const lowerCaseSearchTerm = searchTerm.toLowerCase()
@@ -703,7 +661,7 @@ const getIcon = (iconName?: string) => {
         project.tech.some((tech) => tech.toLowerCase().includes(lowerCaseSearchTerm)),
     )
   }, [searchTerm, projectsData])
-  if (heroLoading || servicesLoading || educationLoading) return <Loading/>;
+
   return (
 
     <div
@@ -720,17 +678,16 @@ const getIcon = (iconName?: string) => {
   className="flex items-center space-x-3 cursor-pointer"
   onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
 >
-{/* <div
-  className={`hidden sm:flex w-8 h-8 ${isDarkMode ? "bg-white" : "bg-gray-900"} rounded-full items-center justify-center`}
+ <div
+  className={`w-8 h-8 ${isDarkMode ? "bg-white" : "bg-gray-900"} rounded-full flex items-center justify-center hide-under-300`}
 >
   <span
     className={`${isDarkMode ? "text-black" : "text-white"} font-bold text-lg`}
   >
-    L
+    S
   </span>
-</div> */}
-
-<span className="text-base sm:text-xl font-medium">LOUBNA SEMLALI</span>
+</div>
+<span className="text-base sm:text-xl font-medium">Smail Yazidi</span>
 </div>
 
 
@@ -984,15 +941,15 @@ const getIcon = (iconName?: string) => {
             <div className="space-y-6 sm:space-y-8 text-center lg:text-left">
               <div className="flex items-center justify-center lg:justify-start gap-3">
                 <Star className="w-5 h-5 text-[rgb(var(--portfolio-gold))] fill-current" />
-                <span className={`${themeClasses.textSecondary} text-sm font-medium`}>{heroData.specialist?.[currentLang]}</span>
+                <span className={`${themeClasses.textSecondary} text-sm font-medium`}>{t.specialist}</span>
               </div>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-light leading-tight">{heroData.heroTitle?.[currentLang]}</h1>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-light leading-tight">{t.heroTitle}</h1>
 
               <p
                 className={`${themeClasses.textSecondary} text-base sm:text-lg leading-relaxed max-w-lg mx-auto lg:mx-0`}
               >
-                {heroData.heroDescription?.[currentLang]}
+                {t.heroDescription}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
              
@@ -1003,31 +960,56 @@ const getIcon = (iconName?: string) => {
                   {t.viewJourney}
                 </Button>
 
-             {heroData.heroButtons.map((button, index) => {
-  const Icon = getIcon(button.icon);
-  const handleClick = () => {
-    if (button.link?.startsWith("http")) {
-   window.location.href = button.link;
-    } else if (button.link) {
-      window.location.href = button.link;
-    }
-  };
+                <Button
+                  variant="ghost"
+                  className={`${isDarkMode
+                    ? "text-white border-gray-700 hover:border-[rgb(184,148,31)] hover:text-[rgb(184,148,31)] hover:bg-transparent"
+                    : "text-gray-900 border-gray-300 hover:border-[rgb(184,148,31)] hover:text-[rgb(184,148,31)] hover:bg-transparent"
+                    } font-medium px-8 py-3 rounded-full border flex items-center`}
+                >
+                  <Mail className="w-4 h-4 mr-2" />
+                  smail.yazidi.work@gmail.com
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => window.open("https://www.linkedin.com", "_blank")}
+                  className={`${isDarkMode
+                    ? "text-white border-gray-700 hover:border-[rgb(184,148,31)] hover:text-[rgb(184,148,31)] hover:bg-transparent"
+                    : "text-gray-900 border-gray-300 hover:border-[rgb(184,148,31)] hover:text-[rgb(184,148,31)] hover:bg-transparent"
+                    } font-medium px-8 py-3 rounded-full border flex items-center cursor-pointer`}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                    className="w-4 h-4 mr-2"
+                    aria-hidden="true"
+                  >
+                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.761 0 5-2.239 5-5v-14c0-2.761-2.239-5-5-5zm-11 19h-3v-9h3v9zm-1.5-10.3c-.966 0-1.75-.784-1.75-1.75s.784-1.75 1.75-1.75 1.75.784 1.75 1.75-.784 1.75-1.75 1.75zm13.5 10.3h-3v-4.5c0-1.07-.93-1.93-2-1.93s-2 .86-2 1.93v4.5h-3v-9h3v1.35c.59-.89 1.88-1.35 3-1.35 2.21 0 4 1.79 4 4v4.65z" />
+                  </svg>
+                  LinkedIn
+                </Button>
 
-  return (
-    <Button
-      key={index}
-      variant="ghost"
-      onClick={handleClick}
-      className={`${isDarkMode
-        ? "text-white border-gray-700 hover:border-[rgb(184,148,31)] hover:text-[rgb(184,148,31)] hover:bg-transparent"
-        : "text-gray-900 border-gray-300 hover:border-[rgb(184,148,31)] hover:text-[rgb(184,148,31)] hover:bg-transparent"
-      } font-medium px-8 py-3 rounded-full border flex items-center cursor-pointer`}
-    >
-      {Icon && <Icon className="w-4 h-4 mr-2" />}
-      {button.text?.[currentLang]}
-    </Button>
-  );
-})}
+                <Button
+                  variant="ghost"
+                  onClick={() => window.open("https://github.com/SmailYazidi", "_blank")}
+                  className={`${isDarkMode
+                    ? "text-white border-gray-700 hover:border-[rgb(184,148,31)] hover:text-[rgb(184,148,31)] hover:bg-transparent"
+                    : "text-gray-900 border-gray-300 hover:border-[rgb(184,148,31)] hover:text-[rgb(184,148,31)] hover:bg-transparent"
+                    } font-medium px-8 py-3 rounded-full border flex items-center cursor-pointer`}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                    className="w-4 h-4 mr-2"
+                    aria-hidden="true"
+                  >
+                    <path d="M12 .5a12 12 0 00-3.79 23.39c.6.11.82-.26.82-.58 0-.29-.01-1.04-.02-2.05-3.34.73-4.04-1.61-4.04-1.61-.55-1.4-1.35-1.77-1.35-1.77-1.1-.75.08-.74.08-.74 1.21.08 1.85 1.25 1.85 1.25 1.08 1.84 2.84 1.31 3.54 1 .11-.78.42-1.31.76-1.61-2.66-.3-5.47-1.33-5.47-5.92 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23a11.48 11.48 0 016 0c2.28-1.55 3.29-1.23 3.29-1.23.66 1.65.25 2.87.12 3.17.77.84 1.24 1.91 1.24 3.22 0 4.6-2.82 5.61-5.5 5.91.43.37.81 1.1.81 2.22 0 1.6-.01 2.88-.01 3.27 0 .32.22.7.83.58A12 12 0 0012 .5z" />
+                  </svg>
+                  GitHub
+                </Button>
+
 
               </div>
 
@@ -1054,197 +1036,235 @@ const getIcon = (iconName?: string) => {
         </div>
       </section>
 
-<section id="services" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
-  <div className="container mx-auto max-w-7xl">
-    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4">
-      {t.servicesTitle}
-      <span className="absolute bottom-0 left-0 w-20 h-1 bg-[rgb(var(--portfolio-gold))]"></span>
-    </h2>
+      {/* Services Section */}
+      <section id="services" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto max-w-7xl">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4">
+            {t.servicesTitle}
+            <span className="absolute bottom-0 left-0 w-20 h-1 bg-[rgb(var(--portfolio-gold))]"></span>
+          </h2>
 
-    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-      {Array.isArray(servicesData?.servicesList) && servicesData.servicesList.length > 0 ? (
-        servicesData.servicesList.map((service, index) => (
-          <Card
-            key={index}
-            className={`${themeClasses.cardBg} ${themeClasses.cardBorder} p-6 sm:p-8 hover:border-[rgb(var(--portfolio-gold))] transition-colors group shadow-lg`}
-          >
-            <CardContent className="p-0">
-              <div className="flex items-start justify-between mb-4 sm:mb-6">
-                <span className={`${themeClasses.textMuted} text-sm text-yellow-500`}>0{index + 1}</span>
-                <ArrowUpRight
-                  className={`w-5 h-5 ${themeClasses.textMuted} group-hover:text-[rgb(var(--portfolio-gold))] transition-colors`}
-                />
-              </div>
-              <h3 className="text-lg sm:text-xl font-medium mb-3 sm:mb-4">{service.title?.[currentLang]}</h3>
-              <p className={`${themeClasses.textSecondary} text-sm sm:text-base leading-relaxed`}>{service.description?.[currentLang]}</p>
-            </CardContent>
-          </Card>
-        ))
-      ) : (
-        <p>No services available</p>
-      )}
-    </div>
-  </div>
-</section>
-
-
-
-
-
-{/* Experience & Education Timeline Section */}
-<section
-  id="experience"
-  className={`py-16 sm:py-20 px-4 sm:px-6 lg:px-8 ${themeClasses.sectionBg}`}
->
-  <div className="container mx-auto max-w-7xl">
-    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4">
-      {educationData?.journeyTitle?.[currentLang]}
-      <span className="absolute bottom-0 left-0 w-20 h-1 bg-[rgb(var(--portfolio-gold))]"></span>
-    </h2>
-
-    <div className="grid md:grid-cols-2 gap-12 md:gap-8">
-      {/* Education Column */}
-      <div>
-        <h3 className="text-xl sm:text-2xl font-medium mb-6 sm:mb-8 flex items-center gap-3">
-          <GraduationCap className="w-5 h-5 sm:w-6 sm:h-6 text-[rgb(var(--portfolio-gold))]" />
-          {currentLang === "fr" ? "Formation" : "Education"}
-        </h3>
-        <div className="space-y-8 relative">
-          {educationData?.education?.map((event, index) => (
-            <div key={index} className="relative pl-6">
-              <div
-                className={`absolute left-0 top-0 bottom-0 w-0.5 ${
-                  isDarkMode ? "bg-gray-700" : "bg-gray-300"
-                }`}
-              ></div>
-              <div
-                className={`absolute -left-2 top-0 w-4 h-4 rounded-full bg-[rgb(var(--portfolio-gold))]`}
-              ></div>
-              <p className={`${themeClasses.textSecondary} font-medium text-sm mb-1`}>
-                {event.year}
-              </p>
-              <h4 className="text-base sm:text-lg font-medium mb-1">
-                {event.title?.[currentLang]}
-              </h4>
-              <p className={`${themeClasses.textSecondary} text-sm mb-1`}>
-                {event.institution?.[currentLang]}
-              </p>
-              {event.description && (
-                <p className={`${themeClasses.textMuted} text-xs mt-2`}>
-                  {event.description?.[currentLang]}
-                </p>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Experience Column */}
-      <div>
-        <h3 className="text-xl sm:text-2xl font-medium mb-6 sm:mb-8 flex items-center gap-3">
-          <Briefcase className="w-5 h-5 sm:w-6 sm:h-6 text-[rgb(var(--portfolio-gold))]" />
-          {currentLang === "fr" ? "Expérience" : "Experience"}
-        </h3>
-        <div className="space-y-8 relative">
-          {educationData?.experience?.map((event, index) => (
-            <div key={index} className="relative pl-6">
-              <div
-                className={`absolute left-0 top-0 bottom-0 w-0.5 ${
-                  isDarkMode ? "bg-gray-700" : "bg-gray-300"
-                }`}
-              ></div>
-              <div
-                className={`absolute -left-2 top-0 w-4 h-4 rounded-full bg-[rgb(var(--portfolio-gold))]`}
-              ></div>
-              <div className="flex items-center gap-2 mb-1">
-                <p className={`${themeClasses.textSecondary} font-medium text-sm`}>
-                  {event.year}
-                </p>
-                {event.duration && (
-                  <Badge className="bg-[rgb(var(--portfolio-gold))] text-[rgb(var(--portfolio-gold-foreground))] text-xs">
-                    {event.duration}
-                  </Badge>
-                )}
-              </div>
-              <h4 className="text-base sm:text-lg font-medium mb-1">
-                {event.title?.[currentLang]}
-              </h4>
-              <p className={`${themeClasses.textSecondary} text-sm mb-1`}>
-                {event.institution?.[currentLang]}
-              </p>
-              {event.description && (
-                <p className={`${themeClasses.textMuted} text-xs mt-2`}>
-                  {event.description?.[currentLang]}
-                </p>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-{/* Skills Section */}
-<section id="skills" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
-  <div className="container mx-auto max-w-7xl">
-    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4">
-      {skillsData?.skillsTitle?.[currentLang]}
-      <span className="absolute bottom-0 left-0 w-20 h-1 bg-[rgb(var(--portfolio-gold))]"></span>
-    </h2>
-
-    <div className="space-y-10 sm:space-y-12">
-      {skillsData?.skills?.map((category, catIndex) => {
-        const CategoryIcon = getIcon(category.skillicon);
-
-        return (
-          <div key={catIndex}>
-            <h3 className="text-xl sm:text-2xl font-medium mb-6 sm:mb-8 flex items-center gap-3">
-              {CategoryIcon && (
-                <CategoryIcon className="w-5 h-5 sm:w-6 sm:h-6 text-[rgb(var(--portfolio-gold))]" />
-              )}
-              {category.title?.[currentLang]}
-            </h3>
-
-            {category.items.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-                {category.items.map((skill, skillIndex) => {
-                  const SkillIcon = getIcon(skill.icon);
-
-                  return (
-                    <Card
-                      key={skillIndex}
-                      className={`${themeClasses.cardBg} ${themeClasses.cardBorder} p-5 sm:p-6 text-center transition-all duration-300 hover:border-[rgb(var(--portfolio-gold))] hover:shadow-lg`}
-                    >
-                      <CardContent className="p-0 flex flex-col items-center">
-                        {SkillIcon && (
-                          <SkillIcon className="w-7 h-7 sm:w-8 sm:h-8 text-[rgb(var(--portfolio-gold))] mb-2 sm:mb-3" />
-                        )}
-                        <h4 className="font-medium text-base sm:text-lg mb-1">
-                          {skill.name?.[currentLang]}
-                        </h4>
-                        {skill.examples?.length > 0 && (
-                          <ul className={`${themeClasses.textMuted} text-xs sm:text-sm list-disc pl-4`}>
-                            {skill.examples.map((ex, exIndex) => (
-                              <li key={exIndex}>{ex}</li>
-                            ))}
-                          </ul>
-                        )}
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
-            ) : (
-              <p className={`${themeClasses.textMuted} text-sm`}>No skills listed.</p>
-            )}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            {filteredServices.map((service, index) => (
+              <Card
+                key={index}
+                className={`${themeClasses.cardBg} ${themeClasses.cardBorder} p-6 sm:p-8 hover:border-[rgb(var(--portfolio-gold))] transition-colors group shadow-lg`}
+              >
+                <CardContent className="p-0">
+                  <div className="flex items-start justify-between mb-4 sm:mb-6">
+                 <span className={`${themeClasses.textMuted} text-sm text-yellow-500`}>0{index + 1}</span>
+  <ArrowUpRight
+                      className={`w-5 h-5 ${themeClasses.textMuted} group-hover:text-[rgb(var(--portfolio-gold))] transition-colors`}
+                    />
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-medium mb-3 sm:mb-4">{service.title}</h3>
+                  <p className={`${themeClasses.textSecondary} text-sm sm:text-base leading-relaxed`}>{service.desc}</p>
+                </CardContent>
+              </Card>
+            ))}
           </div>
-        );
-      })}
-    </div>
-  </div>
-</section>
+        </div>
+      </section>
 
+
+
+      {/* Experience & Education Timeline Section */}
+      <section id="experience" className={`py-16 sm:py-20 px-4 sm:px-6 lg:px-8 ${themeClasses.sectionBg}`}>
+        <div className="container mx-auto max-w-7xl">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4">
+            {t.journeyTitle}
+            <span className="absolute bottom-0 left-0 w-20 h-1 bg-[rgb(var(--portfolio-gold))]"></span>
+          </h2>
+
+          <div className="grid md:grid-cols-2 gap-12 md:gap-8">
+            {/* Formation Column */}
+            <div>
+              <h3 className="text-xl sm:text-2xl font-medium mb-6 sm:mb-8 flex items-center gap-3">
+                <GraduationCap className="w-5 h-5 sm:w-6 sm:h-6 text-[rgb(var(--portfolio-gold))]" />
+                {currentLang === "fr" ? "Formation" : "Education"}
+              </h3>
+              <div className="space-y-8 relative">
+                {filteredEducationEvents.map((event, index) => (
+                  <div key={index} className="relative pl-6">
+                    <div
+                      className={`absolute left-0 top-0 bottom-0 w-0.5 ${isDarkMode ? "bg-gray-700" : "bg-gray-300"}`}
+                    ></div>
+                    <div
+                      className={`absolute -left-2 top-0 w-4 h-4 rounded-full bg-[rgb(var(--portfolio-gold))]`}
+                    ></div>
+                    <p className={`${themeClasses.textSecondary} font-medium text-sm mb-1`}>{event.year}</p>
+                    <h4 className="text-base sm:text-lg font-medium mb-1">{event.title}</h4>
+                    <p className={`${themeClasses.textSecondary} text-sm mb-1`}>{event.institution}</p>
+                    {event.description && (
+                      <p className={`${themeClasses.textMuted} text-xs mt-2`}>{event.description}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Experience Column */}
+            <div>
+              <h3 className="text-xl sm:text-2xl font-medium mb-6 sm:mb-8 flex items-center gap-3">
+                <Briefcase className="w-5 h-5 sm:w-6 sm:h-6 text-[rgb(var(--portfolio-gold))]" />
+                {currentLang === "fr" ? "Expérience" : "Experience"}
+              </h3>
+              <div className="space-y-8 relative">
+                {filteredExperienceEvents.map((event, index) => (
+                  <div key={index} className="relative pl-6">
+                    <div
+                      className={`absolute left-0 top-0 bottom-0 w-0.5 ${isDarkMode ? "bg-gray-700" : "bg-gray-300"}`}
+                    ></div>
+                    <div
+                      className={`absolute -left-2 top-0 w-4 h-4 rounded-full bg-[rgb(var(--portfolio-gold))]`}
+                    ></div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <p className={`${themeClasses.textSecondary} font-medium text-sm`}>{event.year}</p>
+                      {event.duration && (
+                        <Badge className="bg-[rgb(var(--portfolio-gold))] text-[rgb(var(--portfolio-gold-foreground))] text-xs">
+                          {event.duration}
+                        </Badge>
+                      )}
+                    </div>
+                    <h4 className="text-base sm:text-lg font-medium mb-1">{event.title}</h4>
+                    <p className={`${themeClasses.textSecondary} text-sm mb-1`}>{event.institution}</p>
+                    {Array.isArray(event.description) ? (
+                      <ul className={`${themeClasses.textMuted} text-xs mt-2 list-disc pl-4`}>
+                        {event.description.map((item, i) => (
+                          <li key={i}>{item}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className={`${themeClasses.textMuted} text-xs mt-2`}>{event.description}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      {/* Skills Section */}
+      <section id="skills" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto max-w-7xl">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4">
+            {t.skillsTitle}
+            <span className="absolute bottom-0 left-0 w-20 h-1 bg-[rgb(var(--portfolio-gold))]"></span>
+          </h2>
+
+          <div className="space-y-10 sm:space-y-12">
+            {/* Programming Languages */}
+            <div>
+              <h3 className="text-xl sm:text-2xl font-medium mb-6 sm:mb-8 flex items-center gap-3">
+                <Code className="w-5 h-5 sm:w-6 sm:h-6 text-[rgb(var(--portfolio-gold))]" />
+                {t.programmingLanguages}
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+                {filteredSkillsData.programmingLanguages.map((skill, index) => (
+                  <Card
+                    key={index}
+                    className={`${themeClasses.cardBg} ${themeClasses.cardBorder} p-5 sm:p-6 text-center transition-all duration-300 hover:border-[rgb(var(--portfolio-gold))] hover:shadow-lg`}
+                  >
+                    <CardContent className="p-0 flex flex-col items-center">
+                      <skill.icon className="w-7 h-7 sm:w-8 sm:h-8 text-[rgb(var(--portfolio-gold))] mb-2 sm:mb-3" />
+                      <h4 className="font-medium text-base sm:text-lg mb-1">{skill.name}</h4>
+                      <p className={`${themeClasses.textMuted} text-xs sm:text-sm`}>{skill.desc}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            {/* Frameworks and Libraries */}
+            <div>
+              <h3 className="text-xl sm:text-2xl font-medium mb-6 sm:mb-8 flex items-center gap-3">
+                <LayoutGrid className="w-5 h-5 sm:w-6 sm:h-6 text-[rgb(var(--portfolio-gold))]" />
+                {t.frameworksLibraries}
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+                {filteredSkillsData.frameworksLibraries.map((skill, index) => (
+                  <Card
+                    key={index}
+                    className={`${themeClasses.cardBg} ${themeClasses.cardBorder} p-5 sm:p-6 text-center transition-all duration-300 hover:border-[rgb(var(--portfolio-gold))] hover:shadow-lg`}
+                  >
+                    <CardContent className="p-0 flex flex-col items-center">
+                      <skill.icon className="w-7 h-7 sm:w-8 sm:h-8 text-[rgb(var(--portfolio-gold))] mb-2 sm:mb-3" />
+                      <h4 className="font-medium text-base sm:text-lg mb-1">{skill.name}</h4>
+                      <p className={`${themeClasses.textMuted} text-xs sm:text-sm`}>{skill.desc}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            {/* Databases */}
+            <div>
+              <h3 className="text-xl sm:text-2xl font-medium mb-6 sm:mb-8 flex items-center gap-3">
+                <Database className="w-5 h-5 sm:w-6 sm:h-6 text-[rgb(var(--portfolio-gold))]" />
+                {t.databases}
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+                {filteredSkillsData.databases.map((skill, index) => (
+                  <Card
+                    key={index}
+                    className={`${themeClasses.cardBg} ${themeClasses.cardBorder} p-5 sm:p-6 text-center transition-all duration-300 hover:border-[rgb(var(--portfolio-gold))] hover:shadow-lg`}
+                  >
+                    <CardContent className="p-0 flex flex-col items-center">
+                      <skill.icon className="w-7 h-7 sm:w-8 sm:h-8 text-[rgb(var(--portfolio-gold))] mb-2 sm:mb-3" />
+                      <h4 className="font-medium text-base sm:text-lg mb-1">{skill.name}</h4>
+                      <p className={`${themeClasses.textMuted} text-xs sm:text-sm`}>{skill.desc}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            {/* Other Technical Skills */}
+            <div>
+              <h3 className="text-xl sm:text-2xl font-medium mb-6 sm:mb-8 flex items-center gap-3">
+                <Star className="w-5 h-5 sm:w-6 sm:h-6 text-[rgb(var(--portfolio-gold))]" />
+                {t.otherTechnicalSkills}
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+                {filteredSkillsData.otherTechnicalSkills.map((skill, index) => (
+                  <Card
+                    key={index}
+                    className={`${themeClasses.cardBg} ${themeClasses.cardBorder} p-5 sm:p-6 text-center transition-all duration-300 hover:border-[rgb(var(--portfolio-gold))] hover:shadow-lg`}
+                  >
+                    <CardContent className="p-0 flex flex-col items-center">
+                      <skill.icon className="w-7 h-7 sm:w-8 sm:h-8 text-[rgb(var(--portfolio-gold))] mb-2 sm:mb-3" />
+                      <h4 className="font-medium text-base sm:text-lg mb-1">{skill.name}</h4>
+                      <p className={`${themeClasses.textMuted} text-xs sm:text-sm`}>{skill.desc}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            {/* Soft Skills */}
+            <div>
+              <h3 className="text-xl sm:text-2xl font-medium mb-6 sm:mb-8 flex items-center gap-3">
+                <Users className="w-5 h-5 sm:w-6 sm:h-6 text-[rgb(var(--portfolio-gold))]" />
+                {t.softSkills}
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+                {filteredSkillsData.softSkills.map((skill, index) => (
+                  <Card
+                    key={index}
+                    className={`${themeClasses.cardBg} ${themeClasses.cardBorder} p-5 sm:p-6 text-center transition-all duration-300 hover:border-[rgb(var(--portfolio-gold))] hover:shadow-lg`}
+                  >
+                    <CardContent className="p-0 flex flex-col items-center">
+                      <skill.icon className="w-7 h-7 sm:w-8 sm:h-8 text-[rgb(var(--portfolio-gold))] mb-2 sm:mb-3" />
+                      <h4 className="font-medium text-base sm:text-lg mb-1">{skill.name}</h4>
+                      <p className={`${themeClasses.textMuted} text-xs sm:text-sm`}>{skill.desc}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Projects Section */}
       <section
@@ -1484,9 +1504,9 @@ const getIcon = (iconName?: string) => {
               <div
                 className={`w-8 h-8 ${isDarkMode ? "bg-white" : "bg-gray-900"} rounded-full flex items-center justify-center`}
               >
-                <span className={`${isDarkMode ? "text-black" : "text-white"} font-bold text-sm`}>L</span>
+                <span className={`${isDarkMode ? "text-black" : "text-white"} font-bold text-sm`}>S</span>
               </div>
-              <span className={themeClasses.textSecondary}>© 2025 LOUBNA SEMLALI</span>
+              <span className={themeClasses.textSecondary}>© 2025 Smail Yazidi</span>
             </div>
             <p className={`${themeClasses.textMuted} text-xs sm:text-sm`}>{t.rightsReserved}</p>
           </div>
