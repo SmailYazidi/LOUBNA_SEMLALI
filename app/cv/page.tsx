@@ -1,10 +1,9 @@
 "use client"
-import Image from "next/image"
+
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Phone, Mail, MapPin, ChevronLeft, Sun, Moon, Loader2 } from "lucide-react"
-
+import { ChevronLeft, Sun, Moon, Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 export default function CvPage() {
@@ -12,20 +11,7 @@ export default function CvPage() {
   const [language, setLanguage] = useState<"fr" | "en">("fr")
   const [isDarkMode, setIsDarkMode] = useState(true)
   const [isDownloading, setIsDownloading] = useState(false)
-  const [pdfFile, setPdfFile] = useState(`/loubna_semlali_${language}.pdf`)
-
-  const handleDownloadPdf = async () => {
-    setIsDownloading(true)
-    const pdfFileName = `loubna_semlali_${language}.pdf`
-    const link = document.createElement("a")
-    link.href = `/${pdfFileName}`
-    link.download = pdfFileName
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-    setIsDownloading(false)
-  }
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null)
 
   const toggleTheme = () => setIsDarkMode(!isDarkMode)
 
@@ -34,9 +20,32 @@ export default function CvPage() {
     else document.documentElement.classList.remove("dark")
   }, [isDarkMode])
 
+  // Fetch PDF URL from API based on selected language
   useEffect(() => {
-    setPdfFile(`/loubna_semlali_${language}.pdf`)
+    const fetchPdfUrl = async () => {
+      try {
+        const res = await fetch(`/api/cv?lang=${language}`)
+        const data = await res.json()
+        setPdfUrl(data.url)
+      } catch (err) {
+        console.error("Failed to fetch PDF URL:", err)
+      }
+    }
+    fetchPdfUrl()
   }, [language])
+
+  const handleDownloadPdf = async () => {
+    if (!pdfUrl) return
+    setIsDownloading(true)
+    const link = document.createElement("a")
+    link.href = pdfUrl
+    link.download = `loubna_semlali_${language}.pdf`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    await new Promise((resolve) => setTimeout(resolve, 1500))
+    setIsDownloading(false)
+  }
 
   const themeClasses = {
     bg: isDarkMode ? "bg-[#0a0a0a]" : "bg-white",
@@ -91,7 +100,7 @@ export default function CvPage() {
                 ? "bg-[rgb(var(--portfolio-gold))] hover:bg-[rgb(var(--portfolio-gold-hover))] text-black"
                 : "bg-gray-900 hover:bg-gray-800 text-white"
             } font-medium px-6 py-2 rounded-full`}
-            disabled={isDownloading}
+            disabled={isDownloading || !pdfUrl}
           >
             {isDownloading ? (
               <>
@@ -108,14 +117,18 @@ export default function CvPage() {
       {/* PDF container */}
       <div
         className={`cv-a4-page ${themeClasses.cardBg} shadow-lg rounded-lg overflow-hidden w-full max-w-4xl flex flex-col ${themeClasses.text} md:max-w-[794px]`}
-        style={{ height: "1120px" }} // Approx A4 aspect ratio for screen
+        style={{ height: "1120px" }}
       >
- <iframe
-  src={`${pdfFile}#view=FitH&toolbar=0&navpanes=0&scrollbar=0`}
-  className="w-full h-full"
-  title="CV PDF"
-  frameBorder="0"
-/>
+        {pdfUrl ? (
+          <iframe
+            src={`${pdfUrl}#view=FitH&toolbar=0&navpanes=0&scrollbar=0`}
+            className="w-full h-full"
+            title="CV PDF"
+            frameBorder="0"
+          />
+        ) : (
+          <div className="flex items-center justify-center h-full text-gray-500">Loading PDF...</div>
+        )}
       </div>
     </div>
   )
