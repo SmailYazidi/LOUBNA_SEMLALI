@@ -1,93 +1,101 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { put, del } from "@vercel/blob";
-import { ObjectId } from "mongodb";
 
 const BLOB_TOKEN = process.env.BLOB_READ_WRITE_TOKEN || process.env.VERCEL_BLOB_TOKEN!;
 
+// GET all projects
 export async function GET() {
   try {
     const db = await connectDB();
     const projets = await db.collection("projets").findOne({}, { projection: { _id: 0 } });
-    return NextResponse.json(projets || {});
-  } catch (err) {
+    return NextResponse.json(projets || { projects: [] });
+  } catch (err: any) {
     console.error("GET error:", err);
-    return NextResponse.json({ error: "Failed to fetch projects" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to fetch projets" }, { status: 500 });
   }
 }
 
+// PUT - Add or Update a project
 export async function PUT(req: Request) {
   try {
     const formData = await req.formData();
-    const id = formData.get("_id") as string | null;
-    const titleFr = formData.get("title.fr") as string;
-    const titleEn = formData.get("title.en") as string;
-    const descriptionFr = formData.get("description.fr") as string;
-    const descriptionEn = formData.get("description.en") as string;
-    const techStack = JSON.parse(formData.get("techStack") as string); // Array of strings
-    const button = JSON.parse(formData.get("button") as string);
-    const link = formData.get("link") as string;
-
-    const file = formData.get("image") as File | null;
-
     const db = await connectDB();
     const projetsCollection = db.collection("projets");
 
-    let currentProject = id ? await projetsCollection.findOne({ _id: new ObjectId(id) }) : null;
-    let imageUrl = currentProject?.image || null;
+    const projectId = formData.get("projectId") as string | null;
+    const titleFr = formData.get("titleFr") as string;
+    const titleEn = formData.get("titleEn") as string;
+    const descFr = formData.get("descFr") as string;
+    const descEn = formData.get("descEn") as string;
+    const techStack = JSON.parse(formData.get("techStack") as string || "[]"); // pass array
+    const buttonIcon = formData.get("buttonIcon") as string;
+    const buttonLabelFr = formData.get("buttonLabelFr") as string;
+    const buttonLabelEn = formData.get("buttonLabelEn") as string;
+    const buttonLink = formData.get("buttonLink") as string;
 
-    // If new image uploaded
+    const file = formData.get("image") as File | null;
+
+    let imageUrl: string | null = null;
+
+    // If new image provided → delete old + upload
     if (file) {
       if (!file.type.startsWith("image/")) {
-        return NextResponse.json({ error: "Only images allowed" }, { status: 400 });
+        return NextResponse.json({ error: "Only image files allowed" }, { status: 400 });
       }
 
-      // Delete old file if exists
-      if (currentProject?.image) {
-        try {
-          const oldUrl = new URL(currentProject.image);
-          const pathParts = oldUrl.pathname.split("/").filter(Boolean);
-          if (pathParts.length > 0) {
-            const oldKey = pathParts[pathParts.length - 1];
-            await del(oldKey, { token: BLOB_TOKEN });
-            console.log(`Deleted old image: ${oldKey}`);
+      if (projectId) {
+        const existing = await projetsCollection.findOne({ "projects._id": projectId });
+        const project = existing?.projects?.find((p: any) => p._id === projectId);
+        if (project?.image) {
+          try {
+            const oldUrl = new URL(project.image);
+            const oldKey = oldUrl.pathname.split("/").pop();
+            if (oldKey) await del(oldKey, { token: BLOB_TOKEN });
+          } catch (e) {
+            console.error("Delete old image error:", e);
           }
-        } catch (err) {
-          console.error("Failed to delete old image:", err);
         }
       }
 
-      // Upload new one
       const buffer = Buffer.from(await file.arrayBuffer());
-      const timestamp = Date.now();
-      const cleanName = file.name.replace(/\s+/g, "_").replace(/\//g, "-");
-      const key = `project_${timestamp}_${cleanName}`;
-
+      const key = `project_${Date.now()}_${file.name.replace(/\s+/g, "_")}`;
       const uploadRes = await put(key, buffer, {
         token: BLOB_TOKEN,
         contentType: file.type,
         access: "public",
         addRandomSuffix: false,
       });
-
       imageUrl = uploadRes.url;
     }
 
     const newProject = {
+      _id: projectId || crypto.randomUUID(),
       title: { fr: titleFr, en: titleEn },
-      description: { fr: descriptionFr, en: descriptionEn },
+      description: { fr: descFr, en: descEn },
       techStack,
-      button,
-      link,
-      image: imageUrl,
+      button: {
+        icon: buttonIcon,
+        label: { fr: buttonLabelFr, en: buttonLabelEn },
+        link: buttonLink,
+      },
+      ...(imageUrl ? { image: imageUrl } : {}),
       updatedAt: new Date(),
     };
 
-    if (id) {
-      await projetsCollection.updateOne({ _id: new ObjectId(id) }, { $set: newProject });
+    // If editing → update project inside array
+    if (projectId) {
+      await projetsCollection.updateOne(
+        { "projects._id": projectId },
+        { $set: { "projects.$": newProject } }
+      );
     } else {
-      newProject["createdAt"] = new Date();
-      await projetsCollection.insertOne(newProject);
+      // Insert new project
+      await projetsCollection.updateOne(
+        {},
+        { $push: { projects: newProject }, $setOnInsert: { createdAt: new Date() } },
+        { upsert: true }
+      );
     }
 
     return NextResponse.json(newProject);
