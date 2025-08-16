@@ -324,9 +324,9 @@ export default function Portfolio() {
   const [servicesData, setServicesData] = useState<any>(null);
   const [heroLoading, setHeroLoading] = useState(true);
   const [servicesLoading, setServicesLoading] = useState(true);
-
+  const [aboutData, setAboutData] = useState<any>(null);
   const [photoLoading, setPhotoLoading] = useState(true);
-
+  const [aboutLoading, setAboutLoading] = useState(true);
 
   const [educationLoading, setEducationLoading] = useState(true);
   const [skillsLoading, setSkillsLoading] = useState(true);
@@ -386,7 +386,18 @@ export default function Portfolio() {
         setHeroLoading(false);
       });
   }, []);
-
+ useEffect(() => {
+    fetch("/api/about_me")
+      .then((res) => res.json())
+      .then((data) => {
+        setAboutData(data);
+        setAboutLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching about data:", err);
+        setAboutLoading(false);
+      });
+  }, []);
   // Fetch services data
   useEffect(() => {
     fetch("/api/services")
@@ -504,57 +515,7 @@ export default function Portfolio() {
     accentRed: "var(--portfolio-red)", // Using the new CSS variable
     accentRedForeground: "var(--portfolio-red-foreground)",
   }
-  const educationEvents = useMemo(
-    () => [
-      {
-        year: "2024 - 2025",
-        title: t.itWebDev, // Informatique et Développement Web
-        institution: t.centreAzrou, // Centre Azrou pour le développement communautaire
-        location: "",
-        description: t.itWebDevDesc, // Formation en Informatique et Développement Web.
-      },
-      {
-        year: "2022 - 2024",
-        title: t.diplomaFullStack, // Diplôme en Développement Digital Web Full Stack
-        institution: t.istaIfrane, // Institut Spécialisé de Technologie Appliquée Ifrane (OFPPT)
-        location: "",
-        description: t.diplomaFullStackDesc, // Formation complète en développement web full stack.
-      },
-      {
-        year: "2021",
-        title: t.baccalaureate, // Baccalauréat en Sciences de la Vie et de la Terre
-        institution: t.lyceeSidiElMakhfi, // Lycée Qualifiant Sidi El Makhfi
-        location: "",
-        description: t.baccalaureateDesc, // Diplôme de fin d'études secondaires
-      },
 
-
-    ],
-    [t],
-  )
-
-  const experienceEvents = useMemo(
-    () => [
-
-      {
-        year: "10 juin 2025 au 10 juillet 2025",
-        duration: t.oneMonth, // 1 mois
-        title: t.internshipIT, // Stage en Informatique
-        institution: t.alAkhawaynUniversity, // Al Akhawayn University
-        location: t.ifrane, // Ifrane
-        description: [t.internshipITDesc], // Stage pratique en informatique et développement web.
-      },
-      {
-        year: "11 mars 2024 au 11 avril 2024",
-        duration: t.oneMonth, // 1 mois
-        title: t.internshipWebDev, // Stage en Développement Web
-        institution: t.communeSidiMokhfi, // Commune de Sidi Mokhfi
-        location: t.sidiMokhfi, // Sidi Mokhfi
-        description: [t.internshipWebDevDesc], // Application des compétences en développement web et contribution à une équipe dynamique.
-      },
-    ],
-    [t],
-  )
 
 
   const projectsData = useMemo(
@@ -635,73 +596,13 @@ export default function Portfolio() {
       />
     );
   };
-  const filteredServices = useMemo(() => {
-    if (!searchTerm)
-      return [
-        { title: t.service1Title, desc: t.service1Desc },
-        { title: t.service2Title, desc: t.service2Desc },
-        { title: t.service3Title, desc: t.service3Desc },
-      ]
-    const lowerCaseSearchTerm = searchTerm.toLowerCase()
-    return [
-      { title: t.service1Title, desc: t.service1Desc },
-      { title: t.service2Title, desc: t.service2Desc },
-      { title: t.service3Title, desc: t.service3Desc },
-    ].filter(
-      (service) =>
-        service.title.toLowerCase().includes(lowerCaseSearchTerm) ||
-        service.desc.toLowerCase().includes(lowerCaseSearchTerm),
-    )
-  }, [searchTerm, t])
 
 
-  const filteredEducationEvents = useMemo(() => {
-    if (!searchTerm) return educationEvents
-    const lowerCaseSearchTerm = searchTerm.toLowerCase()
-    return educationEvents.filter(
-      (event) =>
-        event.title.toLowerCase().includes(lowerCaseSearchTerm) ||
-        event.institution.toLowerCase().includes(lowerCaseSearchTerm) ||
-        event.description.toLowerCase().includes(lowerCaseSearchTerm) ||
-        (event.location && event.location.toLowerCase().includes(lowerCaseSearchTerm)) ||
-        event.year.toLowerCase().includes(lowerCaseSearchTerm),
-    )
-  }, [searchTerm, educationEvents])
 
-  const filteredExperienceEvents = useMemo(() => {
-    if (!searchTerm) return experienceEvents
-    const lowerCaseSearchTerm = searchTerm.toLowerCase()
-    return experienceEvents.filter(
-      (event) =>
-        event.title.toLowerCase().includes(lowerCaseSearchTerm) ||
-        event.institution.toLowerCase().includes(lowerCaseSearchTerm) ||
-        (Array.isArray(event.description)
-          ? event.description.some((desc) => desc.toLowerCase().includes(lowerCaseSearchTerm))
-          : event.description.toLowerCase().includes(lowerCaseSearchTerm)) ||
-        (event.location && event.location.toLowerCase().includes(lowerCaseSearchTerm)) ||
-        event.year.toLowerCase().includes(lowerCaseSearchTerm) ||
-        (event.duration && event.duration.toLowerCase().includes(lowerCaseSearchTerm)),
-    )
-  }, [searchTerm, experienceEvents])
 
-  const filteredSkillsData = useMemo(() => {
-    if (!searchTerm) return skillsData
-    const lowerCaseSearchTerm = searchTerm.toLowerCase()
-    const filterCategory = (category: any[]) =>
-      category.filter(
-        (skill) =>
-          skill.name.toLowerCase().includes(lowerCaseSearchTerm) ||
-          skill.desc.toLowerCase().includes(lowerCaseSearchTerm),
-      )
 
-    return {
-      programmingLanguages: filterCategory(skillsData.programmingLanguages),
-      frameworksLibraries: filterCategory(skillsData.frameworksLibraries),
-      databases: filterCategory(skillsData.databases),
-      otherTechnicalSkills: filterCategory(skillsData.otherTechnicalSkills),
-      softSkills: filterCategory(skillsData.softSkills),
-    }
-  }, [searchTerm, skillsData])
+  
+
 
 
 
@@ -721,7 +622,7 @@ const getIcon = (iconName?: string) => {
         project.tech.some((tech) => tech.toLowerCase().includes(lowerCaseSearchTerm)),
     )
   }, [searchTerm, projectsData])
-  if (heroLoading || servicesLoading || photoLoading || educationLoading) return <Loading/>;
+  if (heroLoading || servicesLoading || photoLoading || educationLoading || aboutLoading) return <Loading/>;
   return (
 
     <div
@@ -1373,98 +1274,100 @@ const getIcon = (iconName?: string) => {
         </div>
       </section>
 
+{/* About Section */}
+<section id="about" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
+  <div className="container mx-auto max-w-7xl">
+    <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
+      <div>
+        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-6 sm:mb-8">{aboutData.aboutTitle?.[currentLang]}</h2>
+        <p className={`${themeClasses.textSecondary} text-base sm:text-lg leading-relaxed mb-6 sm:mb-8`}>
+          {aboutData.aboutDescription?.[currentLang]}
+        </p>
 
-      {/* About Section */}
-      <section id="about" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
-        <div className="container mx-auto max-w-7xl">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
-            <div>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-6 sm:mb-8">{t.aboutTitle}</h2>
-              <p className={`${themeClasses.textSecondary} text-base sm:text-lg leading-relaxed mb-6 sm:mb-8`}>
-                {t.aboutDescription}
-              </p>
-
-              {/* Personal Info */}
-              <div className="grid grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
+        {/* Personal Info */}
+        <div className="grid grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
+          {aboutData.personalInfo?.map((info, index) => {
+            const IconComponent = getIcon(info.icon);
+            return (
+              <div key={index} className="flex items-start gap-2">
+                {IconComponent && (
+                  <IconComponent className={`w-4 h-4 mt-0.5 ${themeClasses.textSecondary}`} />
+                )}
                 <div>
-                  <p className={`${themeClasses.textMuted} text-xs sm:text-sm mb-1`}>{t.age}</p>
-                  <p className="font-medium text-sm sm:text-base">{t.years}</p>
-                </div>
-                <div>
-                  <p className={`${themeClasses.textMuted} text-xs sm:text-sm mb-1`}>{t.location}</p>
-                  <p className="font-medium text-sm sm:text-base">{t.locationValue}</p>
-                </div>
-                <div>
-                  <p className={`${themeClasses.textMuted} text-xs sm:text-sm mb-1`}>{t.status}</p>
-                  <p className="font-medium text-sm sm:text-base">{t.single}</p>
-                </div>
-                <div>
-                  <p className={`${themeClasses.textMuted} text-xs sm:text-sm mb-1`}>{t.nationality}</p>
-                  <p className="font-medium text-sm sm:text-base">{t.moroccan}</p>
+                  <p className={`${themeClasses.textMuted} text-xs sm:text-sm mb-1`}>
+                    {info.label?.[currentLang]}
+                  </p>
+                  <p className="font-medium text-sm sm:text-base">
+                    {info.value?.[currentLang]}
+                  </p>
                 </div>
               </div>
-            </div>
+            );
+          })}
+        </div>
+      </div>
 
-            <div className="space-y-8">
-              {/* Languages */}
-              <div>
-                <h3 className="text-xl sm:text-2xl font-medium mb-4 sm:mb-6 flex items-center gap-3">
-                  <LanguagesIcon className="w-5 h-5 sm:w-6 sm:h-6 text-[rgb(var(--portfolio-gold))]" />
-                  {t.languages}
-                </h3>
-                <div className="space-y-3 sm:space-y-4">
-                  {[
-                         { lang: currentLang === "fr" ? "Anglais" : "English", level: t.good, width: "80%" },
-                 
-                    { lang: currentLang === "fr" ? "Français" : "French", level: t.average, width: "60%" },
-                    { lang: "Tamazight", level: t.native, width: "85%" },
-                    { lang: currentLang === "fr" ? "Arabe" : "Arabic", level: t.native, width: "85%" },
-                   
-                 ].map((item, index) => (
-                    <div key={index}>
-                      <div className="flex justify-between mb-1 sm:mb-2">
-                        <span className="font-medium text-sm sm:text-base">{item.lang}</span>
-                        <span className={`${themeClasses.textSecondary} text-xs sm:text-sm`}>{item.level}</span>
-                      </div>
-                      <div className={`w-full ${isDarkMode ? "bg-gray-800" : "bg-gray-200"} rounded-full h-1`}>
-                        <div
-                          className="bg-[rgb(var(--portfolio-gold))] h-1 rounded-full transition-all duration-1000"
-                          style={{ width: item.width }}
-                        ></div>
-                      </div>
-                    </div>
-                  ))}
+      <div className="space-y-8">
+        {/* Languages */}
+        <div>
+          <h3 className="text-xl sm:text-2xl font-medium mb-4 sm:mb-6 flex items-center gap-3">
+            <LanguagesIcon className="w-5 h-5 sm:w-6 sm:h-6 text-[rgb(var(--portfolio-gold))]" />
+            {aboutData.languages?.title?.[currentLang] || t.languages}
+          </h3>
+          <div className="space-y-3 sm:space-y-4">
+            {aboutData.languages?.list?.map((lang, index) => {
+              const levelKey = lang.level.toLowerCase();
+              const levelText = aboutData.languages?.levels?.[levelKey]?.[currentLang] || '';
+              
+              return (
+                <div key={index}>
+                  <div className="flex justify-between mb-1 sm:mb-2">
+                    <span className="font-medium text-sm sm:text-base capitalize">
+                      {lang.name}
+                    </span>
+                    <span className={`${themeClasses.textSecondary} text-xs sm:text-sm`}>
+                      {levelText}
+                    </span>
+                  </div>
+                  <div className={`w-full ${isDarkMode ? "bg-gray-800" : "bg-gray-200"} rounded-full h-1`}>
+                    <div
+                      className="bg-[rgb(var(--portfolio-gold))] h-1 rounded-full transition-all duration-1000"
+                      style={{ width: `${(lang.level.length / 2) * 20}%` }}
+                    ></div>
+                  </div>
                 </div>
-              </div>
-
-              {/* Interests */}
-              <div>
-                <h3 className="text-xl sm:text-2xl font-medium mb-4 sm:mb-6 flex items-center gap-3">
-                  <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-[rgb(var(--portfolio-gold))]" />
-                  {t.interests}
-                </h3>
-                <div className="flex flex-wrap gap-3 sm:gap-4">
-                  <Badge
-                    className={`${isDarkMode ? "bg-gray-800 text-white border-gray-700" : "bg-gray-100 text-gray-900 border-gray-300"} border px-3 sm:px-4 py-1 sm:py-2 text-sm`}
-                  >
-                    {t.sport}
-                  </Badge>
-                  <Badge
-                    className={`${isDarkMode ? "bg-gray-800 text-white border-gray-700" : "bg-gray-100 text-gray-900 border-gray-300"} border px-3 sm:px-4 py-1 sm:py-2 text-sm`}
-                  >
-                    {t.travel}
-                  </Badge>
-                  <Badge
-                    className={`${isDarkMode ? "bg-gray-800 text-white border-gray-700" : "bg-gray-100 text-gray-900 border-gray-300"} border px-3 sm:px-4 py-1 sm:py-2 text-sm`}
-                  >
-                    {t.coding}
-                  </Badge>
-                </div>
-              </div>
-            </div>
+              );
+            })}
           </div>
         </div>
-      </section>
+
+        {/* Interests */}
+        <div>
+          <h3 className="text-xl sm:text-2xl font-medium mb-4 sm:mb-6 flex items-center gap-3">
+            <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-[rgb(var(--portfolio-gold))]" />
+            {t.interests}
+          </h3>
+          <div className="flex flex-wrap gap-3 sm:gap-4">
+            {aboutData.interests?.map((interest, index) => {
+              const IconComponent = getIcon(interest.icon);
+              return (
+                <Badge
+                  key={index}
+                  className={`${isDarkMode ? "bg-gray-800 text-white border-gray-700" : "bg-gray-100 text-gray-900 border-gray-300"} border px-3 sm:px-4 py-1 sm:py-2 text-sm flex items-center gap-2`}
+                >
+                  {IconComponent && (
+                    <IconComponent className="w-3 h-3" />
+                  )}
+                  {interest.name?.[currentLang]}
+                </Badge>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
       {/* Contact Section */}
       <section id="contact" className={`py-16 sm:py-20 px-4 sm:px-6 lg:px-8 ${themeClasses.sectionBg}`}>
