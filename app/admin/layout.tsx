@@ -1,12 +1,14 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { getSession } from "next-auth/react";
 import Header from "@/components/header";
 import Sidebar from "@/components/sidbar";
-
+import Loading from '@/components/Loading';
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [loading, setLoading] = useState(true); // wait until session check finishes
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   // Auto-open sidebar on desktop
@@ -21,33 +23,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // 🔐 Session check
+  // Check session
   useEffect(() => {
     const checkSession = async () => {
-      try {
-        const res = await fetch("/api/auth/check-session", {
-          method: "GET",
-          credentials: "include", // send cookies
-        });
-
-        if (!res.ok) {
-          router.push("/login");
-          return;
-        }
-
-        const data = await res.json();
-        if (!data.success) {
-          router.push("/login");
-          return;
-        }
-      } catch (err) {
-        console.error("Session check failed:", err);
+      const session = await getSession();
+      if (!session) {
         router.push("/login");
-      } finally {
+      } else {
         setLoading(false);
       }
     };
-
     checkSession();
   }, [router]);
 
@@ -59,12 +44,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     setSidebarOpen(false);
   };
 
-  // show loading screen until session is checked
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
-        <p className="text-gray-700 dark:text-gray-200 text-lg">Checking session...</p>
-      </div>
+<Loading/>
     );
   }
 

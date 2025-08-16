@@ -1,6 +1,8 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Loading from "@/components/Loading";
 
 export default function SettingsPage() {
   const [hasPassword, setHasPassword] = useState<boolean | null>(null);
@@ -26,10 +28,10 @@ export default function SettingsPage() {
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault(); // prevent default page reload
     setError("");
     setSuccess("");
-    
+
     if (newPassword !== confirmPassword) {
       setError("New passwords don't match");
       return;
@@ -72,12 +74,8 @@ export default function SettingsPage() {
     }
   };
 
-  if (hasPassword === null) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
+  if (hasPassword === null || loading) {
+    return <Loading />;
   }
 
   return (
@@ -86,17 +84,12 @@ export default function SettingsPage() {
         <h1 className="text-2xl font-bold text-gray-800 mb-6">
           {hasPassword ? "Change Admin Password" : "Set Admin Password"}
         </h1>
-        
+
         {error && (
-          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
-            {error}
-          </div>
+          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">{error}</div>
         )}
-        
         {success && (
-          <div className="mb-4 p-3 bg-green-100 text-green-700 rounded-md">
-            {success}
-          </div>
+          <div className="mb-4 p-3 bg-green-100 text-green-700 rounded-md">{success}</div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -149,7 +142,7 @@ export default function SettingsPage() {
               disabled={loading}
               className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
             >
-              {loading ? "Processing..." : hasPassword ? "Update Password" : "Set Password"}
+              {hasPassword ? "Update Password" : "Set Password"}
             </button>
           </div>
         </form>
