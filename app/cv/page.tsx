@@ -169,12 +169,13 @@ export default function CvPage() {
       </div>
 
       {/* Google Viewer container */}
-      <div
-        className={`cv-a4-page ${themeClasses.cardBg} shadow-lg rounded-lg overflow-hidden w-full max-w-4xl flex flex-col ${themeClasses.text} md:max-w-[794px]`}
-        style={{ height: "1120px", minHeight: "600px" }}
-      >
-        {renderContent()}
-      </div>
+    <div
+  className={`cv-a4-page ${themeClasses.cardBg} shadow-lg rounded-lg overflow-hidden w-full max-w-4xl flex flex-col ${themeClasses.text} 
+              h-[60vh] md:h-[1120px] md:max-w-[794px]`}
+>
+  {renderContent()}
+</div>
+
     </div>
   )
 }
