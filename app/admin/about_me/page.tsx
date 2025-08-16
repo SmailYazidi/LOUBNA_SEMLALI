@@ -3,6 +3,11 @@
 import { useEffect, useState } from "react";
 import Loading from '@/components/Loading';
 
+interface LanguageItem {
+  name: string;
+  level: string; // stores the level key (e.g., "a1")
+}
+
 interface AboutData {
   aboutTitle: { fr: string; en: string };
   aboutDescription: { fr: string; en: string };
@@ -13,26 +18,30 @@ interface AboutData {
   }[];
   languages: {
     title: { fr: string; en: string };
-    levels: {
-      native: { fr: string; en: string };
-      good: { fr: string; en: string };
-      average: { fr: string; en: string };
-    };
+    levels: Record<string, { fr: string; en: string }>;
+    list: LanguageItem[];
   };
   interests: { icon: string; name: { fr: string; en: string } }[];
 }
+
+const defaultLevels = {
+  a1: { fr: "A1 — Débutant", en: "A1 — Beginner" },
+  a2: { fr: "A2 — Élémentaire", en: "A2 — Elementary" },
+  b1: { fr: "B1 — Intermédiaire", en: "B1 — Intermediate" },
+  b2: { fr: "B2 — Intermédiaire Avancé", en: "B2 — Upper Intermediate" },
+  c1: { fr: "C1 — Avancé", en: "C1 — Advanced" },
+  c2: { fr: "C2 — Maîtrise", en: "C2 — Mastery" },
+  native: { fr: "Langue Maternelle", en: "Native" }
+};
 
 const defaultAboutData: AboutData = {
   aboutTitle: { fr: "", en: "" },
   aboutDescription: { fr: "", en: "" },
   personalInfo: [],
   languages: {
-    title: { fr: "Languages", en: "Languages" },
-    levels: {
-      native: { fr: "Native", en: "Native" },
-      good: { fr: "Good", en: "Good" },
-      average: { fr: "Average", en: "Average" },
-    },
+    title: { fr: "Langues", en: "Languages" },
+    levels: defaultLevels,
+    list: [],
   },
   interests: [],
 };
@@ -41,6 +50,7 @@ export default function AboutAdminPage() {
   const [about, setAbout] = useState<AboutData>(defaultAboutData);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [newLanguageName, setNewLanguageName] = useState("");
 
   useEffect(() => {
     async function fetchAbout() {
@@ -51,17 +61,19 @@ export default function AboutAdminPage() {
         
         const data = await res.json();
         if (data) {
-          // Merge with default to ensure all fields exist
+          // Merge with default levels if none exist
+          const levels = data.languages?.levels || defaultLevels;
+          
           setAbout({
             ...defaultAboutData,
             ...data,
             languages: {
-              ...defaultAboutData.languages,
-              ...(data.languages || {}),
-              levels: {
-                ...defaultAboutData.languages.levels,
-                ...(data.languages?.levels || {}),
+              title: {
+                ...defaultAboutData.languages.title,
+                ...(data.languages?.title || {}),
               },
+              levels,
+              list: data.languages?.list || [],
             },
           });
         } else {
@@ -85,7 +97,7 @@ export default function AboutAdminPage() {
     value: string
   ) => {
     setAbout((prev) => {
-      const newData = JSON.parse(JSON.stringify(prev)); // Deep clone
+      const newData = JSON.parse(JSON.stringify(prev));
       
       if (section === "aboutTitle" || section === "aboutDescription") {
         (newData[section] as any)[indexOrKey as string] = value;
@@ -93,9 +105,17 @@ export default function AboutAdminPage() {
       else if (section === "languages") {
         if (field === "title") {
           (newData.languages.title as any)[indexOrKey as string] = value;
-        } else {
-          const langLevel = field as "native" | "good" | "average";
-          newData.languages.levels[langLevel][indexOrKey as string] = value;
+        } else if (field === "levelName") {
+          const [level, lang] = (indexOrKey as string).split(".");
+          newData.languages.levels[level][lang] = value;
+        } else if (field.startsWith("list.")) {
+          const [_, listField, langIndex] = field.split(".");
+          const index = parseInt(langIndex);
+          if (listField === "name") {
+            newData.languages.list[index].name = value;
+          } else if (listField === "level") {
+            newData.languages.list[index].level = value;
+          }
         }
       } 
       else if (section === "personalInfo") {
@@ -121,38 +141,34 @@ export default function AboutAdminPage() {
     });
   };
 
-  const handleAddItem = (section: "personalInfo" | "interests") => {
-    setAbout((prev) => {
-      const newData = { ...prev };
-      if (section === "personalInfo") {
-        newData.personalInfo = [
-          ...newData.personalInfo,
+  const handleAddLanguage = () => {
+    if (!newLanguageName.trim()) return;
+    
+    setAbout(prev => ({
+      ...prev,
+      languages: {
+        ...prev.languages,
+        list: [
+          ...prev.languages.list,
           {
-            icon: "",
-            label: { fr: "", en: "" },
-            value: { fr: "", en: "" },
-          },
-        ];
-      } else if (section === "interests") {
-        newData.interests = [
-          ...newData.interests,
-          { icon: "", name: { fr: "", en: "" } },
-        ];
+            name: newLanguageName.trim(),
+            level: "b1" // Default to intermediate level
+          }
+        ]
       }
-      return newData;
-    });
+    }));
+    
+    setNewLanguageName("");
   };
 
-  const handleRemoveItem = (section: "personalInfo" | "interests", index: number) => {
-    setAbout((prev) => {
-      const newData = { ...prev };
-      if (section === "personalInfo") {
-        newData.personalInfo = newData.personalInfo.filter((_, i) => i !== index);
-      } else if (section === "interests") {
-        newData.interests = newData.interests.filter((_, i) => i !== index);
+  const handleRemoveLanguage = (index: number) => {
+    setAbout(prev => ({
+      ...prev,
+      languages: {
+        ...prev.languages,
+        list: prev.languages.list.filter((_, i) => i !== index)
       }
-      return newData;
-    });
+    }));
   };
 
   const handleSave = async () => {
@@ -229,36 +245,84 @@ export default function AboutAdminPage() {
         </div>
       </div>
 
-      {/* Language Levels */}
+      {/* Language Proficiency Levels */}
       <div className="space-y-4">
-        <h2 className="font-semibold">Language Levels</h2>
-        <div className="grid md:grid-cols-3 gap-4">
-          {Object.entries(about.languages.levels).map(([level, translations]) => (
-            <div key={level} className="space-y-2">
-              <h3 className="font-medium capitalize">{level}</h3>
-              <div className="space-y-2">
-                <div>
-                  <label className="block text-sm mb-1">French</label>
-                  <input
-                    type="text"
-                    value={translations.fr}
-                    onChange={(e) => handleInputChange("languages", "fr", level, e.target.value)}
-                    className="border p-2 rounded w-full"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm mb-1">English</label>
-                  <input
-                    type="text"
-                    value={translations.en}
-                    onChange={(e) => handleInputChange("languages", "en", level, e.target.value)}
-                    className="border p-2 rounded w-full"
-                  />
-                </div>
-              </div>
+        <h2 className="font-semibold">Language Proficiency Levels</h2>
+        <div className="grid md:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+          {Object.entries(about.languages.levels).map(([levelKey, level]) => (
+            <div key={levelKey} className="flex items-center">
+              <span className="font-mono bg-blue-100 px-2 py-1 rounded mr-2">{levelKey.toUpperCase()}</span>
+              <span className="flex-1">{level.fr}</span>
+              <span className="text-gray-500">{level.en}</span>
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Language List Management */}
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <h2 className="font-semibold">Languages</h2>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={newLanguageName}
+              onChange={(e) => setNewLanguageName(e.target.value)}
+              className="border p-2 rounded"
+              placeholder="Language name (e.g., Français)"
+              onKeyDown={(e) => e.key === 'Enter' && handleAddLanguage()}
+            />
+            <button
+              onClick={handleAddLanguage}
+              className="px-3 py-1 bg-green-500 text-white rounded text-sm"
+              disabled={!newLanguageName.trim()}
+            >
+              Add Language
+            </button>
+          </div>
+        </div>
+        
+        {about.languages.list.length === 0 ? (
+          <div className="text-gray-500 italic">No languages added yet</div>
+        ) : (
+          <div className="space-y-3">
+            {about.languages.list.map((language, idx) => (
+              <div key={idx} className="border p-4 rounded-lg space-y-3 relative">
+                <button
+                  onClick={() => handleRemoveLanguage(idx)}
+                  className="absolute top-2 right-2 px-2 py-1 bg-red-500 text-white rounded text-xs"
+                >
+                  Remove
+                </button>
+                
+                <div>
+                  <label className="block text-sm mb-1">Language Name</label>
+                  <input
+                    type="text"
+                    value={language.name}
+                    onChange={(e) => handleInputChange("languages", idx, "list.name", e.target.value)}
+                    className="border p-2 rounded w-full"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm mb-1">Proficiency Level</label>
+                  <select
+                    value={language.level}
+                    onChange={(e) => handleInputChange("languages", idx, "list.level", e.target.value)}
+                    className="border p-2 rounded w-full"
+                  >
+                    {Object.entries(about.languages.levels).map(([levelKey, level]) => (
+                      <option key={levelKey} value={levelKey}>
+                        {levelKey.toUpperCase()} — {level.fr} / {level.en}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Personal Info */}

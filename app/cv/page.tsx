@@ -1,10 +1,14 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { Document, Page, pdfjs } from 'react-pdf'
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ChevronLeft, Sun, Moon, Loader2 } from "lucide-react"
+import { ChevronLeft, Sun, Moon, Loader2, Download, ZoomIn, ZoomOut } from "lucide-react"
 import { useRouter } from "next/navigation"
+
+// Configure PDF.js worker
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`
 
 export default function CvPage() {
   const router = useRouter()
@@ -13,6 +17,10 @@ export default function CvPage() {
   const [isDownloading, setIsDownloading] = useState(false)
   const [cvUrls, setCvUrls] = useState<{ fr?: string; en?: string }>({})
   const [loading, setLoading] = useState(true)
+  const [numPages, setNumPages] = useState<number | null>(null)
+  const [pageNumber, setPageNumber] = useState(1)
+  const [scale, setScale] = useState(1.0)
+  const [pdfError, setPdfError] = useState(false)
 
   const toggleTheme = () => setIsDarkMode(!isDarkMode)
 
@@ -21,7 +29,6 @@ export default function CvPage() {
     else document.documentElement.classList.remove("dark")
   }, [isDarkMode])
 
-  // Fetch both CV URLs when component mounts
   useEffect(() => {
     const fetchCvUrls = async () => {
       try {
@@ -31,6 +38,7 @@ export default function CvPage() {
         setCvUrls(data)
       } catch (err) {
         console.error("Failed to fetch CV URLs:", err)
+        setPdfError(true)
       } finally {
         setLoading(false)
       }
@@ -44,17 +52,31 @@ export default function CvPage() {
     
     setIsDownloading(true)
     try {
+      const response = await fetch(pdfUrl)
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
       const link = document.createElement("a")
-      link.href = pdfUrl
+      link.href = url
       link.download = `loubna_semlali_${language}.pdf`
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
     } catch (err) {
       console.error("Download failed:", err)
     } finally {
       setIsDownloading(false)
     }
+  }
+
+  const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
+    setNumPages(numPages)
+    setPdfError(false)
+  }
+
+  const onDocumentLoadError = (error: Error) => {
+    console.error("PDF load error:", error)
+    setPdfError(true)
   }
 
   const themeClasses = {
@@ -67,31 +89,57 @@ export default function CvPage() {
     accentGoldHover: "rgb(var(--portfolio-gold-hover))",
   }
 
+  const zoomIn = () => setScale(prev => Math.min(prev + 0.25, 2.0))
+  const zoomOut = () => setScale(prev => Math.max(prev - 0.25, 0.5))
+
   return (
     <div className={`flex flex-col items-center p-4 min-h-screen ${themeClasses.bg} ${themeClasses.text}`}>
       {/* Top controls */}
       <div className="flex flex-row flex-wrap items-center justify-between w-full max-w-4xl gap-4 mb-6 no-print">
-      <Button
-  variant="ghost"
-  size="sm"
-  onClick={() => router.push("/")}
-  className={`p-2 ${isDarkMode ? "hover:bg-gray-800" : "hover:bg-gray-100"} flex items-center gap-2`}
->
-  <ChevronLeft className="w-5 h-5" />
-  <span className="text-sm font-medium">{language === "fr" ? "Retour" : "Back"}</span>
-</Button>
-
-
         <Button
           variant="ghost"
           size="sm"
-          onClick={toggleTheme}
-          className={`p-2 ${isDarkMode ? "hover:bg-gray-800" : "hover:bg-gray-100"}`}
+          onClick={() => router.push("/")}
+          className={`p-2 ${isDarkMode ? "hover:bg-gray-800" : "hover:bg-gray-100"} flex items-center gap-2`}
         >
-          {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          <ChevronLeft className="w-5 h-5" />
+          <span className="text-sm font-medium">{language === "fr" ? "Retour" : "Back"}</span>
         </Button>
 
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={zoomOut}
+            disabled={scale <= 0.5}
+            className="p-2"
+            aria-label="Zoom out"
+          >
+            <ZoomOut className="w-5 h-5" />
+          </Button>
+          <span className="text-sm w-10 text-center">{Math.round(scale * 100)}%</span>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={zoomIn}
+            disabled={scale >= 2.0}
+            className="p-2"
+            aria-label="Zoom in"
+          >
+            <ZoomIn className="w-5 h-5" />
+          </Button>
+        </div>
+
         <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={toggleTheme}
+            className={`p-2 ${isDarkMode ? "hover:bg-gray-800" : "hover:bg-gray-100"}`}
+          >
+            {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          </Button>
+
           <Select value={language} onValueChange={(value: "fr" | "en") => setLanguage(value)}>
             <SelectTrigger
               className={`min-w-[135px] w-auto ${isDarkMode ? "bg-gray-800 text-white border-gray-700" : "bg-gray-100 text-gray-900 border-gray-300"}`}
@@ -110,43 +158,88 @@ export default function CvPage() {
               isDarkMode
                 ? "bg-[rgb(var(--portfolio-gold))] hover:bg-[rgb(var(--portfolio-gold-hover))] text-black"
                 : "bg-gray-900 hover:bg-gray-800 text-white"
-            } font-medium px-6 py-2 rounded-full`}
+            } font-medium px-6 py-2 rounded-full flex items-center gap-2`}
             disabled={isDownloading || !cvUrls[language]}
           >
             {isDownloading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {language === "fr" ? "Téléchargement..." : "Downloading..."}
-              </>
+              <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
-              language === "fr" ? "Télécharger" : "Download"
+              <Download className="w-4 h-4" />
             )}
+            <span>{language === "fr" ? "Télécharger" : "Download"}</span>
           </Button>
         </div>
       </div>
 
       {/* PDF container */}
       <div
-        className={`cv-a4-page ${themeClasses.cardBg} shadow-lg rounded-lg overflow-hidden w-full max-w-4xl flex flex-col ${themeClasses.text} md:max-w-[794px]`}
-        style={{ height: "1120px" }}
+        className={`${themeClasses.cardBg} shadow-lg rounded-lg overflow-hidden w-full max-w-4xl flex flex-col ${themeClasses.text} md:max-w-[794px]`}
       >
         {loading ? (
-          <div className="flex items-center justify-center h-full text-gray-500">
+          <div className="flex items-center justify-center h-[1120px] text-gray-500">
             <Loader2 className="w-8 h-8 animate-spin" />
           </div>
-        ) : cvUrls[language] ? (
-          <iframe
-            src={`${cvUrls[language]}#view=FitH&toolbar=0&navpanes=0&scrollbar=0`}
-            className="w-full h-full"
-            title="CV PDF"
-            frameBorder="0"
-          />
-        ) : (
-          <div className="flex items-center justify-center h-full text-gray-500">
+        ) : pdfError || !cvUrls[language] ? (
+          <div className="flex items-center justify-center h-[1120px] text-gray-500">
             {language === "fr" ? "CV non disponible" : "CV not available"}
+          </div>
+        ) : (
+          <div className="overflow-auto max-h-[1120px]">
+            <Document
+              file={cvUrls[language]}
+              onLoadSuccess={onDocumentLoadSuccess}
+              onLoadError={onDocumentLoadError}
+              loading={
+                <div className="flex items-center justify-center h-[1120px]">
+                  <Loader2 className="w-8 h-8 animate-spin" />
+                </div>
+              }
+              error={
+                <div className="flex items-center justify-center h-[1120px] text-red-500">
+                  {language === "fr" ? "Erreur de chargement du PDF" : "Failed to load PDF"}
+                </div>
+              }
+            >
+              {Array.from(new Array(numPages), (_, index) => (
+                <Page
+                  key={`page_${index + 1}`}
+                  pageNumber={index + 1}
+                  scale={scale}
+                  loading={
+                    <div className="flex items-center justify-center h-[1120px]">
+                      <Loader2 className="w-8 h-8 animate-spin" />
+                    </div>
+                  }
+                  className="border-b border-gray-200 dark:border-gray-700"
+                />
+              ))}
+            </Document>
           </div>
         )}
       </div>
+
+      {/* Page navigation */}
+      {numPages && numPages > 1 && (
+        <div className="flex items-center justify-center gap-4 mt-4">
+          <Button
+            variant="ghost"
+            onClick={() => setPageNumber(prev => Math.max(prev - 1, 1))}
+            disabled={pageNumber <= 1}
+          >
+            {language === "fr" ? "Précédent" : "Previous"}
+          </Button>
+          <span className="text-sm">
+            {language === "fr" ? "Page" : "Page"} {pageNumber} {language === "fr" ? "sur" : "of"} {numPages}
+          </span>
+          <Button
+            variant="ghost"
+            onClick={() => setPageNumber(prev => Math.min(prev + 1, numPages))}
+            disabled={pageNumber >= numPages}
+          >
+            {language === "fr" ? "Suivant" : "Next"}
+          </Button>
+        </div>
+      )}
     </div>
   )
 }
