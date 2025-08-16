@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { connectDB } from "@/lib/mongodb"
-import { Blob } from "@vercel/blob"
-
+import { put } from '@vercel/blob';
+import { NextResponse } from 'next/server';
 const blobClient = new Blob({ accessToken: process.env.VERCEL_BLOB_TOKEN })
 
 export async function GET() {
