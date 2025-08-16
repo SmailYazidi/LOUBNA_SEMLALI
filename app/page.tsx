@@ -61,112 +61,21 @@ const translations = {
 
     // Experience & Education Timeline
     journeyTitle: "Parcours Professionnel & Éducatif",
-    internshipIT: "Stage en Informatique",
-    alAkhawaynUniversity: "Al Akhawayn University",
-    ifrane: "Ifrane",
-    internshipITDesc: "Stage pratique en informatique et développement web.",
-    itWebDev: "Informatique et Développement Web",
-    centreAzrou: "Centre Azrou pour le développement communautaire",
-    itWebDevDesc: "Formation en Informatique et Développement Web.",
-    internshipWebDev: "Stage en Développement Web",
-    communeSidiMokhfi: "Commune de Sidi Mokhfi",
-    sidiMokhfi: "Sidi Mokhfi",
-    internshipWebDevDesc: "Application des compétences en développement web et contribution à une équipe dynamique.",
-    diplomaFullStack: "Diplôme en Développement Digital Web Full Stack",
-    istaIfrane: "Institut Spécialisé de Technologie Appliquée Ifrane (OFPPT)",
-    diplomaFullStackDesc: "Formation complète en développement web full stack.",
-    baccalaureate: "Baccalauréat en Sciences de la Vie et de la Terre",
-    lyceeSidiElMakhfi: "Lycée Qualifiant Sidi El Makhfi",
-    baccalaureateDesc: "Diplôme de fin d'études secondaires.",
+
 
     // Skills
     skillsTitle: "Mes Compétences",
-    programmingLanguages: "Langages de Programmation",
-    backendLanguage: "Langage Backend",
-    scriptingLanguage: "Langage de Scripting",
-    backendRuntime: "Environnement d'exécution Backend",
-    frameworksLibraries: "Frameworks et Bibliothèques",
-    phpFramework: "Framework PHP",
-    frontendFramework: "Framework Frontend",
-    cssFramework: "Framework CSS",
-    databases: "Bases de Données",
-    relationalDatabase: "Base de Données Relationnelle",
-    nosqlDatabase: "Base de Données NoSQL",
-    otherTechnicalSkills: "Autres Compétences Techniques",
-    technicalAnalysis: "Analyse Technique",
-    understandingSystemsNeeds: "Compréhension des systèmes et des besoins",
-    webAppDevelopment: "Développement d'Applications Web",
-    buildingFunctionalWebApps: "Construction d'applications web fonctionnelles",
-    webProjectManagement: "Gestion de Projets Web",
-    organizingLeadingWebProjects: "Organisation et direction de projets web",
-    versionControlGit: "Contrôle de Version : Git",
-    managingCodeVersions: "Gestion des versions de code",
-    softSkills: "Compétences Non Techniques",
-    teamwork: "Travail d'Équipe",
-    workingWellWithOthers: "Bien travailler avec les autres",
-    effectiveCommunication: "Communication Efficace",
-    sharingIdeasClearly: "Partager des idées clairement",
-    problemSolving: "Résolution de Problèmes",
-    findingSmartSolutions: "Trouver des solutions intelligentes",
-    timeManagement: "Gestion du Temps",
-    usingTimeWisely: "Utiliser le temps judicieusement",
-    adaptability: "Adaptabilité",
-    adjustingToChange: "S'adapter au changement",
-    criticalThinking: "Pensée Critique",
-    analyzingReasoning: "Analyser et raisonner",
-    creativity: "Créativité",
-    thinkingOutsideTheBox: "Penser différemment",
-    initiative: "Initiative",
-    takingActionIndependently: "Agir de manière indépendante",
+  
 
     // Projects
     myProjects: "Mes Projets",
-    animovTitle: "Animov",
-    animovDesc:
-      "AniMov est une plateforme pour suivre, noter et discuter de films, séries, livres, mangas et animes — créez des listes de visionnage, de lecture, de favoris et partagez vos pensées avec vos amis.",
-    tableManagementTitle: "Système de Gestion de Table",
-    tableManagementDesc:
-      "Un système d'affichage numérique en temps réel développé pour le département CLE de l'Université Al Akhawayn. Il aide les étudiants à identifier rapidement leurs tuteurs et tables assignés grâce à une interface intuitive et photo-supportée.",
-    github: "GitHub",
-    live: "Live",
-        weatherAppTitle: "Weather Forecast App",
-    weatherAppDesc: "A comprehensive weather application providing real-time forecasts, 14-day outlooks, and hourly predictions with multi-language support and dark/light mode.",
-  
- sNoteTitle: "Application S-Note",
-  sNoteDesc: "Une application sécurisée et intuitive pour stocker et gérer vos notes et mots de passe.",
+
 
  // (You fill in the details)
     // About
     aboutTitle: "À Propos de Moi",
-    aboutDescription:
-      "Jeune professionnel passionné par le développement web, je développe mes compétences avec une approche moderne et innovante, cherchant à contribuer à des projets stimulants.",
-    age: "Âge",
-    location: "Localisation",
-    status: "Statut",
-    nationality: "Nationalité",
-    years: "21 ans",
-    locationValue: "IFRANE, MOROC",
-    single: "Célibataire",
-    moroccan: "Marocaine",
-    languages: "Langues",
-    interests: "Centres d'Intérêt",
-    sport: "🏃 Sport",
-    travel: "✈️ Voyage",
-    coding: "💻 Codage",
+   
 
-
-    // Language levels
-    native: "Bien",
-    good: "Bon",
-    average: "Intermédiaire",
-
-    // Contact
-    contactTitle: "Travaillons Ensemble",
-    contactDescription:
-      "Prêt à donner vie à votre projet ? Contactez-moi pour discuter de vos besoins et découvrir comment nous pouvons collaborer.",
-    email: "Email",
-    phone: "Téléphone",
-    startProject: "Commencer un Projet",
 
     // Footer
     rightsReserved: "Tous droits réservés",
@@ -182,42 +91,14 @@ const translations = {
     contact: "Contact",
     hireMe: "Hire Me",
 
-    // Hero
-    specialist: "Full Stack Web Developer",
-    heroTitle: "Transform your ideas into powerful web applications",
-    heroDescription:
-      "I am a dynamic and ambitious web developer with skills in building web applications. I hold a diploma in full-stack web development and received additional training from the Azrou Center for Community Development. I am seeking opportunities to apply my skills and contribute to a motivated and collaborative team.",
-    viewJourney: "View My CV",
+ viewJourney: "View My CV",
 
     // Services
     servicesTitle: "Services",
-    service1Title: "Web Development",
-    service1Desc: "Design and development of robust and scalable web applications, from front-end to back-end.",
-    service2Title: "Mobile Applications",
-    service2Desc:
-      "Creation of high-performance and intuitive mobile applications for iOS and Android, with fluid user experiences.",
-    service3Title: "Web Project Management",
-    service3Desc: "Organization and leadership of web projects, ensuring efficient delivery and client satisfaction.",
-
+  
     // Experience & Education Timeline
     journeyTitle: "Work Experience & Education Timeline",
-    internshipIT: "Web Development Internship",
-    alAkhawaynUniversity: "Al Akhawayn University",
-    ifrane: "Ifrane",
-    internshipITDesc: "Practical internship in web development.",
-    itWebDev: "Web Development",
-    centreAzrou: "Centre Azrou for Community Development",
-    itWebDevDesc: "Training in Web Development.",
-    internshipWebDev: "Web Development Internship",
-    communeSidiMokhfi: "Commune de Sidi Mokhfi",
-    sidiMokhfi: "Sidi Mokhfi",
-    internshipWebDevDesc: "Application of web development skills and contribution to a dynamic team.",
-    diplomaFullStack: "Full Stack Digital Web Development Diploma",
-    istaIfrane: "Specialized Institute of Applied Technology Ifrane (OFPPT)",
-    diplomaFullStackDesc: "Comprehensive training in full stack web development.",
-    baccalaureate: "Baccalaureate in Life and Earth Sciences",
-    lyceeSidiElMakhfi: "Qualifying High School Sidi El Makhfi",
-    baccalaureateDesc: "High school diploma.",
+ 
 
     // Skills
     skillsTitle: "My Skills",
@@ -550,93 +431,6 @@ export default function Portfolio() {
 
 
 
-  const projectsData = useMemo(
-    () => [
-       {
-        title: t.tableManagementTitle,
-        description: t.tableManagementDesc,
-        images: [
-          "/images/table-management/1.png",
-            "/images/table-management/2.png"
-
-        ],
-        tech: ["Next.js", "Node.js", "Atlas MongoDB", "Tailwind"],
-        github: "https://github.com/SmailYazidi/Table-Management-System",
-        live: "https://table-management-system-five.vercel.app",
-      },
-      {
-        title: t.animovTitle,
-        description: t.animovDesc,
-        images: [
-          "/images/animov/1.png",
-          "/images/animov/2.png",
-          "/images/animov/3.png"
-        ],
-        tech: ["Next.js", "Node.js", "MongoDB", "Tailwind"],
-        github: "https://github.com/SmailYazidi/AniMov",
-        live: "https://ani-mov.vercel.app",
-      },
-        {
-      title: t.weatherAppTitle, // Assuming you'll add this to your translation file
-      description: t.weatherAppDesc, // Assuming you'll add this to your translation file
-      images: [
-        "/images/Weather/1.png",
-        "/images/Weather/2.png"
-      ],
-      tech: ["Next.js", "Node.js", "WeatherAPI", "Tailwind"], 
-      github: "https://github.com/SmailYazidi/S-Weather",
-      live: "https://s-weather-sandy.vercel.app",
-    },
-       {
-      title: t.sNoteTitle, // Assuming you'll add this to your translation file
-      description: t.sNoteDesc, // Assuming you'll add this to your translation file
-      images: [
-        "/images/s-note/1.png",
-        "/images/s-note/2.png"
-      ],
-      tech: ["Next.js", "Node.js", "MongoDB", "Tailwind"], 
-      github: "https://github.com/SmailYazidi/S-Note",
-      live: "https://s-note.vercel.app",
-    },  
-    ],
-    [t]
-  );
-
-
-  // AutoRotatingImage component (define this outside your Projects section)
-  const AutoRotatingImage = ({ src, alt, totalImages, index }) => {
-    const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
-    useEffect(() => {
-      if (totalImages <= 1) return;
-
-      const interval = setInterval(() => {
-        setCurrentImageIndex(prev => (prev + 1) % totalImages);
-      }, 3000);
-
-      return () => clearInterval(interval);
-    }, [totalImages]);
-
-    return (
-      <Image
-        src={src}
-        alt={alt}
-        width={600}
-        height={350}
-        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${index === currentImageIndex ? 'opacity-100' : 'opacity-0'
-          }`}
-      />
-    );
-  };
-
-
-
-
-
-  
-
-
-
 
 const getIcon = (iconName?: string) => {
   if (!iconName) return null; // لو مافي أي اسم أيقونة، رجع null
@@ -644,16 +438,6 @@ const getIcon = (iconName?: string) => {
   return LucideIcons[pascalCase] || null; // لو الأيقونة مش موجودة، رجع null
 };
 
-  const filteredProjectsData = useMemo(() => {
-    if (!searchTerm) return projectsData
-    const lowerCaseSearchTerm = searchTerm.toLowerCase()
-    return projectsData.filter(
-      (project) =>
-        project.title.toLowerCase().includes(lowerCaseSearchTerm) ||
-        project.description.toLowerCase().includes(lowerCaseSearchTerm) ||
-        project.tech.some((tech) => tech.toLowerCase().includes(lowerCaseSearchTerm)),
-    )
-  }, [searchTerm, projectsData])
   if (heroLoading || servicesLoading || photoLoading || educationLoading || aboutLoading || contactLoading) return <Loading/>;
   return (
 
@@ -1223,7 +1007,7 @@ const getIcon = (iconName?: string) => {
     </h2>
 
     <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
-      {projectsData.projects?.map((project: any, index: number) => (
+      {projetsData.projects?.map((project: any, index: number) => (
         <Card
           key={project._id || index}
           className={`${themeClasses.cardBg} ${themeClasses.cardBorder} overflow-hidden transition-all duration-300 hover:border-[rgb(var(--portfolio-gold))] hover:shadow-lg`}
