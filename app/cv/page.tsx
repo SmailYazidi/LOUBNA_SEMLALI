@@ -1,14 +1,22 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Document, Page, pdfjs } from 'react-pdf'
+import dynamic from 'next/dynamic'
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ChevronLeft, Sun, Moon, Loader2, Download, ZoomIn, ZoomOut } from "lucide-react"
 import { useRouter } from "next/navigation"
 
-// Configure PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`
+// Dynamically import the PDF viewer with SSR disabled
+const PDFViewer = dynamic(
+  () => import('@/components/pdf-viewer').then((mod) => mod.PDFViewer),
+  { 
+    ssr: false,
+    loading: () => <div className="flex items-center justify-center h-[1120px]">
+      <Loader2 className="w-8 h-8 animate-spin" />
+    </div>
+  }
+)
 
 export default function CvPage() {
   const router = useRouter()
@@ -17,9 +25,6 @@ export default function CvPage() {
   const [isDownloading, setIsDownloading] = useState(false)
   const [cvUrls, setCvUrls] = useState<{ fr?: string; en?: string }>({})
   const [loading, setLoading] = useState(true)
-  const [numPages, setNumPages] = useState<number | null>(null)
-  const [pageNumber, setPageNumber] = useState(1)
-  const [scale, setScale] = useState(1.0)
   const [pdfError, setPdfError] = useState(false)
 
   const toggleTheme = () => setIsDarkMode(!isDarkMode)
@@ -69,16 +74,6 @@ export default function CvPage() {
     }
   }
 
-  const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
-    setNumPages(numPages)
-    setPdfError(false)
-  }
-
-  const onDocumentLoadError = (error: Error) => {
-    console.error("PDF load error:", error)
-    setPdfError(true)
-  }
-
   const themeClasses = {
     bg: isDarkMode ? "bg-[#0a0a0a]" : "bg-white",
     text: isDarkMode ? "text-white" : "text-gray-900",
@@ -105,30 +100,6 @@ export default function CvPage() {
           <ChevronLeft className="w-5 h-5" />
           <span className="text-sm font-medium">{language === "fr" ? "Retour" : "Back"}</span>
         </Button>
-
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={zoomOut}
-            disabled={scale <= 0.5}
-            className="p-2"
-            aria-label="Zoom out"
-          >
-            <ZoomOut className="w-5 h-5" />
-          </Button>
-          <span className="text-sm w-10 text-center">{Math.round(scale * 100)}%</span>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={zoomIn}
-            disabled={scale >= 2.0}
-            className="p-2"
-            aria-label="Zoom in"
-          >
-            <ZoomIn className="w-5 h-5" />
-          </Button>
-        </div>
 
         <div className="flex items-center gap-4">
           <Button
@@ -184,62 +155,9 @@ export default function CvPage() {
             {language === "fr" ? "CV non disponible" : "CV not available"}
           </div>
         ) : (
-          <div className="overflow-auto max-h-[1120px]">
-            <Document
-              file={cvUrls[language]}
-              onLoadSuccess={onDocumentLoadSuccess}
-              onLoadError={onDocumentLoadError}
-              loading={
-                <div className="flex items-center justify-center h-[1120px]">
-                  <Loader2 className="w-8 h-8 animate-spin" />
-                </div>
-              }
-              error={
-                <div className="flex items-center justify-center h-[1120px] text-red-500">
-                  {language === "fr" ? "Erreur de chargement du PDF" : "Failed to load PDF"}
-                </div>
-              }
-            >
-              {Array.from(new Array(numPages), (_, index) => (
-                <Page
-                  key={`page_${index + 1}`}
-                  pageNumber={index + 1}
-                  scale={scale}
-                  loading={
-                    <div className="flex items-center justify-center h-[1120px]">
-                      <Loader2 className="w-8 h-8 animate-spin" />
-                    </div>
-                  }
-                  className="border-b border-gray-200 dark:border-gray-700"
-                />
-              ))}
-            </Document>
-          </div>
+          <PDFViewer pdfUrl={cvUrls[language]} language={language} />
         )}
       </div>
-
-      {/* Page navigation */}
-      {numPages && numPages > 1 && (
-        <div className="flex items-center justify-center gap-4 mt-4">
-          <Button
-            variant="ghost"
-            onClick={() => setPageNumber(prev => Math.max(prev - 1, 1))}
-            disabled={pageNumber <= 1}
-          >
-            {language === "fr" ? "Précédent" : "Previous"}
-          </Button>
-          <span className="text-sm">
-            {language === "fr" ? "Page" : "Page"} {pageNumber} {language === "fr" ? "sur" : "of"} {numPages}
-          </span>
-          <Button
-            variant="ghost"
-            onClick={() => setPageNumber(prev => Math.min(prev + 1, numPages))}
-            disabled={pageNumber >= numPages}
-          >
-            {language === "fr" ? "Suivant" : "Next"}
-          </Button>
-        </div>
-      )}
     </div>
   )
 }
