@@ -791,7 +791,7 @@ const getIcon = (iconName?: string) => {
 
             {/* Desktop Controls */}
             <div className="hidden lg:flex items-center space-x-3">
-              {/* Language Dropdown */}
+              {/* Language ser */}
            <div className="relative language-menu">
   <Button
     variant="ghost"
