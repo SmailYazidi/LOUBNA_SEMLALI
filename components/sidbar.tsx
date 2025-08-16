@@ -8,24 +8,29 @@ import {
   Briefcase,
   Code,
   FileText,
-  User,
+    User as UserIcon, 
   Image,
   Settings,
-  LogOut
+  LogOut,  FolderKanban,  // For Projets
+  Mail  // For Contact
 } from "lucide-react";
 
 export default function Sidebar({ isOpen, closeSidebar }: { isOpen: boolean, closeSidebar: () => void }) {
   const pathname = usePathname();
 
-  const navItems = [
-    { href: "/admin", icon: Home, label: "Home" },
-    { href: "/admin/education", icon: BookOpen, label: "Education" },
-    { href: "/admin/services", icon: Briefcase, label: "Services" },
-    { href: "/admin/skills", icon: Code, label: "Skills" },
-    { href: "/admin/cv", icon: FileText, label: "CV" },
-    { href: "/admin/about_me", icon: User, label: "About Me" },
-    { href: "/admin/photo", icon: Image, label: "Photo" },
-  ];
+const navItems = [
+  { href: "/admin", icon: Home, label: "Home" },
+  { href: "/admin/education", icon: BookOpen, label: "Education" },
+  { href: "/admin/services", icon: Briefcase, label: "Services" },
+  { href: "/admin/skills", icon: Code, label: "Skills" },
+  { href: "/admin/projets", icon: FolderKanban, label: "Projets" },
+    { href: "/admin/about_me", icon: UserIcon, label: "About Me" },
+    { href: "/admin/contact", icon: Mail, label: "Contact" },
+  { href: "/admin/cv", icon: FileText, label: "CV" },
+
+  { href: "/admin/photo", icon: Image, label: "Photo" },
+
+];
 
   return (
     <>
