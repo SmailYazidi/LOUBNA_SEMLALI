@@ -31,6 +31,14 @@ export async function PUT(req: Request) {
       );
     }
 
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      return NextResponse.json(
+        { error: "Only image files are allowed" },
+        { status: 400 }
+      );
+    }
+
     const db = await connectDB();
     const photoCollection = db.collection("photo");
     
@@ -42,12 +50,24 @@ export async function PUT(req: Request) {
     if (currentPhoto?.url) {
       try {
         const oldUrl = new URL(currentPhoto.url);
-        const oldKey = oldUrl.pathname.split("/").filter(Boolean).pop()!;
-        await del(oldKey, {
-          token: BLOB_TOKEN
-        });
+        // Extract the key from the URL pathname
+        const pathParts = oldUrl.pathname.split("/").filter(Boolean);
+        
+        // The key should be the last part of the path
+        if (pathParts.length > 0) {
+          const oldKey = pathParts[pathParts.length - 1];
+          
+          // Construct the full blob URL for deletion
+          const blobUrl = `https://blob.vercel-storage.com/${container}/${oldKey}`;
+          
+          await del(blobUrl, {
+            token: BLOB_TOKEN
+          });
+          console.log(`Successfully deleted old photo: ${blobUrl}`);
+        }
       } catch (err) {
-        console.warn("Failed to delete old photo:", err);
+        console.error("Failed to delete old photo:", err);
+        // Don't fail the whole operation if deletion fails
       }
     }
 
@@ -57,7 +77,10 @@ export async function PUT(req: Request) {
     const cleanFileName = file.name.replace(/\s+/g, '_').replace(/\//g, '-');
     const key = `photo_${timestamp}_${cleanFileName}`;
     
-    const uploadRes = await put(key, buffer, {
+    // Construct the full blob URL for upload
+    const blobUrl = `https://blob.vercel-storage.com/${container}/${key}`;
+    
+    const uploadRes = await put(blobUrl, buffer, {
       token: BLOB_TOKEN,
       contentType: file.type,
       access: 'public'
