@@ -1273,7 +1273,6 @@ const getIcon = (iconName?: string) => {
           </div>
         </div>
       </section>
-
 {/* About Section */}
 <section id="about" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
   <div className="container mx-auto max-w-7xl">
@@ -1319,6 +1318,19 @@ const getIcon = (iconName?: string) => {
               const levelKey = lang.level.toLowerCase();
               const levelText = aboutData.languages?.levels?.[levelKey]?.[currentLang] || '';
               
+              // Determine width based on language level
+              const widthMap = {
+                a1: "20%",
+                a2: "30%",
+                b1: "50%",
+                b2: "70%",
+                c1: "85%",
+                c2: "95%",
+                native: "100%"
+              };
+              
+              const width = widthMap[levelKey] || "50%";
+
               return (
                 <div key={index}>
                   <div className="flex justify-between mb-1 sm:mb-2">
@@ -1332,7 +1344,7 @@ const getIcon = (iconName?: string) => {
                   <div className={`w-full ${isDarkMode ? "bg-gray-800" : "bg-gray-200"} rounded-full h-1`}>
                     <div
                       className="bg-[rgb(var(--portfolio-gold))] h-1 rounded-full transition-all duration-1000"
-                      style={{ width: `${(lang.level.length / 2) * 20}%` }}
+                      style={{ width }}
                     ></div>
                   </div>
                 </div>
@@ -1368,7 +1380,6 @@ const getIcon = (iconName?: string) => {
     </div>
   </div>
 </section>
-
       {/* Contact Section */}
       <section id="contact" className={`py-16 sm:py-20 px-4 sm:px-6 lg:px-8 ${themeClasses.sectionBg}`}>
         <div className="container mx-auto max-w-4xl text-center">
