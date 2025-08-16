@@ -169,12 +169,15 @@ export default function CvPage() {
       </div>
 
       {/* Google Viewer container */}
-    <div
+  <div
   className={`cv-a4-page ${themeClasses.cardBg} shadow-lg rounded-lg overflow-hidden w-full max-w-4xl flex flex-col ${themeClasses.text} 
               h-[70vh] md:h-[1120px] md:max-w-[794px]`}
-><br />
-  {renderContent()}
+>
+  <div className="mt-8 md:mt-16">
+    {renderContent()}
+  </div>
 </div>
+
 
     </div>
   )
