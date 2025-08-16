@@ -1179,6 +1179,8 @@ const getIcon = (iconName?: string) => {
 </section>
 
 
+
+
       {/* Projects Section */}
       <section
         id="projects"
@@ -1278,10 +1280,19 @@ const getIcon = (iconName?: string) => {
   <div className="container mx-auto max-w-7xl">
     <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
       <div>
-        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-6 sm:mb-8">{aboutData.aboutTitle?.[currentLang]}</h2>
+           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4">
+      {aboutData.aboutTitle?.[currentLang]}
+      <span className="absolute bottom-0 left-0 w-20 h-1 bg-[rgb(var(--portfolio-gold))]"></span>
+    </h2>
+       
         <p className={`${themeClasses.textSecondary} text-base sm:text-lg leading-relaxed mb-6 sm:mb-8`}>
           {aboutData.aboutDescription?.[currentLang]}
         </p>
+
+
+
+
+
 
         {/* Personal Info */}
         <div className="grid grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
