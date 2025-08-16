@@ -996,6 +996,7 @@ const getIcon = (iconName?: string) => {
 
 
 {/* Projects Section */}
+
 <section
   id="projects"
   className={`py-16 sm:py-20 px-4 sm:px-6 lg:px-8 ${themeClasses.sectionBg}`}
@@ -1006,76 +1007,95 @@ const getIcon = (iconName?: string) => {
       <span className="absolute bottom-0 left-0 w-20 h-1 bg-[rgb(var(--portfolio-gold))]"></span>
     </h2>
 
-    <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
-      {projetsData.projects?.map((project: any, index: number) => (
-        <Card
-          key={project._id || index}
-          className={`${themeClasses.cardBg} ${themeClasses.cardBorder} overflow-hidden transition-all duration-300 hover:border-[rgb(var(--portfolio-gold))] hover:shadow-lg`}
-        >
-          {/* Project Image */}
-          <div className="relative h-48 sm:h-56 overflow-hidden">
-            {project.image ? (
-              <Image
-                src={project.image}
-                alt={`${project.title?.fr || project.title?.en || 'Project'} screenshot`}
-                width={800}
-                height={800}
-                className="absolute inset-0 w-full h-full object-cover"
-              />
-            ) : (
-              <Image
-                src="/placeholder.svg"
-                alt={project.title?.fr || project.title?.en || 'Project'}
-                width={800}
-                height={800}
-                className="absolute inset-0 w-full h-full object-cover"
-              />
-            )}
-          </div>
-
-          <CardContent className="p-6">
-            <h3 className="text-xl sm:text-2xl font-medium mb-2 sm:mb-3">
-              {project.title?.[currentLang] || project.title?.fr || project.title?.en}
-            </h3>
-            <p
-              className={`${themeClasses.textSecondary} text-sm sm:text-base leading-relaxed mb-4 sm:mb-6`}
-            >
-              {project.description?.[currentLang] || project.description?.fr || project.description?.en}
-            </p>
-            <div className="flex flex-wrap gap-2 mb-4 sm:mb-6">
-              {project.techStack?.map((tech: string, techIndex: number) => (
-                <Badge
-                  key={techIndex}
-                  className={`${
-                    isDarkMode
-                      ? "bg-gray-800 text-white border-gray-700"
-                      : "bg-gray-100 text-gray-900 border-gray-300"
-                  } border px-3 py-1 text-xs`}
-                >
-                  {tech}
-                </Badge>
-              ))}
+    {projetsLoading ? (
+      <div className="flex justify-center items-center h-64">
+        <Loading />
+      </div>
+    ) : projetsData?.projects?.length > 0 ? (
+      <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
+        {projetsData.projects.map((project: any) => (
+          <Card
+            key={project._id}
+            className={`${themeClasses.cardBg} ${themeClasses.cardBorder} overflow-hidden transition-all duration-300 hover:border-[rgb(var(--portfolio-gold))] hover:shadow-lg`}
+          >
+            {/* Project Image */}
+            <div className="relative h-48 sm:h-56 overflow-hidden">
+              {project.image ? (
+                <Image
+                  src={project.image}
+                  alt={`${project.title?.fr || project.title?.en || 'Project'}`}
+                  width={800}
+                  height={450}
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+              ) : (
+                <div className="absolute inset-0 bg-gray-200 dark:bg-gray-800 flex items-center justify-center">
+                  <span className="text-gray-500 dark:text-gray-400">
+                    No image available
+                  </span>
+                </div>
+              )}
             </div>
-            {project.button && (
-              <div className="flex gap-3 sm:gap-4">
-                <Button
-                  variant="outline"
-                  className={`${
-                    isDarkMode
-                      ? "border-gray-700 text-white hover:bg-gray-800"
-                      : "border-gray-300 text-gray-900 hover:bg-gray-100"
-                  } flex items-center gap-2 text-sm sm:text-base`}
-                  onClick={() => window.open(project.button.link, "_blank")}
-                >
-                  <Link className="w-4 h-4" />
-                  {project.button.label?.[currentLang] || project.button.label?.fr || project.button.label?.en || 'View Project'}
-                </Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      ))}
-    </div>
+
+            <CardContent className="p-6">
+              <h3 className="text-xl sm:text-2xl font-medium mb-2 sm:mb-3">
+                {project.title?.[currentLang] || project.title?.fr || project.title?.en}
+              </h3>
+              <p
+                className={`${themeClasses.textSecondary} text-sm sm:text-base leading-relaxed mb-4 sm:mb-6`}
+              >
+                {project.description?.[currentLang] || project.description?.fr || project.description?.en}
+              </p>
+              
+              {/* Tech Stack */}
+              {project.techStack?.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-4 sm:mb-6">
+                  {project.techStack.map((tech: string, techIndex: number) => (
+                    <Badge
+                      key={techIndex}
+                      className={`${
+                        isDarkMode
+                          ? "bg-gray-800 text-white border-gray-700"
+                          : "bg-gray-100 text-gray-900 border-gray-300"
+                      } border px-3 py-1 text-xs`}
+                    >
+                      {tech}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+
+              {/* Project Button */}
+              {project.button && (
+                <div className="flex gap-3 sm:gap-4">
+                  <Button
+                    variant="outline"
+                    className={`${
+                      isDarkMode
+                        ? "border-gray-700 text-white hover:bg-gray-800"
+                        : "border-gray-300 text-gray-900 hover:bg-gray-100"
+                    } flex items-center gap-2 text-sm sm:text-base`}
+                    onClick={() => window.open(project.button.link, "_blank")}
+                  >
+                    <Link className="w-4 h-4" />
+                    {project.button.label?.[currentLang] || 
+                     project.button.label?.fr || 
+                     project.button.label?.en || 
+                     'View Project'}
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    ) : (
+      <div className="text-center py-12">
+        <p className={`${themeClasses.textSecondary} text-lg`}>
+          No projects found
+        </p>
+      </div>
+    )}
   </div>
 </section>
 {/* About Section */}
