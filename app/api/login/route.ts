@@ -83,23 +83,28 @@ export async function POST(request: Request) {
       { status: 200 }
     );
 
+    // Dynamic cookie configuration
+    const isProduction = process.env.NODE_ENV === "production";
+    const isVercel = process.env.VERCEL === "1";
+    const domain = isProduction 
+      ? (isVercel ? ".vercel.app" : ".yourdomain.com")
+      : undefined;
+
     const cookieOptions = {
       name: "session_token",
       value: token,
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict" as const,
+      secure: isProduction,
+      sameSite: isProduction ? "lax" : "strict",
       path: "/",
       maxAge: expiresIn,
-      domain: process.env.NODE_ENV === "production" ? ".yourdomain.com" : undefined
+      domain: domain
     };
 
     console.log("Setting cookie with options:", {
       ...cookieOptions,
-      value: "***masked***", // Don't log full token
-      maxAge: `${cookieOptions.maxAge} seconds (${cookieOptions.maxAge/3600} hours)`,
-      secure: cookieOptions.secure,
-      sameSite: cookieOptions.sameSite
+      value: "***masked***",
+      maxAge: `${cookieOptions.maxAge} seconds (${cookieOptions.maxAge/3600} hours)`
     });
 
     response.cookies.set(cookieOptions);
