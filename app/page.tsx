@@ -20,13 +20,7 @@ import {
   Heart,
   Sun,
   Moon,
-  Globe,
   ChevronDown,
-  Code,
-  Database,
-  LayoutGrid,
-  Users,
-  MapPinIcon,
   Github,
   Link,
   Search,
@@ -327,6 +321,12 @@ export default function Portfolio() {
   const [aboutData, setAboutData] = useState<any>(null);
   const [photoLoading, setPhotoLoading] = useState(true);
   const [aboutLoading, setAboutLoading] = useState(true);
+  const [contactLoading, setContactLoading] = useState(true);
+   const [contactData, setContactData] = useState<any>(null);
+
+
+
+
 
   const [educationLoading, setEducationLoading] = useState(true);
   const [skillsLoading, setSkillsLoading] = useState(true);
@@ -398,7 +398,19 @@ export default function Portfolio() {
         setAboutLoading(false);
       });
   }, []);
-  // Fetch services data
+  // Fetch contact data
+  useEffect(() => {
+    fetch("/api/contact")
+      .then((res) => res.json())
+      .then((data) => {
+        setContactData(data);
+        setContactLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching contact data:", err);
+        setContactLoading(false);
+      });
+  }, []);
   useEffect(() => {
     fetch("/api/services")
       .then((res) => res.json())
@@ -411,7 +423,6 @@ export default function Portfolio() {
         setServicesLoading(false);
       });
   }, []);
-
     // Fetch education data
   useEffect(() => {
     fetch("/api/education")
@@ -622,7 +633,7 @@ const getIcon = (iconName?: string) => {
         project.tech.some((tech) => tech.toLowerCase().includes(lowerCaseSearchTerm)),
     )
   }, [searchTerm, projectsData])
-  if (heroLoading || servicesLoading || photoLoading || educationLoading || aboutLoading) return <Loading/>;
+  if (heroLoading || servicesLoading || photoLoading || educationLoading || aboutLoading || contactLoading) return <Loading/>;
   return (
 
     <div
@@ -1391,47 +1402,46 @@ const getIcon = (iconName?: string) => {
     </div>
   </div>
 </section>
-      {/* Contact Section */}
-      <section id="contact" className={`py-16 sm:py-20 px-4 sm:px-6 lg:px-8 ${themeClasses.sectionBg}`}>
-        <div className="container mx-auto max-w-4xl text-center">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-6 sm:mb-8">{t.contactTitle}</h2>
-          <p className={`${themeClasses.textSecondary} text-base sm:text-lg mb-10 sm:mb-12 max-w-2xl mx-auto`}>
-            {t.contactDescription}
-          </p>
+{/* Contact Section */}
+<section id="contact" className={`py-16 sm:py-20 px-4 sm:px-6 lg:px-8 ${themeClasses.sectionBg}`}>
+  <div className="container mx-auto max-w-4xl text-center">
+    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-6 sm:mb-8">
+      {contactData.contactTitle?.[currentLang]}
+    </h2>
+    <p className={`${themeClasses.textSecondary} text-base sm:text-lg mb-10 sm:mb-12 max-w-2xl mx-auto`}>
+      {contactData.contactDescription?.[currentLang]}
+    </p>
 
-          <div className="grid md:grid-cols-3 gap-6 sm:gap-8 mb-10 sm:mb-12">
-            <div className="text-center">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[rgb(var(--portfolio-gold))] rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                <Mail className="w-5 h-5 sm:w-6 sm:h-6 text-black" />
-
-
-              </div>
-              <h3 className="font-medium text-base sm:text-lg mb-1 sm:mb-2">{t.email}</h3>
-              <p className={`${themeClasses.textSecondary} text-sm sm:text-base`}>smail.yazidi.work@gmail.com</p>
+    <div className="grid md:grid-cols-3 gap-6 sm:gap-8 mb-10 sm:mb-12">
+      {contactData.contactInfo?.map((info, index) => {
+        const IconComponent = getIcon(info.icon);
+        return (
+          <div key={index} className="text-center">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[rgb(var(--portfolio-gold))] rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+              {IconComponent && (
+                <IconComponent className="w-5 h-5 sm:w-6 sm:h-6 text-black" />
+              )}
             </div>
-            <div className="text-center">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[rgb(var(--portfolio-gold))] rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                <Phone className="w-5 h-5 sm:w-6 sm:h-6 text-black" />
-
-              </div>
-              <h3 className="font-medium text-base sm:text-lg mb-1 sm:mb-2">{t.phone}</h3>
-              <p className={`${themeClasses.textSecondary} text-sm sm:text-base`}>0719270155</p>
-            </div>
-            <div className="text-center">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[rgb(var(--portfolio-gold))] rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-black" />   </div>
-              <h3 className="font-medium text-base sm:text-lg mb-1 sm:mb-2">{t.location}</h3>
-              <p className={`${themeClasses.textSecondary} text-sm sm:text-base`}>{t.locationValue}</p>
-            </div>
+            <h3 className="font-medium text-base sm:text-lg mb-1 sm:mb-2">
+              {info.label?.[currentLang]}
+            </h3>
+            <p className={`${themeClasses.textSecondary} text-sm sm:text-base`}>
+              {typeof info.value === 'object' ? info.value[currentLang] : info.value}
+            </p>
           </div>
+        );
+      })}
+    </div>
 
-          <Button className="bg-[rgb(var(--portfolio-gold))] hover:bg-[rgb(var(--portfolio-gold-hover))] text-black font-medium px-8 py-3 rounded-full text-base sm:text-lg">
-            <Mail className="w-5 h-5 mr-2 text-black" />
-            {t.startProject}
-          </Button>
-
-        </div>
-      </section>
+    <a 
+      href={contactData.contactButton?.link || "#contact-form"}
+      className="inline-flex items-center bg-[rgb(var(--portfolio-gold))] hover:bg-[rgb(var(--portfolio-gold-hover))] text-black font-medium px-8 py-3 rounded-full text-base sm:text-lg transition-colors"
+    >
+      <Mail className="w-5 h-5 mr-2 text-black" />
+      {contactData.contactButton?.startProject?.[currentLang]}
+    </a>
+  </div>
+</section>
 
       {/* Footer */}
       <footer className={`py-6 sm:py-8 px-4 sm:px-6 lg:px-8 border-t ${themeClasses.headerBorder}`}>
