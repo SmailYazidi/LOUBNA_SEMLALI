@@ -71,15 +71,16 @@ export default function CvPage() {
     <div className={`flex flex-col items-center p-4 min-h-screen ${themeClasses.bg} ${themeClasses.text}`}>
       {/* Top controls */}
       <div className="flex flex-row flex-wrap items-center justify-between w-full max-w-4xl gap-4 mb-6 no-print">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => router.back()}
-          className={`p-2 ${isDarkMode ? "hover:bg-gray-800" : "hover:bg-gray-100"} flex items-center gap-2`}
-        >
-          <ChevronLeft className="w-5 h-5" />
-          <span className="text-sm font-medium">{language === "fr" ? "Retour" : "Back"}</span>
-        </Button>
+      <Button
+  variant="ghost"
+  size="sm"
+  onClick={() => router.push("/")}
+  className={`p-2 ${isDarkMode ? "hover:bg-gray-800" : "hover:bg-gray-100"} flex items-center gap-2`}
+>
+  <ChevronLeft className="w-5 h-5" />
+  <span className="text-sm font-medium">{language === "fr" ? "Retour" : "Back"}</span>
+</Button>
+
 
         <Button
           variant="ghost"
