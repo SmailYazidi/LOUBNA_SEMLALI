@@ -2,8 +2,8 @@ import { NextResponse } from "next/server"
 import { connectDB } from "@/lib/mongodb"
 import { put, del } from "@vercel/blob"
 
-const BLOB_TOKEN = process.env.VERCEL_BLOB_TOKEN!
-const container = "cv-documents" // Use a more specific container name
+const BLOB_TOKEN = process.env.BLOB_READ_WRITE_TOKEN || process.env.VERCEL_BLOB_TOKEN!
+const container = "cv-documents"
 
 export async function GET() {
   try {
@@ -36,15 +36,20 @@ export async function PUT(req: Request) {
       if (file) {
         // Validate file type
         if (file.type !== "application/pdf") {
-          throw new Error(`Only PDF files are allowed for ${lang} CV`)
+          return NextResponse.json(
+            { error: `Only PDF files are allowed for ${lang} CV` },
+            { status: 400 }
+          )
         }
 
         // Delete old file if exists
         if (currentCv[lang]) {
           try {
-            const oldUrl = new URL(currentCv[lang])
+            const oldUrl = new URL(currentCv[lang]!)
             const oldKey = oldUrl.pathname.split("/").pop()!
-            await del(container, oldKey, { accessToken: BLOB_TOKEN })
+            await del(`https://blob.vercel-storage.com/${container}/${oldKey}`, {
+              token: BLOB_TOKEN
+            })
           } catch (err) {
             console.warn(`Failed to delete old ${lang} CV:`, err)
           }
@@ -55,11 +60,10 @@ export async function PUT(req: Request) {
         const timestamp = Date.now()
         const key = `${lang}_${timestamp}_${file.name.replace(/\s+/g, '_')}`
         
-        const uploadRes = await put(container, key, buffer, {
-          accessToken: BLOB_TOKEN,
+        const uploadRes = await put(`https://blob.vercel-storage.com/${container}/${key}`, buffer, {
+          token: BLOB_TOKEN,
           contentType: "application/pdf",
-          addRandomSuffix: false,
-            access: 'public' 
+          access: 'public'
         })
 
         updatedCv[lang] = uploadRes.url
