@@ -109,8 +109,8 @@ export default function AboutAdminPage() {
           const [level, lang] = (indexOrKey as string).split(".");
           newData.languages.levels[level][lang] = value;
         } else if (field.startsWith("list.")) {
-          const [_, listField, langIndex] = field.split(".");
-          const index = parseInt(langIndex);
+          const [_, listField] = field.split(".");
+          const index = indexOrKey as number;
           if (listField === "name") {
             newData.languages.list[index].name = value;
           } else if (listField === "level") {
@@ -169,6 +169,47 @@ export default function AboutAdminPage() {
         list: prev.languages.list.filter((_, i) => i !== index)
       }
     }));
+  };
+
+  const handleAddItem = (section: "personalInfo" | "interests") => {
+    setAbout(prev => {
+      const newData = { ...prev };
+      
+      if (section === "personalInfo") {
+        newData.personalInfo = [
+          ...prev.personalInfo,
+          {
+            icon: "",
+            label: { fr: "", en: "" },
+            value: { fr: "", en: "" }
+          }
+        ];
+      } else if (section === "interests") {
+        newData.interests = [
+          ...prev.interests,
+          {
+            icon: "",
+            name: { fr: "", en: "" }
+          }
+        ];
+      }
+      
+      return newData;
+    });
+  };
+
+  const handleRemoveItem = (section: "personalInfo" | "interests", index: number) => {
+    setAbout(prev => {
+      const newData = { ...prev };
+      
+      if (section === "personalInfo") {
+        newData.personalInfo = prev.personalInfo.filter((_, i) => i !== index);
+      } else if (section === "interests") {
+        newData.interests = prev.interests.filter((_, i) => i !== index);
+      }
+      
+      return newData;
+    });
   };
 
   const handleSave = async () => {
@@ -245,8 +286,6 @@ export default function AboutAdminPage() {
         </div>
       </div>
 
-
-
       {/* Language List Management */}
       <div className="space-y-4">
         <div className="flex justify-between items-center">
@@ -302,7 +341,7 @@ export default function AboutAdminPage() {
                   >
                     {Object.entries(about.languages.levels).map(([levelKey, level]) => (
                       <option key={levelKey} value={levelKey}>
-                       {/*  {levelKey.toUpperCase()} —  */}{level.fr} {/* / {level.en} */}
+                        {level.fr}
                       </option>
                     ))}
                   </select>
@@ -325,69 +364,73 @@ export default function AboutAdminPage() {
           </button>
         </div>
         
-        {about.personalInfo.map((info, idx) => (
-          <div key={idx} className="border p-4 rounded-lg space-y-3 relative">
-            <button
-              onClick={() => handleRemoveItem("personalInfo", idx)}
-              className="absolute top-2 right-2 px-2 py-1 bg-red-500 text-white rounded text-xs"
-            >
-              Remove
-            </button>
-            
-            <div>
-              <label className="block text-sm mb-1">Icon</label>
-              <input
-                type="text"
-                value={info.icon}
-                onChange={(e) => handleInputChange("personalInfo", idx, "icon", e.target.value)}
-                className="border p-2 rounded w-full"
-                placeholder="Icon name (e.g., mail, phone)"
-              />
+        {about.personalInfo.length === 0 ? (
+          <div className="text-gray-500 italic">No personal info added yet</div>
+        ) : (
+          about.personalInfo.map((info, idx) => (
+            <div key={idx} className="border p-4 rounded-lg space-y-3 relative">
+              <button
+                onClick={() => handleRemoveItem("personalInfo", idx)}
+                className="absolute top-2 right-2 px-2 py-1 bg-red-500 text-white rounded text-xs"
+              >
+                Remove
+              </button>
+              
+              <div>
+                <label className="block text-sm mb-1">Icon</label>
+                <input
+                  type="text"
+                  value={info.icon}
+                  onChange={(e) => handleInputChange("personalInfo", idx, "icon", e.target.value)}
+                  className="border p-2 rounded w-full"
+                  placeholder="Icon name (e.g., mail, phone)"
+                />
+              </div>
+              
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm mb-1">Label (FR)</label>
+                  <input
+                    type="text"
+                    value={info.label.fr}
+                    onChange={(e) => handleInputChange("personalInfo", idx, "label.fr", e.target.value)}
+                    className="border p-2 rounded w-full"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm mb-1">Label (EN)</label>
+                  <input
+                    type="text"
+                    value={info.label.en}
+                    onChange={(e) => handleInputChange("personalInfo", idx, "label.en", e.target.value)}
+                    className="border p-2 rounded w-full"
+                  />
+                </div>
+              </div>
+              
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm mb-1">Value (FR)</label>
+                  <input
+                    type="text"
+                    value={info.value.fr}
+                    onChange={(e) => handleInputChange("personalInfo", idx, "value.fr", e.target.value)}
+                    className="border p-2 rounded w-full"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm mb-1">Value (EN)</label>
+                  <input
+                    type="text"
+                    value={info.value.en}
+                    onChange={(e) => handleInputChange("personalInfo", idx, "value.en", e.target.value)}
+                    className="border p-2 rounded w-full"
+                  />
+                </div>
+              </div>
             </div>
-            
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm mb-1">Label (FR)</label>
-                <input
-                  type="text"
-                  value={info.label.fr}
-                  onChange={(e) => handleInputChange("personalInfo", idx, "label.fr", e.target.value)}
-                  className="border p-2 rounded w-full"
-                />
-              </div>
-              <div>
-                <label className="block text-sm mb-1">Label (EN)</label>
-                <input
-                  type="text"
-                  value={info.label.en}
-                  onChange={(e) => handleInputChange("personalInfo", idx, "label.en", e.target.value)}
-                  className="border p-2 rounded w-full"
-                />
-              </div>
-            </div>
-            
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm mb-1">Value (FR)</label>
-                <input
-                  type="text"
-                  value={info.value.fr}
-                  onChange={(e) => handleInputChange("personalInfo", idx, "value.fr", e.target.value)}
-                  className="border p-2 rounded w-full"
-                />
-              </div>
-              <div>
-                <label className="block text-sm mb-1">Value (EN)</label>
-                <input
-                  type="text"
-                  value={info.value.en}
-                  onChange={(e) => handleInputChange("personalInfo", idx, "value.en", e.target.value)}
-                  className="border p-2 rounded w-full"
-                />
-              </div>
-            </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
       {/* Interests */}
@@ -402,48 +445,52 @@ export default function AboutAdminPage() {
           </button>
         </div>
         
-        {about.interests.map((interest, idx) => (
-          <div key={idx} className="border p-4 rounded-lg space-y-3 relative">
-            <button
-              onClick={() => handleRemoveItem("interests", idx)}
-              className="absolute top-2 right-2 px-2 py-1 bg-red-500 text-white rounded text-xs"
-            >
-              Remove
-            </button>
-            
-            <div>
-              <label className="block text-sm mb-1">Icon</label>
-              <input
-                type="text"
-                value={interest.icon}
-                onChange={(e) => handleInputChange("interests", idx, "icon", e.target.value)}
-                className="border p-2 rounded w-full"
-                placeholder="Emoji or icon name"
-              />
-            </div>
-            
-            <div className="grid md:grid-cols-2 gap-4">
+        {about.interests.length === 0 ? (
+          <div className="text-gray-500 italic">No interests added yet</div>
+        ) : (
+          about.interests.map((interest, idx) => (
+            <div key={idx} className="border p-4 rounded-lg space-y-3 relative">
+              <button
+                onClick={() => handleRemoveItem("interests", idx)}
+                className="absolute top-2 right-2 px-2 py-1 bg-red-500 text-white rounded text-xs"
+              >
+                Remove
+              </button>
+              
               <div>
-                <label className="block text-sm mb-1">Name (FR)</label>
+                <label className="block text-sm mb-1">Icon</label>
                 <input
                   type="text"
-                  value={interest.name.fr}
-                  onChange={(e) => handleInputChange("interests", idx, "name.fr", e.target.value)}
+                  value={interest.icon}
+                  onChange={(e) => handleInputChange("interests", idx, "icon", e.target.value)}
                   className="border p-2 rounded w-full"
+                  placeholder="Emoji or icon name"
                 />
               </div>
-              <div>
-                <label className="block text-sm mb-1">Name (EN)</label>
-                <input
-                  type="text"
-                  value={interest.name.en}
-                  onChange={(e) => handleInputChange("interests", idx, "name.en", e.target.value)}
-                  className="border p-2 rounded w-full"
-                />
+              
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm mb-1">Name (FR)</label>
+                  <input
+                    type="text"
+                    value={interest.name.fr}
+                    onChange={(e) => handleInputChange("interests", idx, "name.fr", e.target.value)}
+                    className="border p-2 rounded w-full"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm mb-1">Name (EN)</label>
+                  <input
+                    type="text"
+                    value={interest.name.en}
+                    onChange={(e) => handleInputChange("interests", idx, "name.en", e.target.value)}
+                    className="border p-2 rounded w-full"
+                  />
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
       {/* Save Button */}
