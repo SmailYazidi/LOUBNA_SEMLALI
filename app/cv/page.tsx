@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ChevronLeft, Sun, Moon, Loader2, Download, ZoomIn, ZoomOut } from "lucide-react"
 import { useRouter } from "next/navigation"
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.3.93/pdf.worker.min.js"></script>
 
 // Dynamically import the PDF viewer with SSR disabled
 const PDFViewer = dynamic(
