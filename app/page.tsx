@@ -324,6 +324,8 @@ export default function Portfolio() {
   const [contactLoading, setContactLoading] = useState(true);
    const [contactData, setContactData] = useState<any>(null);
 
+ const [projetsLoading, setProjetsLoading] = useState(true);
+   const [projetsData, setProjetsData] = useState<any>(null);
 
 
 
@@ -451,6 +453,25 @@ export default function Portfolio() {
         setSkillsLoading(false);
       });
   }, []);
+
+
+    // Fetch Projets data
+  useEffect(() => {
+    fetch("/api/projets")
+      .then((res) => res.json())
+      .then((data) => {
+        setProjetsData(data);
+        setProjetsLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching Projets data:", err);
+        setProjetsLoading(false);
+      });
+  }, []);
+
+
+
+
 
   useEffect(() => {
     document.documentElement.lang = currentLang
