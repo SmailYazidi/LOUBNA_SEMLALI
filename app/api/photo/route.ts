@@ -18,6 +18,7 @@ export async function GET() {
     );
   }
 }
+
 export async function PUT(req: Request) {
   try {
     const formData = await req.formData();
@@ -30,10 +31,18 @@ export async function PUT(req: Request) {
       );
     }
 
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      return NextResponse.json(
+        { error: "Only image files are allowed" },
+        { status: 400 }
+      );
+    }
+
     const db = await connectDB();
     const photoCollection = db.collection("photo");
-
-    // Get current photo
+    
+    // Get current photo data
     const currentPhoto = await photoCollection.findOne({});
     const updatedPhoto: { url: string | null } = { url: null };
 
@@ -41,29 +50,46 @@ export async function PUT(req: Request) {
     if (currentPhoto?.url) {
       try {
         const oldUrl = new URL(currentPhoto.url);
-        const oldKey = oldUrl.pathname.replace(/^\/?blob\//, ""); // ✅ FIX
-        await del(oldKey, { token: BLOB_TOKEN });
+        // Extract the key from the URL pathname
+        const pathParts = oldUrl.pathname.split("/").filter(Boolean);
+        
+        // The key should be the last part of the path
+        if (pathParts.length > 0) {
+          const oldKey = pathParts[pathParts.length - 1];
+          
+          // Delete using the key only (no container prefix needed)
+          await del(oldKey, {
+            token: BLOB_TOKEN
+          });
+          console.log(`Successfully deleted old photo: ${oldKey}`);
+        }
       } catch (err) {
-        console.warn("Failed to delete old photo:", err);
+        console.error("Failed to delete old photo:", err);
+        // Continue with upload even if deletion fails
       }
     }
 
     // Upload new file
     const buffer = Buffer.from(await file.arrayBuffer());
     const timestamp = Date.now();
-    const cleanFileName = file.name.replace(/\s+/g, "_").replace(/\//g, "-");
-    const key = `photo_${timestamp}_${cleanFileName}`;
-
+    const cleanFileName = file.name.replace(/\s+/g, '_').replace(/\//g, '-');
+    const key = `profile_${timestamp}_${cleanFileName}`; // Changed prefix to 'profile_'
+    
     const uploadRes = await put(key, buffer, {
       token: BLOB_TOKEN,
       contentType: file.type,
-      access: "public",
+      access: 'public',
+      addRandomSuffix: false // Ensure consistent naming
     });
 
     updatedPhoto.url = uploadRes.url;
 
     // Update database
-    await photoCollection.updateOne({}, { $set: updatedPhoto }, { upsert: true });
+    await photoCollection.updateOne(
+      {},
+      { $set: updatedPhoto },
+      { upsert: true }
+    );
 
     return NextResponse.json(updatedPhoto);
   } catch (err: any) {
