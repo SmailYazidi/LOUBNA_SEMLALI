@@ -9,79 +9,123 @@ export default function AdminCvPage() {
   const [cvFiles, setCvFiles] = useState<{ fr?: File; en?: File }>({})
   const [isUploading, setIsUploading] = useState(false)
   const [cvUrls, setCvUrls] = useState<{ fr?: string; en?: string }>({})
+  const [error, setError] = useState<string | null>(null)
 
   // Fetch existing CV URLs
   useEffect(() => {
     const fetchCvUrls = async () => {
-      const res = await fetch("/api/cv")
-      if (res.ok) {
+      try {
+        const res = await fetch("/api/cv")
+        if (!res.ok) throw new Error("Failed to fetch CVs")
         const data = await res.json()
         setCvUrls(data)
+      } catch (err) {
+        console.error("Fetch error:", err)
+        setError("Failed to load CVs")
       }
     }
     fetchCvUrls()
   }, [])
 
   const handleFileChange = (lang: "fr" | "en", file: File | null) => {
-    setCvFiles((prev) => ({ ...prev, [lang]: file || undefined }))
+    setCvFiles(prev => ({ ...prev, [lang]: file || undefined }))
+    setError(null)
   }
 
   const handleUpload = async () => {
+    if (!cvFiles.fr && !cvFiles.en) {
+      setError("Please select at least one file")
+      return
+    }
+
     setIsUploading(true)
-    const formData = new FormData()
-    if (cvFiles.fr) formData.append("fr", cvFiles.fr)
-    if (cvFiles.en) formData.append("en", cvFiles.en)
+    setError(null)
 
-    const res = await fetch("/api/cv", {
-      method: "PUT",
-      body: formData,
-    })
+    try {
+      const formData = new FormData()
+      if (cvFiles.fr) formData.append("fr", cvFiles.fr)
+      if (cvFiles.en) formData.append("en", cvFiles.en)
 
-    if (res.ok) {
+      const res = await fetch("/api/cv", {
+        method: "PUT",
+        body: formData,
+      })
+
+      if (!res.ok) {
+        const errorData = await res.json()
+        throw new Error(errorData.error || "Failed to update CVs")
+      }
+
       const data = await res.json()
       setCvUrls(data)
-      alert("CV updated successfully")
-    } else {
-      alert("Failed to update CV")
+      setCvFiles({}) // Clear selected files after successful upload
+    } catch (err: any) {
+      console.error("Upload error:", err)
+      setError(err.message)
+    } finally {
+      setIsUploading(false)
     }
-    setIsUploading(false)
   }
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Update CV</h1>
+    <div className="p-6 max-w-2xl mx-auto">
+      <h1 className="text-2xl font-bold mb-6">Update CV</h1>
 
-      <div className="mb-4">
-        <label className="block mb-1">French CV</label>
-        <input
-          type="file"
-          accept="application/pdf"
-          onChange={(e) => handleFileChange("fr", e.target.files?.[0] || null)}
-        />
-        {cvUrls.fr && (
-          <p className="text-sm mt-1">
-            Current: <a href={cvUrls.fr} target="_blank">{cvUrls.fr}</a>
-          </p>
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <label className="block text-sm font-medium">French CV (PDF only)</label>
+          <input
+            type="file"
+            accept="application/pdf"
+            onChange={(e) => handleFileChange("fr", e.target.files?.[0] || null)}
+            className="block w-full text-sm text-gray-500
+              file:mr-4 file:py-2 file:px-4
+              file:rounded-md file:border-0
+              file:text-sm file:font-semibold
+              file:bg-blue-50 file:text-blue-700
+              hover:file:bg-blue-100"
+          />
+          {cvUrls.fr && (
+            <p className="text-sm mt-1">
+              Current: <a href={cvUrls.fr} target="_blank" className="text-blue-600 hover:underline">{cvUrls.fr}</a>
+            </p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <label className="block text-sm font-medium">English CV (PDF only)</label>
+          <input
+            type="file"
+            accept="application/pdf"
+            onChange={(e) => handleFileChange("en", e.target.files?.[0] || null)}
+            className="block w-full text-sm text-gray-500
+              file:mr-4 file:py-2 file:px-4
+              file:rounded-md file:border-0
+              file:text-sm file:font-semibold
+              file:bg-blue-50 file:text-blue-700
+              hover:file:bg-blue-100"
+          />
+          {cvUrls.en && (
+            <p className="text-sm mt-1">
+              Current: <a href={cvUrls.en} target="_blank" className="text-blue-600 hover:underline">{cvUrls.en}</a>
+            </p>
+          )}
+        </div>
+
+        {error && (
+          <div className="p-3 bg-red-50 text-red-700 rounded-md">
+            {error}
+          </div>
         )}
-      </div>
 
-      <div className="mb-4">
-        <label className="block mb-1">English CV</label>
-        <input
-          type="file"
-          accept="application/pdf"
-          onChange={(e) => handleFileChange("en", e.target.files?.[0] || null)}
-        />
-        {cvUrls.en && (
-          <p className="text-sm mt-1">
-            Current: <a href={cvUrls.en} target="_blank">{cvUrls.en}</a>
-          </p>
-        )}
+        <Button 
+          onClick={handleUpload} 
+          disabled={isUploading || (!cvFiles.fr && !cvFiles.en)}
+          className="w-full sm:w-auto"
+        >
+          {isUploading ? "Uploading..." : "Update CVs"}
+        </Button>
       </div>
-
-      <Button onClick={handleUpload} disabled={isUploading}>
-        {isUploading ? "Uploading..." : "Update CVs"}
-      </Button>
     </div>
   )
 }

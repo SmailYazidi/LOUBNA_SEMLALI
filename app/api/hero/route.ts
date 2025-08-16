@@ -45,12 +45,12 @@ export async function PUT(request: Request) {
 
     const updatedHero = await request.json();
 
-    // Update the first hero document (or you can filter by some id)
-    const result = await heroCollection.updateOne({}, { $set: updatedHero });
-
-    if (result.matchedCount === 0) {
-      return NextResponse.json({ message: "Hero not found" }, { status: 404 });
-    }
+    // Use upsert: true to create if doesn't exist
+    const result = await heroCollection.updateOne(
+      {}, 
+      { $set: updatedHero },
+      { upsert: true }
+    );
 
     return NextResponse.json({ message: "Hero updated successfully" }, { status: 200 });
   } catch (error) {
@@ -58,7 +58,6 @@ export async function PUT(request: Request) {
     return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }
 }
-
 export async function DELETE() {
   try {
     const db = await connectDB();
