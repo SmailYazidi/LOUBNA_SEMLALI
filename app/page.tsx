@@ -1211,102 +1211,89 @@ const getIcon = (iconName?: string) => {
 </section>
 
 
+{/* Projects Section */}
+<section
+  id="projects"
+  className={`py-16 sm:py-20 px-4 sm:px-6 lg:px-8 ${themeClasses.sectionBg}`}
+>
+  <div className="container mx-auto max-w-7xl">
+    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4">
+      {t.myProjects}
+      <span className="absolute bottom-0 left-0 w-20 h-1 bg-[rgb(var(--portfolio-gold))]"></span>
+    </h2>
 
-
-      {/* Projects Section */}
-      <section
-        id="projects"
-        className={`py-16 sm:py-20 px-4 sm:px-6 lg:px-8 ${themeClasses.sectionBg}`}
-      >
-        <div className="container mx-auto max-w-7xl">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4">
-            {t.myProjects}
-            <span className="absolute bottom-0 left-0 w-20 h-1 bg-[rgb(var(--portfolio-gold))]"></span>
-          </h2>
-
-          <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
-            {filteredProjectsData.map((project, index) => (
-              <Card
-                key={index}
-                className={`${themeClasses.cardBg} ${themeClasses.cardBorder} overflow-hidden transition-all duration-300 hover:border-[rgb(var(--portfolio-gold))] hover:shadow-lg`}
-              >
-                {/* Images container with auto-rotating images */}
-                <div className="relative h-48 sm:h-56 overflow-hidden">
-                  {project.images && project.images.length > 0 ? (
-                    project.images.map((imgSrc, imgIndex) => (
-                      <AutoRotatingImage
-                        key={imgIndex}
-                        src={imgSrc}
-                        alt={`${project.title} screenshot ${imgIndex + 1}`}
-                        totalImages={project.images.length}
-                        index={imgIndex}
-                      />
-                    ))
-                  ) : (
-                    <Image
-                      src="/placeholder.svg"
-                      alt={project.title}
-                      width={800}
-                      height={800}
-                      className="absolute inset-0 w-full h-full object-cover"
-                    />
-                  )}
-                </div>
-
-                <CardContent className="p-6">
-                  <h3 className="text-xl sm:text-2xl font-medium mb-2 sm:mb-3">
-                    {project.title}
-                  </h3>
-                  <p
-                    className={`${themeClasses.textSecondary} text-sm sm:text-base leading-relaxed mb-4 sm:mb-6`}
-                  >
-                    {project.description}
-                  </p>
-                  <div className="flex flex-wrap gap-2 mb-4 sm:mb-6">
-                    {project.tech.map((tech, techIndex) => (
-                      <Badge
-                        key={techIndex}
-                        className={`${isDarkMode
-                          ? "bg-gray-800 text-white border-gray-700"
-                          : "bg-gray-100 text-gray-900 border-gray-300"
-                          } border px-3 py-1 text-xs`}
-                      >
-                        {tech}
-                      </Badge>
-                    ))}
-                  </div>
-                  <div className="flex gap-3 sm:gap-4">
-                    <Button
-                      variant="outline"
-                      className={`${isDarkMode
-                        ? "border-gray-700 text-white hover:bg-gray-800"
-                        : "border-gray-300 text-gray-900 hover:bg-gray-100"
-                        } flex items-center gap-2 text-sm sm:text-base`}
-                      onClick={() => window.open(project.github, "_blank")}
-                    
-                    >
-                      <Github className="w-4 h-4" />
-                      {t.github}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className={`${isDarkMode
-                        ? "border-gray-700 text-white hover:bg-gray-800"
-                        : "border-gray-300 text-gray-900 hover:bg-gray-100"
-                        } flex items-center gap-2 text-sm sm:text-base`}
-                      onClick={() => window.open(project.live, "_blank")}
-                      
-                    >
-                      <Link className="w-4 h-4" />
-                      {t.live}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+    <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
+      {projectsData.projects?.map((project: any, index: number) => (
+        <Card
+          key={project._id || index}
+          className={`${themeClasses.cardBg} ${themeClasses.cardBorder} overflow-hidden transition-all duration-300 hover:border-[rgb(var(--portfolio-gold))] hover:shadow-lg`}
+        >
+          {/* Project Image */}
+          <div className="relative h-48 sm:h-56 overflow-hidden">
+            {project.image ? (
+              <Image
+                src={project.image}
+                alt={`${project.title?.fr || project.title?.en || 'Project'} screenshot`}
+                width={800}
+                height={800}
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+            ) : (
+              <Image
+                src="/placeholder.svg"
+                alt={project.title?.fr || project.title?.en || 'Project'}
+                width={800}
+                height={800}
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+            )}
           </div>
-        </div>
-      </section>
+
+          <CardContent className="p-6">
+            <h3 className="text-xl sm:text-2xl font-medium mb-2 sm:mb-3">
+              {project.title?.[currentLang] || project.title?.fr || project.title?.en}
+            </h3>
+            <p
+              className={`${themeClasses.textSecondary} text-sm sm:text-base leading-relaxed mb-4 sm:mb-6`}
+            >
+              {project.description?.[currentLang] || project.description?.fr || project.description?.en}
+            </p>
+            <div className="flex flex-wrap gap-2 mb-4 sm:mb-6">
+              {project.techStack?.map((tech: string, techIndex: number) => (
+                <Badge
+                  key={techIndex}
+                  className={`${
+                    isDarkMode
+                      ? "bg-gray-800 text-white border-gray-700"
+                      : "bg-gray-100 text-gray-900 border-gray-300"
+                  } border px-3 py-1 text-xs`}
+                >
+                  {tech}
+                </Badge>
+              ))}
+            </div>
+            {project.button && (
+              <div className="flex gap-3 sm:gap-4">
+                <Button
+                  variant="outline"
+                  className={`${
+                    isDarkMode
+                      ? "border-gray-700 text-white hover:bg-gray-800"
+                      : "border-gray-300 text-gray-900 hover:bg-gray-100"
+                  } flex items-center gap-2 text-sm sm:text-base`}
+                  onClick={() => window.open(project.button.link, "_blank")}
+                >
+                  <Link className="w-4 h-4" />
+                  {project.button.label?.[currentLang] || project.button.label?.fr || project.button.label?.en || 'View Project'}
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  </div>
+</section>
 {/* About Section */}
 <section id="about" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
   <div className="container mx-auto max-w-7xl">
