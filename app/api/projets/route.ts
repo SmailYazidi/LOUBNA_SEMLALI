@@ -28,7 +28,7 @@ export async function PUT(req: Request) {
     const titleEn = formData.get("titleEn") as string;
     const descFr = formData.get("descFr") as string;
     const descEn = formData.get("descEn") as string;
-    const techStack = JSON.parse(formData.get("techStack") as string || "[]"); // pass array
+    const techStack = JSON.parse(formData.get("techStack") as string || "[]");
     const buttonIcon = formData.get("buttonIcon") as string;
     const buttonLabelFr = formData.get("buttonLabelFr") as string;
     const buttonLabelEn = formData.get("buttonLabelEn") as string;
@@ -100,7 +100,7 @@ export async function PUT(req: Request) {
 
     return NextResponse.json(newProject);
   } catch (err: any) {
-    console.error("PUT error:", err);
+    console.error("PUT error:", err.message, err.stack);
     return NextResponse.json({ error: err.message || "Failed to save project" }, { status: 500 });
   }
 }

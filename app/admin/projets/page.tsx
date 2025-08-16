@@ -6,7 +6,7 @@ export default function ProjetsPage() {
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // form states
+  // Form states
   const [titleFr, setTitleFr] = useState("");
   const [titleEn, setTitleEn] = useState("");
   const [descFr, setDescFr] = useState("");
@@ -16,21 +16,29 @@ export default function ProjetsPage() {
   const [file, setFile] = useState<File | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
 
-  // dynamic buttons
-  const [buttons, setButtons] = useState<
-    { labelFr: string; labelEn: string; link: string; icon?: string }[]
-  >([]);
+  // Button states
+  const [button, setButton] = useState<{
+    labelFr: string;
+    labelEn: string;
+    link: string;
+    icon?: string;
+  } | null>(null);
   const [btnLabelFr, setBtnLabelFr] = useState("");
   const [btnLabelEn, setBtnLabelEn] = useState("");
   const [btnLink, setBtnLink] = useState("");
 
   const fetchProjects = async () => {
+    setLoading(true);
     try {
       const res = await fetch("/api/projets");
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
       const data = await res.json();
       setProjects(data.projects || []);
     } catch (e) {
-      console.error("fetch error:", e);
+      console.error("Fetch error:", e);
+      alert("Failed to load projects");
     } finally {
       setLoading(false);
     }
@@ -49,14 +57,20 @@ export default function ProjetsPage() {
 
   const addButton = () => {
     if (btnLabelFr.trim() && btnLabelEn.trim() && btnLink.trim()) {
-      setButtons([
-        ...buttons,
-        { labelFr: btnLabelFr, labelEn: btnLabelEn, link: btnLink, icon: "external-link" },
-      ]);
+      setButton({
+        labelFr: btnLabelFr,
+        labelEn: btnLabelEn,
+        link: btnLink,
+        icon: "external-link"
+      });
       setBtnLabelFr("");
       setBtnLabelEn("");
       setBtnLink("");
     }
+  };
+
+  const removeButton = () => {
+    setButton(null);
   };
 
   const resetForm = () => {
@@ -67,32 +81,66 @@ export default function ProjetsPage() {
     setTechStack([]);
     setFile(null);
     setEditingId(null);
-    setButtons([]);
+    setButton(null);
+    setBtnLabelFr("");
+    setBtnLabelEn("");
+    setBtnLink("");
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!titleFr || !titleEn) {
+      alert("Please provide titles in both languages");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("titleFr", titleFr);
     formData.append("titleEn", titleEn);
     formData.append("descFr", descFr);
     formData.append("descEn", descEn);
     formData.append("techStack", JSON.stringify(techStack));
-    formData.append("buttons", JSON.stringify(buttons));
-    if (file) formData.append("image", file);
-
-    const url = editingId ? `/api/projets/${editingId}` : "/api/projets";
-    const method = editingId ? "PUT" : "POST";
-
-    const res = await fetch(url, { method, body: formData });
-
-    if (!res.ok) {
-      console.error("save failed");
-      return;
+    
+    // Add button data
+    if (button) {
+      formData.append("buttonIcon", button.icon || "external-link");
+      formData.append("buttonLabelFr", button.labelFr);
+      formData.append("buttonLabelEn", button.labelEn);
+      formData.append("buttonLink", button.link);
+    } else {
+      // Provide default/empty values if no button
+      formData.append("buttonIcon", "external-link");
+      formData.append("buttonLabelFr", "");
+      formData.append("buttonLabelEn", "");
+      formData.append("buttonLink", "");
     }
 
-    await fetchProjects();
-    resetForm();
+    if (file) formData.append("image", file);
+    if (editingId) formData.append("projectId", editingId);
+
+    try {
+      const url = editingId ? `/api/projets/${editingId}` : "/api/projets";
+      const method = "PUT"; // Always use PUT as your API expects
+
+      const res = await fetch(url, {
+        method,
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.error("Save failed:", errorData);
+        alert(`Save failed: ${errorData.error || 'Unknown error'}`);
+        return;
+      }
+
+      await fetchProjects();
+      resetForm();
+    } catch (error) {
+      console.error("Network error:", error);
+      alert("Network error - check console");
+    }
   };
 
   const handleEdit = (p: any) => {
@@ -102,14 +150,36 @@ export default function ProjetsPage() {
     setDescFr(p.description.fr);
     setDescEn(p.description.en);
     setTechStack(p.techStack || []);
-    setButtons(p.buttons || []);
-    setFile(null); // new file optional, old image stays unless replaced
+    
+    // Initialize form with existing button data if it exists
+    if (p.button) {
+      setButton({
+        labelFr: p.button.label.fr,
+        labelEn: p.button.label.en,
+        link: p.button.link,
+        icon: p.button.icon
+      });
+    } else {
+      setButton(null);
+    }
+    
+    setFile(null);
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this project?")) return;
-    const res = await fetch(`/api/projets/${id}`, { method: "DELETE" });
-    if (res.ok) fetchProjects();
+    try {
+      const res = await fetch(`/api/projets/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        await fetchProjects();
+      } else {
+        const errorData = await res.json();
+        alert(`Delete failed: ${errorData.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      alert("Delete failed - check console");
+    }
   };
 
   return (
@@ -122,12 +192,14 @@ export default function ProjetsPage() {
           onChange={(e) => setTitleFr(e.target.value)}
           placeholder="Titre FR"
           className="border p-2 w-full"
+          required
         />
         <input
           value={titleEn}
           onChange={(e) => setTitleEn(e.target.value)}
           placeholder="Title EN"
           className="border p-2 w-full"
+          required
         />
         <textarea
           value={descFr}
@@ -166,9 +238,9 @@ export default function ProjetsPage() {
           ))}
         </div>
 
-        {/* Buttons input */}
+        {/* Button input */}
         <div className="flex flex-col gap-2 border-t pt-2">
-          <h3 className="font-semibold">Project Buttons</h3>
+          <h3 className="font-semibold">Project Button</h3>
           <input
             value={btnLabelFr}
             onChange={(e) => setBtnLabelFr(e.target.value)}
@@ -187,45 +259,58 @@ export default function ProjetsPage() {
             placeholder="Button Link"
             className="border p-2"
           />
-          <button
-            type="button"
-            onClick={addButton}
-            className="bg-purple-500 text-white px-4 py-1"
-          >
-            Add Button
-          </button>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={addButton}
+              className="bg-purple-500 text-white px-4 py-1"
+            >
+              {button ? "Update Button" : "Add Button"}
+            </button>
+            {button && (
+              <button
+                type="button"
+                onClick={removeButton}
+                className="bg-red-500 text-white px-4 py-1"
+              >
+                Remove
+              </button>
+            )}
+          </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          {buttons.map((b, i) => (
-            <span
-              key={i}
-              className="bg-gray-300 px-2 py-1 rounded text-sm"
-            >
-              {b.labelFr} / {b.labelEn}
+          {button ? (
+            <span className="bg-gray-300 px-2 py-1 rounded text-sm">
+              {button.labelFr} / {button.labelEn}
             </span>
-          ))}
+          ) : (
+            <span className="text-gray-500">No button added</span>
+          )}
         </div>
 
         <input
           type="file"
           onChange={(e) => setFile(e.target.files?.[0] || null)}
+          accept="image/*"
         />
 
-        <button
-          type="submit"
-          className="bg-green-500 text-white px-4 py-2"
-        >
-          {editingId ? "Update Project" : "Add Project"}
-        </button>
-        {editingId && (
+        <div className="flex gap-2">
           <button
-            type="button"
-            onClick={resetForm}
-            className="ml-2 bg-gray-500 text-white px-4 py-2"
+            type="submit"
+            className="bg-green-500 text-white px-4 py-2"
           >
-            Cancel
+            {editingId ? "Update Project" : "Add Project"}
           </button>
-        )}
+          {editingId && (
+            <button
+              type="button"
+              onClick={resetForm}
+              className="bg-gray-500 text-white px-4 py-2"
+            >
+              Cancel
+            </button>
+          )}
+        </div>
       </form>
 
       <div className="mt-6">
@@ -241,16 +326,16 @@ export default function ProjetsPage() {
               <p>Tech: {p.techStack?.join(", ")}</p>
               {p.image && <img src={p.image} alt="" className="w-40" />}
               <div className="flex flex-wrap gap-2 mt-2">
-                {p.buttons?.map((b: any, i: number) => (
+                {p.button && (
                   <a
-                    key={i}
-                    href={b.link}
+                    href={p.button.link}
                     target="_blank"
+                    rel="noopener noreferrer"
                     className="bg-blue-600 text-white px-2 py-1 rounded text-sm"
                   >
-                    {b.labelFr} / {b.labelEn}
+                    {p.button.label.fr} / {p.button.label.en}
                   </a>
-                ))}
+                )}
               </div>
               <div className="flex gap-2 mt-2">
                 <button
