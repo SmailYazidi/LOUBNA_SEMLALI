@@ -16,7 +16,7 @@ export default function LogoutPage() {
       } catch (err) {
         console.error("Logout error:", err);
       } finally {
-        router.push("/admin/login");
+        router.push("/login");
       }
     };
 
