@@ -21,19 +21,35 @@ export default function HeroAdminPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const fetchHero = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/hero");
-      if (!res.ok) throw new Error("Failed to fetch hero");
-      const data = await res.json();
+ const fetchHero = async () => {
+  setLoading(true);
+  try {
+    const res = await fetch("/api/hero");
+    if (!res.ok) throw new Error("Failed to fetch hero");
+    const data = await res.json();
+    // If no hero exists, initialize with empty structure
+    if (!data) {
+      setHero({
+        specialist: { fr: "", en: "" },
+        heroTitle: { fr: "", en: "" },
+        heroDescription: { fr: "", en: "" },
+        heroButtons: [],
+      });
+    } else {
       setHero(data);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
     }
-  };
+  } catch (err: any) {
+    // Instead of showing error, show empty form
+    setHero({
+      specialist: { fr: "", en: "" },
+      heroTitle: { fr: "", en: "" },
+      heroDescription: { fr: "", en: "" },
+      heroButtons: [],
+    });
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     fetchHero();
