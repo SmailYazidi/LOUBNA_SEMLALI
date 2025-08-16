@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -7,8 +7,30 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isCheckingSession, setIsCheckingSession] = useState(true);
   const router = useRouter();
 
+ useEffect(() => {
+  const checkSession = async () => {
+    try {
+      const res = await fetch('/api/auth/check-session', {
+        credentials: 'include',
+        cache: 'no-store'
+      });
+      
+      if (res.ok) {
+        router.push('/admin');
+      } else {
+        // Clear any invalid cookies
+        document.cookie = 'session_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+      }
+    } finally {
+      setIsCheckingSession(false);
+    }
+  };
+
+  checkSession();
+}, [router]);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -17,25 +39,31 @@ export default function LoginPage() {
     try {
       const response = await fetch("/api/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password }),
+        credentials: 'include' // Crucial for cookies
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
+        const data = await response.json();
         throw new Error(data.error || "Login failed");
       }
 
-      // Redirect to admin dashboard on success
       router.push("/admin");
     } catch (err: any) {
       setError(err.message);
+    } finally {
       setLoading(false);
     }
   };
+
+  if (isCheckingSession) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
@@ -62,6 +90,7 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
               required
+              autoComplete="current-password"
             />
           </div>
 
@@ -73,12 +102,6 @@ export default function LoginPage() {
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
-
-        <div className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
-          <Link href="/" className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
-            ← Back to home
-          </Link>
-        </div>
       </div>
     </div>
   );

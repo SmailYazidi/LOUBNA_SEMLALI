@@ -2,64 +2,115 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import bcrypt from "bcryptjs";
 import { SignJWT } from "jose";
-import { cookies } from "next/headers";
 
-export async function POST(req: Request) {
+export async function POST(request: Request) {
+  console.log("--- Starting login process ---");
+  console.log("Incoming request headers:", request.headers);
+  
   try {
-    const { password } = await req.json();
-    const db = await connectDB();
+    const requestBody = await request.json();
+    console.log("Request body received:", { 
+      password: requestBody.password ? "***masked***" : "undefined" 
+    });
 
-    // 1. Get hashed password from adminpassword collection
-    const adminPassword = await db.collection("adminpassword").findOne({});
+    const db = await connectDB();
+    console.log("Database connected successfully");
+
+    // 1. Verify admin password exists
+    console.log("Checking for admin configuration...");
+    const admin = await db.collection("adminpassword").findOne({});
     
-    if (!adminPassword) {
+    if (!admin) {
+      console.error("Admin not configured in database");
       return NextResponse.json(
-        { error: "Admin password not configured" },
+        { error: "Admin not configured" },
         { status: 500 }
       );
     }
+    console.log("Admin configuration found");
 
     // 2. Compare passwords
-    const isMatch = await bcrypt.compare(password, adminPassword.hashedPassword);
+    console.log("Comparing passwords...");
+    const valid = await bcrypt.compare(requestBody.password, admin.hashedPassword);
     
-    if (!isMatch) {
+    if (!valid) {
+      console.error("Password comparison failed");
       return NextResponse.json(
         { error: "Invalid credentials" },
         { status: 401 }
       );
     }
+    console.log("Password validated successfully");
 
-    // 3. Create session token (JWT)
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-    const expiresIn = 24 * 60 * 60; // 24 hours in seconds
+    // 3. Create JWT token
+    console.log("Creating JWT token...");
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
+    const expiresIn = 24 * 60 * 60; // 24 hours
     
-    const token = await new SignJWT({})
+    const token = await new SignJWT({ userId: admin._id.toString() })
       .setProtectedHeader({ alg: "HS256" })
       .setExpirationTime(expiresIn)
       .sign(secret);
 
-    // 4. Store session in database
-    const session = await db.collection("sessions").insertOne({
-      token,
-      createdAt: new Date(),
-      expiresAt: new Date(Date.now() + expiresIn * 1000),
+    console.log("JWT token created successfully. Token details:", {
+      userId: admin._id,
+      expiresIn: `${expiresIn} seconds (${expiresIn/3600} hours)`,
+      tokenPreview: `${token.slice(0, 10)}...${token.slice(-5)}`
     });
 
-    // 5. Set secure HTTP-only cookie
-    cookies().set({
+    // 4. Store session in database
+    console.log("Storing session in database...");
+    const sessionData = {
+      token,
+      userId: admin._id,
+      createdAt: new Date(),
+      expiresAt: new Date(Date.now() + expiresIn * 1000)
+    };
+    
+    const insertResult = await db.collection("sessions").insertOne(sessionData);
+    console.log("Session stored in database. Insert result:", {
+      insertedId: insertResult.insertedId,
+      sessionData: {
+        ...sessionData,
+        expiresAt: sessionData.expiresAt.toISOString()
+      }
+    });
+
+    // 5. Create response with cookie
+    console.log("Preparing response with cookie...");
+    const response = NextResponse.json(
+      { success: true },
+      { status: 200 }
+    );
+
+    const cookieOptions = {
       name: "session_token",
       value: token,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "strict" as const,
       path: "/",
-      expires: new Date(Date.now() + expiresIn * 1000),
+      maxAge: expiresIn,
+      domain: process.env.NODE_ENV === "production" ? ".yourdomain.com" : undefined
+    };
+
+    console.log("Setting cookie with options:", {
+      ...cookieOptions,
+      value: "***masked***", // Don't log full token
+      maxAge: `${cookieOptions.maxAge} seconds (${cookieOptions.maxAge/3600} hours)`,
+      secure: cookieOptions.secure,
+      sameSite: cookieOptions.sameSite
     });
 
-    return NextResponse.json(
-      { success: true, redirectUrl: "/admin" },
-      { status: 200 }
-    );
+    response.cookies.set(cookieOptions);
+    console.log("Cookie set successfully in response");
+
+    console.log("Final response headers:", {
+      status: 200,
+      cookies: response.cookies
+    });
+
+    return response;
 
   } catch (error) {
     console.error("Login error:", error);
@@ -67,5 +118,7 @@ export async function POST(req: Request) {
       { error: "Internal server error" },
       { status: 500 }
     );
+  } finally {
+    console.log("--- Login process completed ---");
   }
 }
