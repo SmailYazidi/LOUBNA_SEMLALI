@@ -25,12 +25,12 @@ interface AboutData {
 }
 
 const defaultLevels = {
-  a1: { fr: "A1 — Débutant", en: "A1 — Beginner" },
-  a2: { fr: "A2 — Élémentaire", en: "A2 — Elementary" },
-  b1: { fr: "B1 — Intermédiaire", en: "B1 — Intermediate" },
-  b2: { fr: "B2 — Intermédiaire Avancé", en: "B2 — Upper Intermediate" },
-  c1: { fr: "C1 — Avancé", en: "C1 — Advanced" },
-  c2: { fr: "C2 — Maîtrise", en: "C2 — Mastery" },
+  a1: { fr: "Débutant", en: "Beginner" },
+  a2: { fr: "Élémentaire", en: "Elementary" },
+  b1: { fr: "Intermédiaire", en: "Intermediate" },
+  b2: { fr: "Intermédiaire Avancé", en: "Upper Intermediate" },
+  c1: { fr: "Avancé", en: "Advanced" },
+  c2: { fr: "Maîtrise", en: "Mastery" },
   native: { fr: "Langue Maternelle", en: "Native" }
 };
 
@@ -62,7 +62,7 @@ export default function AboutAdminPage() {
         const data = await res.json();
         if (data) {
           // Merge with default levels if none exist
-          const levels = data.languages?.levels || defaultLevels;
+          const levels = defaultLevels;
           
           setAbout({
             ...defaultAboutData,
@@ -245,19 +245,7 @@ export default function AboutAdminPage() {
         </div>
       </div>
 
-      {/* Language Proficiency Levels */}
-      <div className="space-y-4">
-        <h2 className="font-semibold">Language Proficiency Levels</h2>
-        <div className="grid md:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
-          {Object.entries(about.languages.levels).map(([levelKey, level]) => (
-            <div key={levelKey} className="flex items-center">
-              <span className="font-mono bg-blue-100 px-2 py-1 rounded mr-2">{levelKey.toUpperCase()}</span>
-              <span className="flex-1">{level.fr}</span>
-              <span className="text-gray-500">{level.en}</span>
-            </div>
-          ))}
-        </div>
-      </div>
+
 
       {/* Language List Management */}
       <div className="space-y-4">
@@ -314,7 +302,7 @@ export default function AboutAdminPage() {
                   >
                     {Object.entries(about.languages.levels).map(([levelKey, level]) => (
                       <option key={levelKey} value={levelKey}>
-                        {levelKey.toUpperCase()} — {level.fr} / {level.en}
+                       {/*  {levelKey.toUpperCase()} —  */}{level.fr} {/* / {level.en} */}
                       </option>
                     ))}
                   </select>
