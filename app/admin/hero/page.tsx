@@ -27,27 +27,7 @@ const fetchHero = async () => {
     const res = await fetch("/api/hero");
     if (!res.ok) throw new Error("Failed to fetch hero");
     const data = await res.json();
-    
-    // If no hero exists, create a default one
-    if (!data || Object.keys(data).length === 0) {
-      const defaultHero = {
-        specialist: { fr: "", en: "" },
-        heroTitle: { fr: "", en: "" },
-        heroDescription: { fr: "", en: "" },
-        heroButtons: [],
-      };
-      // First try to create it
-      const createRes = await fetch("/api/hero", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(defaultHero),
-      });
-      
-      if (!createRes.ok) throw new Error("Failed to create hero");
-      setHero(defaultHero);
-    } else {
-      setHero(data);
-    }
+    setHero(data);
   } catch (err: any) {
     setError(err.message);
     // Fallback to empty structure
@@ -59,6 +39,24 @@ const fetchHero = async () => {
     });
   } finally {
     setLoading(false);
+  }
+};
+
+const saveHero = async () => {
+  if (!hero) return;
+  try {
+    const res = await fetch("/api/hero", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(hero),
+    });
+    
+    if (!res.ok) throw new Error("Failed to save hero");
+    
+    alert("Hero saved successfully!");
+    fetchHero();
+  } catch (err: any) {
+    alert(err.message);
   }
 };
   useEffect(() => {
@@ -94,34 +92,6 @@ const fetchHero = async () => {
     const updatedButtons = hero.heroButtons.filter((_, i) => i !== index);
     setHero({ ...hero, heroButtons: updatedButtons });
   };
-const saveHero = async () => {
-  if (!hero) return;
-  try {
-    // First try to update
-    const updateRes = await fetch("/api/hero", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(hero),
-    });
-    
-    // If update fails because document doesn't exist, try to create
-    if (updateRes.status === 404) {
-      const createRes = await fetch("/api/hero", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(hero),
-      });
-      if (!createRes.ok) throw new Error("Failed to create hero");
-    } else if (!updateRes.ok) {
-      throw new Error("Failed to save hero");
-    }
-    
-    alert("Hero saved successfully!");
-    fetchHero();
-  } catch (err: any) {
-    alert(err.message);
-  }
-};
 
   if (loading) return <Loading />;
   if (error) return <p className="text-red-500">Error: {error}</p>;

@@ -58,7 +58,8 @@ export async function PUT(req: Request) {
         const uploadRes = await put(container, key, buffer, {
           accessToken: BLOB_TOKEN,
           contentType: "application/pdf",
-          addRandomSuffix: false
+          addRandomSuffix: false,
+            access: 'public' 
         })
 
         updatedCv[lang] = uploadRes.url

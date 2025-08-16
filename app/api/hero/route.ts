@@ -2,24 +2,6 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 
-export async function GET() {
-  try {
-    const db = await connectDB();
-    const heroCollection = db.collection("hero");
-
-    // Get the first hero document
-    const heroData = await heroCollection.findOne({});
-    if (!heroData) {
-      return NextResponse.json({ message: "Hero data not found" }, { status: 404 });
-    }
-
-    const { _id, ...data } = heroData;
-    return NextResponse.json(data, { status: 200 });
-  } catch (error) {
-    console.error("Failed to fetch hero data:", error);
-    return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
-  }
-}
 
 export async function POST(request: Request) {
   try {
@@ -38,6 +20,32 @@ export async function POST(request: Request) {
   }
 }
 
+export async function GET() {
+  try {
+    const db = await connectDB();
+    const heroCollection = db.collection("hero");
+
+    // Get the first hero document or return empty structure
+    const heroData = await heroCollection.findOne({});
+    
+    // Return empty structure if no data exists
+    if (!heroData) {
+      return NextResponse.json({
+        specialist: { fr: "", en: "" },
+        heroTitle: { fr: "", en: "" },
+        heroDescription: { fr: "", en: "" },
+        heroButtons: []
+      }, { status: 200 });
+    }
+
+    const { _id, ...data } = heroData;
+    return NextResponse.json(data, { status: 200 });
+  } catch (error) {
+    console.error("Failed to fetch hero data:", error);
+    return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
+  }
+}
+
 export async function PUT(request: Request) {
   try {
     const db = await connectDB();
@@ -45,14 +53,14 @@ export async function PUT(request: Request) {
 
     const updatedHero = await request.json();
 
-    // Use upsert: true to create if doesn't exist
-    const result = await heroCollection.updateOne(
+    // Always use upsert to create if doesn't exist
+    await heroCollection.updateOne(
       {}, 
       { $set: updatedHero },
       { upsert: true }
     );
 
-    return NextResponse.json({ message: "Hero updated successfully" }, { status: 200 });
+    return NextResponse.json(updatedHero, { status: 200 });
   } catch (error) {
     console.error("Failed to update hero:", error);
     return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
