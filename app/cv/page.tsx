@@ -58,12 +58,6 @@ export default function CvPage() {
     }
   }
 
-  const handleViewInNewTab = () => {
-    const pdfUrl = cvUrls[language]
-    if (!pdfUrl) return
-    window.open(pdfUrl, '_blank')
-  }
-
   // Get Google Docs Viewer URL
   const getGoogleViewerUrl = (pdfUrl: string) => {
     return `https://docs.google.com/gview?url=${encodeURIComponent(pdfUrl)}&embedded=true`
@@ -149,14 +143,6 @@ export default function CvPage() {
             </SelectContent>
           </Select>
 
-          <Button
-            onClick={handleViewInNewTab}
-            variant="outline"
-            className={`${isDarkMode ? "hover:bg-gray-800" : "hover:bg-gray-100"} flex items-center gap-2`}
-          >
-            <ExternalLink className="w-4 h-4" />
-            {language === "fr" ? "Ouvrir" : "Open"}
-          </Button>
 
           <Button
             onClick={handleDownloadPdf}
