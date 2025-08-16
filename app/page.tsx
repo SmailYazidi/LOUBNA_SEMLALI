@@ -438,7 +438,7 @@ const getIcon = (iconName?: string) => {
   return LucideIcons[pascalCase] || null; // لو الأيقونة مش موجودة، رجع null
 };
 
-  if (heroLoading || servicesLoading || photoLoading || educationLoading || aboutLoading || contactLoading) return <Loading/>;
+  if (heroLoading || servicesLoading || photoLoading || educationLoading || aboutLoading || contactLoading || projetsLoading) return <Loading/>;
   return (
 
     <div
