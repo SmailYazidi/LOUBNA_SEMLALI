@@ -11,7 +11,8 @@ export default function CvPage() {
   const [language, setLanguage] = useState<"fr" | "en">("fr")
   const [isDarkMode, setIsDarkMode] = useState(true)
   const [isDownloading, setIsDownloading] = useState(false)
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null)
+  const [cvUrls, setCvUrls] = useState<{ fr?: string; en?: string }>({})
+  const [loading, setLoading] = useState(true)
 
   const toggleTheme = () => setIsDarkMode(!isDarkMode)
 
@@ -20,31 +21,40 @@ export default function CvPage() {
     else document.documentElement.classList.remove("dark")
   }, [isDarkMode])
 
-  // Fetch PDF URL from API based on selected language
+  // Fetch both CV URLs when component mounts
   useEffect(() => {
-    const fetchPdfUrl = async () => {
+    const fetchCvUrls = async () => {
       try {
-        const res = await fetch(`/api/cv?lang=${language}`)
+        const res = await fetch('/api/cv')
+        if (!res.ok) throw new Error("Failed to fetch CV URLs")
         const data = await res.json()
-        setPdfUrl(data.url)
+        setCvUrls(data)
       } catch (err) {
-        console.error("Failed to fetch PDF URL:", err)
+        console.error("Failed to fetch CV URLs:", err)
+      } finally {
+        setLoading(false)
       }
     }
-    fetchPdfUrl()
-  }, [language])
+    fetchCvUrls()
+  }, [])
 
   const handleDownloadPdf = async () => {
+    const pdfUrl = cvUrls[language]
     if (!pdfUrl) return
+    
     setIsDownloading(true)
-    const link = document.createElement("a")
-    link.href = pdfUrl
-    link.download = `loubna_semlali_${language}.pdf`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-    setIsDownloading(false)
+    try {
+      const link = document.createElement("a")
+      link.href = pdfUrl
+      link.download = `loubna_semlali_${language}.pdf`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    } catch (err) {
+      console.error("Download failed:", err)
+    } finally {
+      setIsDownloading(false)
+    }
   }
 
   const themeClasses = {
@@ -100,7 +110,7 @@ export default function CvPage() {
                 ? "bg-[rgb(var(--portfolio-gold))] hover:bg-[rgb(var(--portfolio-gold-hover))] text-black"
                 : "bg-gray-900 hover:bg-gray-800 text-white"
             } font-medium px-6 py-2 rounded-full`}
-            disabled={isDownloading || !pdfUrl}
+            disabled={isDownloading || !cvUrls[language]}
           >
             {isDownloading ? (
               <>
@@ -119,15 +129,21 @@ export default function CvPage() {
         className={`cv-a4-page ${themeClasses.cardBg} shadow-lg rounded-lg overflow-hidden w-full max-w-4xl flex flex-col ${themeClasses.text} md:max-w-[794px]`}
         style={{ height: "1120px" }}
       >
-        {pdfUrl ? (
+        {loading ? (
+          <div className="flex items-center justify-center h-full text-gray-500">
+            <Loader2 className="w-8 h-8 animate-spin" />
+          </div>
+        ) : cvUrls[language] ? (
           <iframe
-            src={`${pdfUrl}#view=FitH&toolbar=0&navpanes=0&scrollbar=0`}
+            src={`${cvUrls[language]}#view=FitH&toolbar=0&navpanes=0&scrollbar=0`}
             className="w-full h-full"
             title="CV PDF"
             frameBorder="0"
           />
         ) : (
-          <div className="flex items-center justify-center h-full text-gray-500">Loading PDF...</div>
+          <div className="flex items-center justify-center h-full text-gray-500">
+            {language === "fr" ? "CV non disponible" : "CV not available"}
+          </div>
         )}
       </div>
     </div>
