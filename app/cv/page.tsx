@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ChevronLeft, Sun, Moon, Loader2, Download, ExternalLink } from "lucide-react"
+import { ChevronLeft, Sun, Moon, Loader2, Download, ExternalLink, Eye } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 export default function CvPage() {
@@ -14,13 +14,16 @@ export default function CvPage() {
   const [cvUrls, setCvUrls] = useState<{ fr?: string; en?: string }>({})
   const [loading, setLoading] = useState(true)
   const [isMobile, setIsMobile] = useState(false)
+  const [viewMode, setViewMode] = useState<'embed' | 'image' | 'mobile'>('embed')
 
   const toggleTheme = () => setIsDarkMode(!isDarkMode)
 
   // Detect mobile devices
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
+      const mobile = window.innerWidth <= 768 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+      setIsMobile(mobile)
+      setViewMode(mobile ? 'mobile' : 'embed')
     }
     
     checkMobile()
@@ -75,6 +78,11 @@ export default function CvPage() {
     window.open(pdfUrl, '_blank')
   }
 
+  // Convert PDF to Google Docs Viewer URL for better mobile support
+  const getGoogleViewerUrl = (pdfUrl: string) => {
+    return `https://docs.google.com/gview?url=${encodeURIComponent(pdfUrl)}&embedded=true`
+  }
+
   const themeClasses = {
     bg: isDarkMode ? "bg-[#0a0a0a]" : "bg-white",
     text: isDarkMode ? "text-white" : "text-gray-900",
@@ -102,107 +110,122 @@ export default function CvPage() {
       )
     }
 
-    if (isMobile) {
-      // Mobile view - show buttons instead of iframe
-      return (
-        <div className="flex flex-col items-center justify-center h-full p-8 space-y-6">
-          <div className="text-center space-y-4">
-            <h3 className="text-xl font-semibold">
-              {language === "fr" ? "Visualiser le CV" : "View CV"}
-            </h3>
-            <p className="text-gray-500 text-sm max-w-md">
-              {language === "fr" 
-                ? "Pour une meilleure expérience sur mobile, utilisez les boutons ci-dessous"
-                : "For better mobile experience, use the buttons below"
-              }
-            </p>
-          </div>
-          
-          <div className="flex flex-col sm:flex-row gap-4 w-full max-w-sm">
-            <Button
-              onClick={handleViewInNewTab}
-              variant="outline"
-              className="flex items-center justify-center gap-2 flex-1"
-            >
-              <ExternalLink className="w-4 h-4" />
-              {language === "fr" ? "Ouvrir" : "Open"}
-            </Button>
-            
-            <Button
-              onClick={handleDownloadPdf}
-              className={`${
-                isDarkMode
-                  ? "bg-[rgb(var(--portfolio-gold))] hover:bg-[rgb(var(--portfolio-gold-hover))] text-black"
-                  : "bg-gray-900 hover:bg-gray-800 text-white"
-              } flex items-center justify-center gap-2 flex-1`}
-              disabled={isDownloading}
-            >
-              {isDownloading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  {language === "fr" ? "Téléchargement..." : "Downloading..."}
-                </>
-              ) : (
-                <>
-                  <Download className="w-4 h-4" />
-                  {language === "fr" ? "Télécharger" : "Download"}
-                </>
-              )}
-            </Button>
-          </div>
-        </div>
-      )
-    }
+    const pdfUrl = cvUrls[language]
 
-    // Desktop view - use object tag for better PDF rendering
-    return (
-      <object
-        data={`${cvUrls[language]}#toolbar=0&navpanes=0&scrollbar=0&statusbar=0&messages=0&view=FitH`}
-        type="application/pdf"
-        className="w-full h-full"
-        aria-label="CV PDF"
-      >
-        <div className="flex flex-col items-center justify-center h-full space-y-4 p-8">
-          <p className="text-gray-500">
-            {language === "fr" 
-              ? "Impossible d'afficher le PDF dans ce navigateur" 
-              : "Unable to display PDF in this browser"
-            }
-          </p>
-          <div className="flex gap-4">
-            <Button
-              onClick={handleViewInNewTab}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              <ExternalLink className="w-4 h-4" />
-              {language === "fr" ? "Ouvrir dans un nouvel onglet" : "Open in new tab"}
-            </Button>
-            <Button
-              onClick={handleDownloadPdf}
-              className={`${
-                isDarkMode
-                  ? "bg-[rgb(var(--portfolio-gold))] hover:bg-[rgb(var(--portfolio-gold-hover))] text-black"
-                  : "bg-gray-900 hover:bg-gray-800 text-white"
-              } flex items-center gap-2`}
-              disabled={isDownloading}
-            >
-              {isDownloading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  {language === "fr" ? "Téléchargement..." : "Downloading..."}
-                </>
-              ) : (
-                <>
+    switch (viewMode) {
+      case 'mobile':
+        // Mobile-friendly view with action buttons
+        return (
+          <div className="flex flex-col items-center justify-center h-full p-6 space-y-6">
+            <div className="text-center space-y-3">
+              <Eye className="w-12 h-12 mx-auto text-gray-400" />
+              <h3 className="text-xl font-semibold">
+                {language === "fr" ? "Visualiser le CV" : "View CV"}
+              </h3>
+              <p className="text-gray-500 text-sm max-w-md">
+                {language === "fr" 
+                  ? "Choisissez comment vous souhaitez consulter le CV"
+                  : "Choose how you'd like to view the CV"
+                }
+              </p>
+            </div>
+            
+            <div className="flex flex-col gap-3 w-full max-w-xs">
+              <Button
+                onClick={handleViewInNewTab}
+                variant="outline"
+                className="flex items-center justify-center gap-2 py-3"
+              >
+                <ExternalLink className="w-4 h-4" />
+                {language === "fr" ? "Ouvrir dans le navigateur" : "Open in browser"}
+              </Button>
+              
+              <Button
+                onClick={() => window.open(getGoogleViewerUrl(pdfUrl), '_blank')}
+                variant="outline"
+                className="flex items-center justify-center gap-2 py-3"
+              >
+                <Eye className="w-4 h-4" />
+                {language === "fr" ? "Voir avec Google Viewer" : "View with Google Viewer"}
+              </Button>
+              
+              <Button
+                onClick={handleDownloadPdf}
+                className={`${
+                  isDarkMode
+                    ? "bg-[rgb(var(--portfolio-gold))] hover:bg-[rgb(var(--portfolio-gold-hover))] text-black"
+                    : "bg-gray-900 hover:bg-gray-800 text-white"
+                } flex items-center justify-center gap-2 py-3`}
+                disabled={isDownloading}
+              >
+                {isDownloading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    {language === "fr" ? "Téléchargement..." : "Downloading..."}
+                  </>
+                ) : (
+                  <>
+                    <Download className="w-4 h-4" />
+                    {language === "fr" ? "Télécharger PDF" : "Download PDF"}
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        )
+
+      case 'embed':
+        // Desktop embed using object tag
+        return (
+          <object
+            data={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0&statusbar=0&messages=0&view=FitH&zoom=100`}
+            type="application/pdf"
+            className="w-full h-full"
+            aria-label="CV PDF"
+          >
+            <div className="flex flex-col items-center justify-center h-full space-y-4 p-8">
+              <p className="text-gray-500 text-center">
+                {language === "fr" 
+                  ? "Impossible d'afficher le PDF dans ce navigateur" 
+                  : "Unable to display PDF in this browser"
+                }
+              </p>
+              <div className="flex gap-4">
+                <Button
+                  onClick={handleViewInNewTab}
+                  variant="outline"
+                  className="flex items-center gap-2"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  {language === "fr" ? "Ouvrir dans un nouvel onglet" : "Open in new tab"}
+                </Button>
+                <Button
+                  onClick={handleDownloadPdf}
+                  className={`${
+                    isDarkMode
+                      ? "bg-[rgb(var(--portfolio-gold))] hover:bg-[rgb(var(--portfolio-gold-hover))] text-black"
+                      : "bg-gray-900 hover:bg-gray-800 text-white"
+                  } flex items-center gap-2`}
+                  disabled={isDownloading}
+                >
                   <Download className="w-4 h-4" />
                   {language === "fr" ? "Télécharger" : "Download"}
-                </>
-              )}
-            </Button>
-          </div>
-        </div>
-      </object>
-    )
+                </Button>
+              </div>
+            </div>
+          </object>
+        )
+
+      default:
+        return (
+          <iframe
+            src={getGoogleViewerUrl(pdfUrl)}
+            className="w-full h-full border-0"
+            title="CV PDF"
+            allow="fullscreen"
+          />
+        )
+    }
   }
 
   return (
@@ -219,14 +242,29 @@ export default function CvPage() {
           <span className="text-sm font-medium">{language === "fr" ? "Retour" : "Back"}</span>
         </Button>
 
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={toggleTheme}
-          className={`p-2 ${isDarkMode ? "hover:bg-gray-800" : "hover:bg-gray-100"}`}
-        >
-          {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={toggleTheme}
+            className={`p-2 ${isDarkMode ? "hover:bg-gray-800" : "hover:bg-gray-100"}`}
+          >
+            {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          </Button>
+
+          {/* View mode selector for desktop */}
+          {!isMobile && (
+            <Select value={viewMode} onValueChange={(value: 'embed' | 'image') => setViewMode(value)}>
+              <SelectTrigger className={`min-w-[120px] w-auto ${isDarkMode ? "bg-gray-800 text-white border-gray-700" : "bg-gray-100 text-gray-900 border-gray-300"}`}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className={`${themeClasses.dropdownBg} ${themeClasses.dropdownBorder}`}>
+                <SelectItem value="embed">Embed</SelectItem>
+                <SelectItem value="image">Google Viewer</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+        </div>
 
         <div className="flex items-center gap-4">
           <Select value={language} onValueChange={(value: "fr" | "en") => setLanguage(value)}>
@@ -268,7 +306,7 @@ export default function CvPage() {
       {/* PDF container */}
       <div
         className={`cv-a4-page ${themeClasses.cardBg} shadow-lg rounded-lg overflow-hidden w-full max-w-4xl flex flex-col ${themeClasses.text} ${
-          isMobile ? "h-auto min-h-[400px]" : "md:max-w-[794px]"
+          isMobile ? "h-auto min-h-[500px]" : "md:max-w-[794px]"
         }`}
         style={!isMobile ? { height: "1120px" } : {}}
       >
