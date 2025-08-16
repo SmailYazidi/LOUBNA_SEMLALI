@@ -57,13 +57,17 @@ export async function POST(request: Request) {
 
     // --- Set HttpOnly cookie ---
     const res = NextResponse.json({ success: true });
-    res.cookies.set("session_token", token, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: "lax",
-      path: "/",
-      maxAge: expiresInSec,
-    });
+
+
+res.cookies.set("session_token", token, {
+  httpOnly: true,
+  secure: true,          // HTTPS في الإنتاج
+  sameSite: "lax",       // أو "strict" حسب حاجتك
+  path: "/",
+  maxAge: expiresInSec,
+});
+
+
     console.log("session_token cookie set");
 
     return res;
