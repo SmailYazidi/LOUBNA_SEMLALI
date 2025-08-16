@@ -40,24 +40,11 @@ const translations = {
     contact: "Contact",
     hireMe: "Me Contacter",
      
-
-    // Hero
-    specialist: "Développeur Web Full Stack",
-    heroTitle: "Transformez vos idées en applications web puissantes",
-    heroDescription:
-      "Je suis une personne dynamique et ambitieuse, spécialisée dans le développement web et les applications web. Diplômé en développement web full-stack et formé au Centre Azrou pour le Développement Communautaire, je souhaite mettre mes compétences à profit et intégrer une équipe motivée.",
-    viewJourney: "Voir Mon CV",
+   viewJourney: "Voir Mon CV",
 
     // Services
     servicesTitle: "Services",
-    service1Title: "Développement Web",
-    service1Desc: "Conception et développement d'applications web robustes et évolutives, du front-end au back-end.",
-    service2Title: "Applications Mobiles",
-    service2Desc:
-      "Création d'applications mobiles performantes et intuitives pour iOS et Android, avec des expériences utilisateur fluides.",
-    service3Title: "Gestion de Projets Web",
-    service3Desc:
-      "Organisation et direction de projets web, assurant une livraison efficace et la satisfaction du client.",
+ 
 
     // Experience & Education Timeline
     journeyTitle: "Parcours Professionnel & Éducatif",
@@ -75,7 +62,6 @@ const translations = {
     // About
     aboutTitle: "À Propos de Moi",
    
-
 
     // Footer
     rightsReserved: "Tous droits réservés",
@@ -99,94 +85,14 @@ const translations = {
     // Experience & Education Timeline
     journeyTitle: "Work Experience & Education Timeline",
  
-
     // Skills
     skillsTitle: "My Skills",
-    programmingLanguages: "Programming Languages",
-    backendLanguage: "Backend Language",
-    scriptingLanguage: "Scripting Language",
-    backendRuntime: "Backend Runtime",
-    frameworksLibraries: "Frameworks and Libraries",
-    phpFramework: "PHP Framework",
-    frontendFramework: "Frontend Framework",
-    cssFramework: "CSS Framework",
-    databases: "Databases",
-    relationalDatabase: "Relational Database",
-    nosqlDatabase: "NoSQL Database",
-    otherTechnicalSkills: "Other Technical Skills",
-    technicalAnalysis: "Technical Analysis",
-    understandingSystemsNeeds: "Understanding systems and needs",
-    webAppDevelopment: "Web Application Development",
-    buildingFunctionalWebApps: "Building functional web apps",
-    webProjectManagement: "Web Project Management",
-    organizingLeadingWebProjects: "Organizing and leading web projects",
-    versionControlGit: "Version Control: Git",
-    managingCodeVersions: "Managing code versions",
-    softSkills: "Soft Skills",
-    teamwork: "Teamwork",
-    workingWellWithOthers: "Working well with others",
-    effectiveCommunication: "Effective Communication",
-    sharingIdeasClearly: "Sharing ideas clearly",
-    problemSolving: "Problem Solving",
-    findingSmartSolutions: "Finding smart solutions",
-    timeManagement: "Time Management",
-    usingTimeWisely: "Using Time wisely",
-    adaptability: "Adaptability",
-    adjustingToChange: "Adjusting to change",
-    criticalThinking: "Critical Thinking",
-    analyzingReasoning: "Analyzing and reasoning",
-    creativity: "Creativity",
-    thinkingOutsideTheBox: "Thinking outside the box",
-    initiative: "Initiative",
-    takingActionIndependently: "Taking action independently",
+   
 
     // Projects
     myProjects: "My Projects",
-    animovTitle: "Animov",
-    animovDesc:
-      "AniMov a platform to track, rate, and discuss movies, series, books, manga, and anime — create watchlists, read lists, favorites, and share your thoughts with friends.",
-    tableManagementTitle: "Table Management System",
-    tableManagementDesc:
-      "A real-time digital display system developed for the CLE department at Akhawayn University. It helps students quickly identify their assigned tutors and tables using an intuitive, photo-supported interface.",
    
-    sNoteTitle: "S-Note App",
-sNoteDesc: "An application for securely storing and managing notes and passwords, offering features like...", 
- github: "GitHub",
-    live: "Live",
-      weatherAppTitle: "Application Météo",
-    weatherAppDesc: "Une application météo complète fournissant des prévisions en temps réel, des prévisions sur 14 jours et des prédictions horaires avec support multilingue et mode sombre/clair.",
-    // About
     aboutTitle: "About Me",
-    aboutDescription:
-      "Young professional passionate about web development, I develop my skills with a modern and innovative approach, seeking to contribute to challenging projects.",
-    age: "Age",
-    location: "Location",
-    status: "Status",
-    nationality: "Nationality",
-    years: "21 years",
-    locationValue: "IFRANE, MOROCCO",
-    single: "Single",
-    moroccan: "Moroccan",
-    languages: "Languages",
-    interests: "Interests",
-    sport: "🏃 Sports",
-    travel: "✈️ Travel",
-    coding: "💻 Coding",
-    // Remove: reading: "📚 Reading",
-
-    // Language levels
-    native: "Good",
-    good: "Good",
-    average: "Medium",
-
-    // Contact
-    contactTitle: "Let's Work Together",
-    contactDescription:
-      "Ready to bring your project to life? Contact me to discuss your needs and discover how we can collaborate.",
-    email: "Email",
-    phone: "Phone",
-    startProject: "Start a Project",
-
     // Footer
     rightsReserved: "All rights reserved",
   },
@@ -362,7 +268,7 @@ export default function Portfolio() {
   useEffect(() => {
     const handleScroll = () => {
       const sections = ["home", "services", "experience", "skills", "projects", "about", "contact"]
-      const scrollPosition = window.scrollY + 100
+      const scrollPosition = window.scrollY + 110
 
       for (const section of sections) {
         const element = document.getElementById(section)
@@ -847,7 +753,7 @@ const getIcon = (iconName?: string) => {
 >
   <div className="container mx-auto max-w-7xl">
     <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4">
-      {educationData?.journeyTitle?.[currentLang]}
+      {t.journeyTitle}
       <span className="absolute bottom-0 left-0 w-20 h-1 bg-[rgb(var(--portfolio-gold))]"></span>
     </h2>
 
@@ -938,7 +844,7 @@ const getIcon = (iconName?: string) => {
 <section id="skills" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
   <div className="container mx-auto max-w-7xl">
     <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4">
-      {skillsData?.skillsTitle?.[currentLang]}
+      {t.skillsTitle}
       <span className="absolute bottom-0 left-0 w-20 h-1 bg-[rgb(var(--portfolio-gold))]"></span>
     </h2>
 
@@ -1104,7 +1010,7 @@ const getIcon = (iconName?: string) => {
     <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
       <div>
            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4">
-      {aboutData.aboutTitle?.[currentLang]}
+      {t.aboutTitle}
       <span className="absolute bottom-0 left-0 w-20 h-1 bg-[rgb(var(--portfolio-gold))]"></span>
     </h2>
        
