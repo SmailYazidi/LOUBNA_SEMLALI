@@ -324,9 +324,13 @@ export default function Portfolio() {
   const [servicesData, setServicesData] = useState<any>(null);
   const [heroLoading, setHeroLoading] = useState(true);
   const [servicesLoading, setServicesLoading] = useState(true);
+
+  const [photoLoading, setPhotoLoading] = useState(true);
+
+
   const [educationLoading, setEducationLoading] = useState(true);
   const [skillsLoading, setSkillsLoading] = useState(true);
-
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [activeSection, setActiveSection] = useState("home")
   const [isDarkMode, setIsDarkMode] = useState(true)
@@ -355,7 +359,21 @@ export default function Portfolio() {
   }
 
 
-
+  useEffect(() => {
+    const fetchPhoto = async () => {
+      try {
+        const res = await fetch('/api/photo');
+        if (!res.ok) throw new Error('Failed to fetch photo');
+        const data = await res.json();
+        setPhotoUrl(data.url);
+      } catch (err: any) {
+        console.error('Error fetching photo:', err);
+      } finally {
+        setPhotoLoading(false);
+      }
+    };
+    fetchPhoto();
+  }, []);
  useEffect(() => {
     fetch("/api/hero")
       .then((res) => res.json())
@@ -703,7 +721,7 @@ const getIcon = (iconName?: string) => {
         project.tech.some((tech) => tech.toLowerCase().includes(lowerCaseSearchTerm)),
     )
   }, [searchTerm, projectsData])
-  if (heroLoading || servicesLoading || educationLoading) return <Loading/>;
+  if (heroLoading || servicesLoading || photoLoading || educationLoading) return <Loading/>;
   return (
 
     <div
@@ -1033,23 +1051,37 @@ const getIcon = (iconName?: string) => {
 
             </div>
 
-            {/* Right Content - Profile Image */}
-            <div className="relative flex justify-center lg:justify-end mt-8 lg:mt-0">
-              <div className="relative">
-                <div
-                  className={`w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 rounded-full ${isDarkMode ? "bg-gradient-to-br from-gray-800 to-gray-900" : "bg-gradient-to-br from-gray-100 to-gray-200"} flex items-center justify-center overflow-hidden border-2 border-[rgb(var(--portfolio-gold))]`}
-                >
-                  <Image
-                    src="/images/profile.png"
-                    alt="Smail Yazidi"
-                    width={400}
-                    height={400}
-                    className="w-full h-full object-cover"
-                    priority
-                  />
-                </div>
-              </div>
-            </div>
+         {/* Right Content - Profile Image */}
+<div className="relative flex justify-center lg:justify-end mt-8 lg:mt-0">
+  <div className="relative">
+    <div
+      className={`w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 rounded-full ${
+        isDarkMode 
+          ? "bg-gradient-to-br from-gray-800 to-gray-900" 
+          : "bg-gradient-to-br from-gray-100 to-gray-200"
+      } flex items-center justify-center overflow-hidden border-2 border-[rgb(var(--portfolio-gold))]`}
+    >
+      {photoUrl ? (
+        <Image
+          src={photoUrl}
+          alt="Profile photo"
+          width={400}
+          height={400}
+          className="w-full h-full object-cover"
+          priority
+        />
+      ) : (
+        <div className="flex flex-col items-center justify-center text-center p-4">
+          <div className="w-full h-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center">
+            <span className="text-gray-500 dark:text-gray-400">
+              No photo available
+            </span>
+          </div>
+        </div>
+      )}
+    </div>
+  </div>
+</div>
           </div>
         </div>
       </section>
