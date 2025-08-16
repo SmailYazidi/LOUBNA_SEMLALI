@@ -1,66 +1,59 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isCheckingSession, setIsCheckingSession] = useState(true);
-  const router = useRouter();
+  const [checking, setChecking] = useState(true);
 
- useEffect(() => {
-  const checkSession = async () => {
-    try {
-      const res = await fetch('/api/auth/check-session', {
-        credentials: 'include',
-        cache: 'no-store'
-      });
-      
-      if (res.ok) {
-        router.push('/admin');
-      } else {
-        // Clear any invalid cookies
-        document.cookie = 'session_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+  useEffect(() => {
+    const check = async () => {
+      try {
+        const res = await fetch("/api/auth/check-session", {
+          credentials: "include",
+          cache: "no-store",
+        });
+        if (res.ok) router.push("/admin");
+      } finally {
+        setChecking(false);
       }
-    } finally {
-      setIsCheckingSession(false);
-    }
-  };
+    };
+    check();
+  }, [router]);
 
-  checkSession();
-}, [router]);
-  const handleSubmit = async (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
     try {
-      const response = await fetch("/api/login", {
+      const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password }),
-        credentials: 'include' // Crucial for cookies
+        credentials: "include", // make sure cookie is accepted
       });
 
-      if (!response.ok) {
-        const data = await response.json();
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
         throw new Error(data.error || "Login failed");
       }
 
       router.push("/admin");
-    } catch (err: any) {
-      setError(err.message);
+    } catch (e: any) {
+      setError(e.message);
     } finally {
       setLoading(false);
     }
   };
 
-  if (isCheckingSession) {
+  if (checking) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500" />
       </div>
     );
   }
@@ -68,17 +61,15 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
       <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-md">
-        <h1 className="text-2xl font-bold text-center mb-6 text-gray-800 dark:text-white">
-          Admin Login
-        </h1>
-        
+        <h1 className="text-2xl font-bold text-center mb-6 text-gray-800 dark:text-white">Admin Login</h1>
+
         {error && (
           <div className="mb-4 p-3 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-100 rounded">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={onSubmit} className="space-y-4">
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Password
