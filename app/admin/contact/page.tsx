@@ -174,7 +174,7 @@ export default function ContactAdminPage() {
       {/* Contact Title */}
       <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
         <div className="flex items-center gap-2 mb-3">
-          <LucideIcons.Heading size={20} className="text-gray-600 dark:text-gray-300" />
+          <LucideIcons.Type size={20} className="text-gray-600 dark:text-gray-300" />
           <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Contact Title</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { getSession } from "next-auth/react";
 import Header from "@/components/header";
 import Sidebar from "@/components/sidbar";
-import Loading from '@/components/Loading';
+import Loading from '@/components/LoadingAdmin';
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
