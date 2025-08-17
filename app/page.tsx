@@ -345,14 +345,6 @@ export default function Portfolio() {
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
-  const navItems = [
-    { id: "services", label: t.services },
-    { id: "experience", label: t.experience },
-    { id: "skills", label: t.skills },
-    { id: "projects", label: t.projects },
-    { id: "about", label: t.about },
-    { id: "contact", label: t.contact },
-  ]
 
   const languageOptions = [
     { code: "fr", label: "Français", flag: "🇫🇷" },
@@ -378,11 +370,12 @@ export default function Portfolio() {
     accentRed: "var(--portfolio-red)",
     accentRedForeground: "var(--portfolio-red-foreground)",
   }
+const isProjectsEmpty = !projetsData || !projetsData.projects?.length;
 
+const isServicesEmpty = !servicesData || !servicesData.servicesList?.length;
 
 const isJourneyDataEmpty =
   !educationData ||
-  !educationData.journeyTitle?.[currentLang]?.trim() ||
   (!educationData.education?.length && !educationData.experience?.length);
   const isContactDataEmpty =
   !contactData ||
@@ -445,12 +438,24 @@ const isHeroDataEmpty =
     (heroData.heroButtons && heroData.heroButtons.length > 0)
   );
 
+
+
+const navItems = [
+  !isServicesEmpty && { id: "services", label: t.services },
+  !isJourneyDataEmpty && { id: "experience", label: t.experience },
+  !isSkillsDataEmpty && { id: "skills", label: t.skills },
+  !isProjectsEmpty && { id: "projects", label: t.projects },
+  !isAboutDataEmpty && { id: "about", label: t.about },
+  !isContactDataEmpty && { id: "contact", label: t.contact },
+].filter(Boolean); // remove false values
+
+
 const getIcon = (iconName?: string) => {
   if (!iconName) return null; 
   const pascalCase = iconName.charAt(0).toUpperCase() + iconName.slice(1);
   return LucideIcons[pascalCase] || null; 
 };
- console.log(servicesData)
+
   if (heroLoading || servicesLoading || photoLoading || educationLoading || aboutLoading || contactLoading || projetsLoading || skillsLoading || usernameLoading) return <Loading/>;
   return (
 
@@ -726,102 +731,94 @@ const getIcon = (iconName?: string) => {
 
       {/* Hero Section */}
 {!isHeroDataEmpty && (
-      <section id="home" className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
-        <div className="container mx-auto max-w-7xl">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-            {/* Left Content */}
-            <div className="space-y-6 sm:space-y-8 text-center lg:text-left">
-              <div className="flex items-center justify-center lg:justify-start gap-3">
-                <Star className="w-5 h-5 text-[rgb(var(--portfolio-gold))] fill-current" />
-                <span className={`${themeClasses.textSecondary} text-sm font-medium`}>{heroData.specialist?.[currentLang]}</span>
-              </div>
-
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-light leading-tight">{heroData.heroTitle?.[currentLang]}</h1>
-
-              <p
-                className={`${themeClasses.textSecondary} text-base sm:text-lg leading-relaxed max-w-lg mx-auto lg:mx-0`}
-              >
-                {heroData.heroDescription?.[currentLang]}
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-             
-
-           <Button
-  className="bg-[#EFBF04] hover:bg-[#d6a904] text-gray-900 font-medium px-8 py-3 rounded-full"
-  onClick={() => window.location.href = '/cv'}
->
-  {t.viewJourney}
-</Button>
-
-
-             {heroData.heroButtons.map((button, index) => {
-  const Icon = getIcon(button.icon);
-  const handleClick = () => {
-    if (button.link?.startsWith("http")) {
-   window.location.href = button.link;
-    } else if (button.link) {
-      window.location.href = button.link;
-    }
-  };
-
-  return (
-    <Button
-      key={index}
-      variant="ghost"
-      onClick={handleClick}
-      className={`${isDarkMode
-        ? "text-white border-gray-700 hover:border-[rgb(184,148,31)] hover:text-[rgb(184,148,31)] hover:bg-transparent"
-        : "text-gray-900 border-gray-300 hover:border-[rgb(184,148,31)] hover:text-[rgb(184,148,31)] hover:bg-transparent"
-      } font-medium px-8 py-3 rounded-full border flex items-center cursor-pointer`}
-    >
-      {Icon && <Icon className="w-4 h-4 mr-2" />}
-      {button.text?.[currentLang]}
-    </Button>
-  );
-})}
-
-              </div>
-
+  <section id="home" className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
+    <div className="container mx-auto max-w-7xl">
+      <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        {/* Left Content */}
+        <div className="space-y-6 sm:space-y-8 text-center lg:text-left">
+          {heroData.specialist?.[currentLang] && (
+            <div className="flex items-center justify-center lg:justify-start gap-3">
+              <Star className="w-5 h-5 text-[rgb(var(--portfolio-gold))] fill-current" />
+              <span className={`${themeClasses.textSecondary} text-sm font-medium`}>
+                {heroData.specialist[currentLang]}
+              </span>
             </div>
+          )}
 
-         {/* Right Content - Profile Image */}
-<div className="relative flex justify-center lg:justify-end mt-8 lg:mt-0">
-  <div className="relative">
-    <div
-      className={`w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 rounded-full ${
-        isDarkMode 
-          ? "bg-gradient-to-br from-gray-800 to-gray-900" 
-          : "bg-gradient-to-br from-gray-100 to-gray-200"
-      } flex items-center justify-center overflow-hidden border-2 border-[rgb(var(--portfolio-gold))]`}
-    >
-      {photoUrl ? (
-        <Image
-          src={photoUrl}
-          alt="Profile photo"
-          width={400}
-          height={400}
-          className="w-full h-full object-cover"
-          priority
-        />
-      ) : (
-        <div className="flex flex-col items-center justify-center text-center p-4">
-          <div className="w-full h-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center">
-            <span className="text-gray-500 dark:text-gray-400">
-              No photo available
-            </span>
+          {heroData.heroTitle?.[currentLang] && (
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-light leading-tight">
+              {heroData.heroTitle[currentLang]}
+            </h1>
+          )}
+
+          {heroData.heroDescription?.[currentLang] && (
+            <p className={`${themeClasses.textSecondary} text-base sm:text-lg leading-relaxed max-w-lg mx-auto lg:mx-0`}>
+              {heroData.heroDescription[currentLang]}
+            </p>
+          )}
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+            <Button
+              className="bg-[#EFBF04] hover:bg-[#d6a904] text-gray-900 font-medium px-8 py-3 rounded-full"
+              onClick={() => (window.location.href = '/cv')}
+            >
+              {t.viewJourney}
+            </Button>
+
+            {heroData.heroButtons?.map((button, index) => {
+              const Icon = getIcon(button.icon);
+              const handleClick = () => {
+                if (button.link) window.location.href = button.link;
+              };
+              return (
+                <Button
+                  key={index}
+                  variant="ghost"
+                  onClick={handleClick}
+                  className={`${isDarkMode
+                    ? "text-white border-gray-700 hover:border-[rgb(184,148,31)] hover:text-[rgb(184,148,31)] hover:bg-transparent"
+                    : "text-gray-900 border-gray-300 hover:border-[rgb(184,148,31)] hover:text-[rgb(184,148,31)] hover:bg-transparent"
+                  } font-medium px-8 py-3 rounded-full border flex items-center cursor-pointer`}
+                >
+                  {Icon && <Icon className="w-4 h-4 mr-2" />}
+                  {button.text?.[currentLang]}
+                </Button>
+              );
+            })}
           </div>
         </div>
-      )}
+
+        {/* Right Content - Profile Image */}
+             {photoUrl ? (
+        <div className="relative flex justify-center lg:justify-end mt-8 lg:mt-0">
+          <div className={`w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 rounded-full ${
+            isDarkMode 
+              ? "bg-gradient-to-br from-gray-800 to-gray-900" 
+              : "bg-gradient-to-br from-gray-100 to-gray-200"
+          } flex items-center justify-center overflow-hidden border-2 border-[rgb(var(--portfolio-gold))]`}>
+       
+              <Image
+                src={photoUrl}
+                alt="Profile photo"
+                width={400}
+                height={400}
+                className="w-full h-full object-cover"
+                priority
+              />
+        
+          </div>
+        </div>    ) : (
+             <></>
+            )}
+      </div>
     </div>
-  </div>
-</div>
-          </div>
-        </div>
-      </section>)}
+  </section>
+)}
+
    {/*  services */}
 
 
-{Array.isArray(servicesData?.servicesList) && servicesData.servicesList.length > 0 && (
+{!isServicesEmpty && (
 
 <section id="services" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
   <div className="container mx-auto max-w-7xl">
@@ -863,10 +860,7 @@ const getIcon = (iconName?: string) => {
 {/* Experience & Education Timeline Section */}
 
 
-{(
-  (Array.isArray(educationData?.education) && educationData.education.length > 0) ||
-  (Array.isArray(educationData?.experience) && educationData.experience.length > 0)
-) && (
+{!isJourneyDataEmpty && (
 <section
   id="experience"
   className={`py-16 sm:py-20 px-4 sm:px-6 lg:px-8 ${themeClasses.sectionBg}`}
@@ -1023,7 +1017,7 @@ const getIcon = (iconName?: string) => {
 
 
 {/* Projects Section */}
-{(projetsLoading || (Array.isArray(projetsData?.projects) && projetsData.projects.length > 0)) && (
+{!isProjectsEmpty && (
 <section
   id="projects"
   className={`py-16 sm:py-20 px-4 sm:px-6 lg:px-8 ${themeClasses.sectionBg}`}

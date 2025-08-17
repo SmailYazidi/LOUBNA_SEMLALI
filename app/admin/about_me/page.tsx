@@ -278,7 +278,7 @@ export default function AboutAdminPage() {
         </h1>
       </div>
 
-      <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
+   {/*    <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
         <div className="flex items-center gap-2 mb-3">
           <LucideIcons.Type size={20} className="text-gray-600 dark:text-gray-300" />
           <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Title</h2>
@@ -303,7 +303,7 @@ export default function AboutAdminPage() {
             />
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* About Description */}
       <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">

@@ -150,7 +150,7 @@ const saveData = async () => {
       </div>
 
  
-      <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
+    {/*   <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
         <div className="flex items-center gap-2 mb-3">
           <LucideIcons.Bookmark size={20} className="text-gray-600 dark:text-gray-300" />
           <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Journey Title</h2>
@@ -178,7 +178,7 @@ const saveData = async () => {
           </div>
         </div>
       </div> 
-
+ */}
       {/* Education Section */}
       <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
         <div className="flex items-center justify-between mb-4">
