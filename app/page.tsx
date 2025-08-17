@@ -925,7 +925,7 @@ const getIcon = (iconName?: string) => {
                         {skill.examples?.length > 0 && (
                           <ul className={`${themeClasses.textMuted} text-xs sm:text-sm list-disc pl-4`}>
                             {skill.examples.map((ex, exIndex) => (
-                              <li key={exIndex}>{ex}</li>
+                              <li key={exIndex}>{ex?.[currentLang]}</li>
                             ))}
                           </ul>
                         )}

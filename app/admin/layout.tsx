@@ -47,7 +47,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <Sidebar isOpen={sidebarOpen} closeSidebar={closeSidebar} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header toggleSidebar={toggleSidebar} />
-        <br /><br />
         <main className="flex-1 overflow-y-auto mt-16">{children}</main>
       </div>
     </div>

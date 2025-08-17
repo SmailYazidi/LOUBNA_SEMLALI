@@ -8,9 +8,10 @@ type LocalizedText = { fr: string; en: string };
 
 type SkillItem = {
   name: LocalizedText;
-  examples: string[];
+  examples: LocalizedText[]; // <-- change here
   icon: string;
 };
+
 
 type SkillCategory = {
   skillicon: string;
@@ -72,34 +73,58 @@ export default function SkillsAdminPage() {
     fetchSkills();
   }, []);
 
-  const handleChange = (
-    categoryIndex: number | null,
-    itemIndex: number | null,
-    field: keyof LocalizedText | "examples" | "skillicon" | "skillsTitle" | "icon",
-    langOrExampleIndex: "fr" | "en" | number,
-    value: string
-  ) => {
-    if (!data) return;
-    const newData = { ...data };
+const handleChange = (
+  categoryIndex: number | null,
+  itemIndex: number | null,
+  field: keyof LocalizedText | "examples" | "skillicon" | "skillsTitle" | "icon",
+  langOrExampleIndex: "fr" | "en" | number | { exampleIndex: number; lang: "fr" | "en" },
+  value: string
+) => {
+  if (!data) return;
 
-    if (categoryIndex === null) {
-      if (field === "skillsTitle" && typeof langOrExampleIndex === "string") {
-        newData.skillsTitle[langOrExampleIndex] = value;
-      }
-    } else if (itemIndex === null) {
-      if (field === "skillicon") newData.skills[categoryIndex].skillicon = value;
-      else if (field === "title" && typeof langOrExampleIndex === "string")
-        newData.skills[categoryIndex].title[langOrExampleIndex] = value;
-    } else {
-      const item = newData.skills[categoryIndex].items[itemIndex];
-      if (field === "name" && typeof langOrExampleIndex === "string") item.name[langOrExampleIndex] = value;
-      else if (field === "examples" && typeof langOrExampleIndex === "number")
-        item.examples[langOrExampleIndex] = value;
-      else if (field === "icon") item.icon = value;
+  const newData = { ...data };
+
+  // Update skillsTitle (top-level)
+  if (categoryIndex === null && field === "skillsTitle" && typeof langOrExampleIndex === "string") {
+    newData.skillsTitle[langOrExampleIndex] = value;
+  } 
+  // Update category-level title or skillicon
+  else if (categoryIndex !== null && itemIndex === null) {
+    const category = newData.skills[categoryIndex];
+    if (field === "skillicon") category.skillicon = value;
+    else if (field === "title" && typeof langOrExampleIndex === "string") {
+      category.title[langOrExampleIndex] = value;
     }
+  } 
+  // Update item-level fields
+  else if (categoryIndex !== null && itemIndex !== null) {
+    const item = newData.skills[categoryIndex].items[itemIndex];
 
-    setData(newData);
-  };
+    if (field === "name" && typeof langOrExampleIndex === "string") {
+      item.name[langOrExampleIndex] = value;
+    } 
+    else if (field === "examples") {
+      // langOrExampleIndex can be a number (index) or object { exampleIndex, lang }
+      if (typeof langOrExampleIndex === "number") {
+        item.examples[langOrExampleIndex] = value;
+      } 
+      else if (
+        typeof langOrExampleIndex === "object" &&
+        "exampleIndex" in langOrExampleIndex &&
+        "lang" in langOrExampleIndex
+      ) {
+        const { exampleIndex, lang } = langOrExampleIndex;
+        item.examples[exampleIndex][lang] = value;
+      }
+    } 
+    else if (field === "icon") {
+      item.icon = value;
+    }
+  }
+
+  setData(newData);
+};
+
 
   const addCategory = () => {
     if (!data) return;
@@ -136,12 +161,13 @@ export default function SkillsAdminPage() {
     setData({ ...data, skills: updated });
   };
 
-  const addExample = (categoryIndex: number, itemIndex: number) => {
-    if (!data) return;
-    const updated = [...data.skills];
-    updated[categoryIndex].items[itemIndex].examples.push("");
-    setData({ ...data, skills: updated });
-  };
+ const addExample = (categoryIndex: number, itemIndex: number) => {
+  if (!data) return;
+  const updated = [...data.skills];
+  updated[categoryIndex].items[itemIndex].examples.push({ fr: "", en: "" });
+  setData({ ...data, skills: updated });
+};
+
 
   const removeExample = (categoryIndex: number, itemIndex: number, exampleIndex: number) => {
     if (!data) return;
@@ -480,7 +506,7 @@ export default function SkillsAdminPage() {
                             </div>
                           </div>
 
-                          {/* Examples */}
+                          {/* Description */}
                           <div>
                             <div className="flex items-center justify-between mb-2">
                               <label className="block text-sm font-medium text-gray-600 dark:text-gray-400">Description</label>
@@ -492,36 +518,42 @@ export default function SkillsAdminPage() {
                                 Add Description
                               </button>
                             </div>
-                            <div className="space-y-2">
-                              {item.examples.map((example, exIdx) => (
-                             <div
-  key={exIdx}
-  className="flex items-center gap-2 w-full"
->
-  <input
-    type="text"
-    value={example}
-    onChange={(e) =>
-      handleChange(catIdx, itemIdx, "examples", exIdx, e.target.value)
-    }
-    placeholder={`Example ${exIdx + 1}`}
-    className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg flex-1 min-w-0 bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-  />
-  <button
-    onClick={() => removeExample(catIdx, itemIdx, exIdx)}
-    className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition flex-shrink-0"
-  >
-    <LucideIcons.X size={14} />
-  </button>
+                       <div className="space-y-2">
+  {item.examples.map((example, exIdx) => (
+    <div key={exIdx} className="flex flex-col gap-2 w-full">
+      <div className="flex items-center gap-2 w-full">
+        <input
+          type="text"
+          value={example.fr}
+          onChange={(e) =>
+            handleChange(catIdx, itemIdx, "examples", { exampleIndex: exIdx, lang: "fr" }, e.target.value)
+          }
+          placeholder={`Description ${exIdx + 1} (FR)`}
+          className="border p-2 rounded-lg flex-1 min-w-0 bg-white text-gray-800"
+        />
+        <input
+          type="text"
+          value={example.en}
+          onChange={(e) =>
+            handleChange(catIdx, itemIdx, "examples", { exampleIndex: exIdx, lang: "en" }, e.target.value)
+          }
+          placeholder={`Description ${exIdx + 1} (EN)`}
+          className="border p-2 rounded-lg flex-1 min-w-0 bg-white text-gray-800"
+        />
+        <button
+          onClick={() => removeExample(catIdx, itemIdx, exIdx)}
+          className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition flex-shrink-0"
+        >
+          <LucideIcons.X size={14} />
+        </button>
+      </div>
+    </div>
+  ))}
+  {item.examples.length === 0 && (
+    <div className="text-sm text-gray-500 italic">No Description added yet</div>
+  )}
 </div>
 
-                              ))}
-                              {item.examples.length === 0 && (
-                                <div className="text-sm text-gray-500 dark:text-gray-400 italic">
-                                  No Description added yet
-                                </div>
-                              )}
-                            </div>
                           </div>
                         </div>
                       ))
