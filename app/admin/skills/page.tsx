@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Loading from "@/components/Loading";
+import Loading from "@/components/LoadingAdmin";
+import * as LucideIcons from "lucide-react";
 
 type LocalizedText = { fr: string; en: string };
 
@@ -26,6 +27,26 @@ export default function SkillsAdminPage() {
   const [data, setData] = useState<SkillsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  
+  // Icon picker state
+  const [showIconPicker, setShowIconPicker] = useState<{type: 'category' | 'item', categoryIndex: number, itemIndex?: number} | null>(null);
+  const [iconSearch, setIconSearch] = useState("");
+
+  const filteredIcons = Object.keys(LucideIcons)
+    .filter(iconName => 
+      iconName.toLowerCase().includes(iconSearch.toLowerCase()) && 
+      iconName !== "default" && 
+      iconName !== "createLucideIcon"
+    )
+    .slice(0, 50);
+
+  const renderIcon = (iconName: string, size = 20) => {
+    if (!iconName || !LucideIcons[iconName as keyof typeof LucideIcons]) {
+      return <LucideIcons.Code size={size} />;
+    }
+    const IconComponent = LucideIcons[iconName as keyof typeof LucideIcons];
+    return <IconComponent size={size} />;
+  };
 
   const fetchSkills = async () => {
     setLoading(true);
@@ -36,6 +57,11 @@ export default function SkillsAdminPage() {
       setData(json);
     } catch (err: any) {
       setError(err.message);
+      // Fallback to empty structure
+      setData({
+        skillsTitle: { fr: "", en: "" },
+        skills: []
+      });
     } finally {
       setLoading(false);
     }
@@ -76,7 +102,11 @@ export default function SkillsAdminPage() {
 
   const addCategory = () => {
     if (!data) return;
-    const newCategory: SkillCategory = { skillicon: "", title: { fr: "", en: "" }, items: [] };
+    const newCategory: SkillCategory = { 
+      skillicon: "folder", 
+      title: { fr: "", en: "" }, 
+      items: [] 
+    };
     setData({ ...data, skills: [...data.skills, newCategory] });
   };
 
@@ -88,7 +118,11 @@ export default function SkillsAdminPage() {
 
   const addItem = (categoryIndex: number) => {
     if (!data) return;
-    const newItem: SkillItem = { name: { fr: "", en: "" }, examples: [], icon: "" };
+    const newItem: SkillItem = { 
+      name: { fr: "", en: "" }, 
+      examples: [], 
+      icon: "code" 
+    };
     const updated = [...data.skills];
     updated[categoryIndex].items.push(newItem);
     setData({ ...data, skills: updated });
@@ -101,161 +135,397 @@ export default function SkillsAdminPage() {
     setData({ ...data, skills: updated });
   };
 
-const saveData = async () => {
-  if (!data) return;
-  try {
-    console.log("Sending data:", data); // Log what's being sent
-    const res = await fetch("/api/skills", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-    
-    if (!res.ok) {
-      const errorData = await res.json();
-      console.error("Server error:", errorData);
-      throw new Error(errorData.error || "Failed to save skills data");
+  const addExample = (categoryIndex: number, itemIndex: number) => {
+    if (!data) return;
+    const updated = [...data.skills];
+    updated[categoryIndex].items[itemIndex].examples.push("");
+    setData({ ...data, skills: updated });
+  };
+
+  const removeExample = (categoryIndex: number, itemIndex: number, exampleIndex: number) => {
+    if (!data) return;
+    const updated = [...data.skills];
+    updated[categoryIndex].items[itemIndex].examples = updated[categoryIndex].items[itemIndex].examples.filter((_, i) => i !== exampleIndex);
+    setData({ ...data, skills: updated });
+  };
+
+  const saveData = async () => {
+    if (!data) return;
+    try {
+      console.log("Sending data:", data);
+      const res = await fetch("/api/skills", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.error("Server error:", errorData);
+        throw new Error(errorData.error || "Failed to save skills data");
+      }
+      
+      const result = await res.json();
+      console.log("Save result:", result);
+      alert("Skills data saved successfully!");
+      fetchSkills();
+    } catch (err: any) {
+      console.error("Save error:", err);
+      alert(`Error: ${err.message}`);
     }
-    
-    const result = await res.json();
-    console.log("Save result:", result);
-    alert("Skills data saved successfully!");
-    fetchSkills();
-  } catch (err: any) {
-    console.error("Save error:", err);
-    alert(`Error: ${err.message}`);
-  }
-};
+  };
 
   if (loading) return <Loading />;
-  if (error) return <p>Error: {error}</p>;
+  if (error) return (
+    <div className="p-6 max-w-6xl mx-auto">
+      <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+        <div className="flex items-center gap-2">
+          <LucideIcons.AlertCircle size={20} className="text-red-500" />
+          <span className="text-red-600 dark:text-red-400">Error: {error}</span>
+        </div>
+      </div>
+    </div>
+  );
+  if (!data) return null;
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Skills Admin</h1>
+    <div className="p-4 md:p-6 max-w-6xl mx-auto bg-white dark:bg-gray-900 rounded-lg shadow-md">
+      <div className="flex items-center gap-3 mb-6">
+        <LucideIcons.Zap size={24} className="text-blue-500" />
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white">
+          Skills Management
+        </h1>
+      </div>
 
-      {/* Skills Title */}
-      <div className="mb-6">
-        <h2 className="font-semibold">Skills Title</h2>
-        <input
-          type="text"
-          value={data.skillsTitle.fr}
-          onChange={(e) => handleChange(null, null, "skillsTitle", "fr", e.target.value)}
-          placeholder="French Title"
-          className="border p-2 mr-2"
-        />
-        <input
-          type="text"
-          value={data.skillsTitle.en}
-          onChange={(e) => handleChange(null, null, "skillsTitle", "en", e.target.value)}
-          placeholder="English Title"
-          className="border p-2"
-        />
+      {/* Skills Title Section */}
+      <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
+        <div className="flex items-center gap-2 mb-3">
+          <LucideIcons.Heading size={20} className="text-gray-600 dark:text-gray-300" />
+          <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Skills Title</h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">French Title</label>
+            <input
+              type="text"
+              value={data.skillsTitle.fr}
+              onChange={(e) => handleChange(null, null, "skillsTitle", "fr", e.target.value)}
+              placeholder="Titre en français"
+              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">English Title</label>
+            <input
+              type="text"
+              value={data.skillsTitle.en}
+              onChange={(e) => handleChange(null, null, "skillsTitle", "en", e.target.value)}
+              placeholder="Title in English"
+              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+            />
+          </div>
+        </div>
       </div>
 
       {/* Skill Categories */}
-      {data.skills.map((category, catIdx) => (
-        <div key={catIdx} className="mb-8 border p-4 rounded">
-          <div className="flex justify-between items-center mb-2">
-            <h3 className="font-bold">Category {catIdx + 1}</h3>
-            <button onClick={() => removeCategory(catIdx)} className="text-red-500">
-              Remove Category
-            </button>
+      <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <LucideIcons.FolderTree size={20} className="text-gray-600 dark:text-gray-300" />
+            <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Skill Categories</h2>
           </div>
-
-          <input
-            type="text"
-            value={category.skillicon}
-            onChange={(e) => handleChange(catIdx, null, "skillicon", 0, e.target.value)}
-            placeholder="Category Icon"
-            className="border p-2 mb-2 w-full"
-          />
-
-          <input
-            type="text"
-            value={category.title.fr}
-            onChange={(e) => handleChange(catIdx, null, "title", "fr", e.target.value)}
-            placeholder="Category Title (FR)"
-            className="border p-2 mb-2 w-full"
-          />
-          <input
-            type="text"
-            value={category.title.en}
-            onChange={(e) => handleChange(catIdx, null, "title", "en", e.target.value)}
-            placeholder="Category Title (EN)"
-            className="border p-2 mb-2 w-full"
-          />
-
-          {/* Skill Items */}
-          {category.items.map((item, itemIdx) => (
-            <div key={itemIdx} className="mb-4 p-2 border rounded">
-              <div className="flex justify-between items-center mb-2">
-                <h4>Item {itemIdx + 1}</h4>
-                <button onClick={() => removeItem(catIdx, itemIdx)} className="text-red-500">
-                  Remove Item
-                </button>
-              </div>
-
-              <input
-                type="text"
-                value={item.name.fr}
-                onChange={(e) => handleChange(catIdx, itemIdx, "name", "fr", e.target.value)}
-                placeholder="Item Name (FR)"
-                className="border p-2 mb-2 w-full"
-              />
-              <input
-                type="text"
-                value={item.name.en}
-                onChange={(e) => handleChange(catIdx, itemIdx, "name", "en", e.target.value)}
-                placeholder="Item Name (EN)"
-                className="border p-2 mb-2 w-full"
-              />
-
-              <input
-                type="text"
-                value={item.icon}
-                onChange={(e) => handleChange(catIdx, itemIdx, "icon", 0, e.target.value)}
-                placeholder="Item Icon"
-                className="border p-2 mb-2 w-full"
-              />
-
-              {item.examples.map((ex, exIdx) => (
-                <input
-                  key={exIdx}
-                  type="text"
-                  value={ex}
-                  onChange={(e) => handleChange(catIdx, itemIdx, "examples", exIdx, e.target.value)}
-                  placeholder={`Example ${exIdx + 1}`}
-                  className="border p-2 mb-2 w-full"
-                />
-              ))}
-
-              <button
-                onClick={() => {
-                  const updated = [...data.skills];
-                  updated[catIdx].items[itemIdx].examples.push("");
-                  setData({ ...data, skills: updated });
-                }}
-                className="text-blue-500"
-              >
-                Add Example
-              </button>
-            </div>
-          ))}
-
-          <button onClick={() => addItem(catIdx)} className="text-green-500 mt-2">
-            Add Item
+          <button
+            onClick={addCategory}
+            className="flex items-center gap-2 bg-green-500 text-white px-3 py-1.5 rounded-lg hover:bg-green-600 transition text-sm"
+          >
+            <LucideIcons.Plus size={16} />
+            Add Category
           </button>
         </div>
-      ))}
 
-      <button onClick={addCategory} className="text-green-600 mb-4">
-        Add Category
-      </button>
+        {data.skills.length === 0 ? (
+          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+            <LucideIcons.FolderX size={24} className="mx-auto mb-2" />
+            No skill categories added yet
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {data.skills.map((category, catIdx) => (
+              <div key={catIdx} className="border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-700 overflow-hidden">
+                {/* Category Header */}
+                <div className="bg-gray-100 dark:bg-gray-600 px-4 py-3 border-b border-gray-200 dark:border-gray-600">
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-2">
+                      {renderIcon(category.skillicon, 20)}
+                      <h3 className="font-bold text-lg text-gray-800 dark:text-white">
+                        Category {catIdx + 1}
+                      </h3>
+                    </div>
+                    <button
+                      onClick={() => removeCategory(catIdx)}
+                      className="flex items-center gap-1 bg-red-500 text-white px-2 py-1 rounded-lg text-xs hover:bg-red-600 transition"
+                    >
+                      <LucideIcons.Trash2 size={12} />
+                      Remove
+                    </button>
+                  </div>
+                </div>
 
-      <div>
-        <button onClick={saveData} className="bg-blue-500 text-white px-4 py-2 rounded">
-          Save Changes
+                <div className="p-4 space-y-4">
+                  {/* Category Icon */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Category Icon</label>
+                    <button 
+                      type="button"
+                      onClick={() => setShowIconPicker(
+                        showIconPicker?.type === 'category' && showIconPicker?.categoryIndex === catIdx 
+                          ? null 
+                          : {type: 'category', categoryIndex: catIdx}
+                      )}
+                      className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 p-2 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white w-full justify-between"
+                    >
+                      <div className="flex items-center gap-2">
+                        {renderIcon(category.skillicon, 16)}
+                        <span>{category.skillicon || "Select icon"}</span>
+                      </div>
+                      <LucideIcons.ChevronDown size={16} />
+                    </button>
+                    
+                    {showIconPicker?.type === 'category' && showIconPicker?.categoryIndex === catIdx && (
+                      <div className="mt-2 p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700">
+                        <div className="relative mb-2">
+                          <input
+                            type="text"
+                            value={iconSearch}
+                            onChange={(e) => setIconSearch(e.target.value)}
+                            placeholder="Search icons..."
+                            className="border border-gray-300 dark:border-gray-600 p-2 pl-9 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                          />
+                          <LucideIcons.Search className="absolute left-2.5 top-3 text-gray-400" size={16} />
+                        </div>
+                        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 max-h-40 overflow-y-auto p-2">
+                          {filteredIcons.map(iconName => (
+                            <button
+                              key={iconName}
+                              type="button"
+                              onClick={() => {
+                                handleChange(catIdx, null, "skillicon", 0, iconName);
+                                setShowIconPicker(null);
+                                setIconSearch("");
+                              }}
+                              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded flex flex-col items-center justify-center"
+                              title={iconName}
+                            >
+                              {renderIcon(iconName, 20)}
+                              <span className="text-xs mt-1 truncate w-full">{iconName}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Category Title */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Category Title (FR)</label>
+                      <input
+                        type="text"
+                        value={category.title.fr}
+                        onChange={(e) => handleChange(catIdx, null, "title", "fr", e.target.value)}
+                        placeholder="Titre de la catégorie"
+                        className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Category Title (EN)</label>
+                      <input
+                        type="text"
+                        value={category.title.en}
+                        onChange={(e) => handleChange(catIdx, null, "title", "en", e.target.value)}
+                        placeholder="Category title"
+                        className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Skill Items */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-medium text-gray-700 dark:text-gray-200 flex items-center gap-2">
+                        <LucideIcons.List size={16} />
+                        Skills in this category
+                      </h4>
+                      <button
+                        onClick={() => addItem(catIdx)}
+                        className="flex items-center gap-1 bg-blue-500 text-white px-2 py-1 rounded-lg text-xs hover:bg-blue-600 transition"
+                      >
+                        <LucideIcons.Plus size={12} />
+                        Add Skill
+                      </button>
+                    </div>
+
+                    {category.items.length === 0 ? (
+                      <div className="text-center py-4 text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                        <LucideIcons.Package size={16} className="mx-auto mb-1" />
+                        <span className="text-sm">No skills in this category yet</span>
+                      </div>
+                    ) : (
+                      category.items.map((item, itemIdx) => (
+                        <div key={itemIdx} className="border border-gray-200 dark:border-gray-600 p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
+                          <div className="flex justify-between items-center mb-3">
+                            <div className="flex items-center gap-2">
+                              {renderIcon(item.icon, 16)}
+                              <span className="font-medium text-gray-700 dark:text-gray-200">
+                                Skill {itemIdx + 1}
+                              </span>
+                            </div>
+                            <button
+                              onClick={() => removeItem(catIdx, itemIdx)}
+                              className="flex items-center gap-1 bg-red-500 text-white px-2 py-1 rounded-lg text-xs hover:bg-red-600 transition"
+                            >
+                              <LucideIcons.X size={12} />
+                              Remove
+                            </button>
+                          </div>
+
+                          {/* Item Icon */}
+                          <div className="mb-3">
+                            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Skill Icon</label>
+                            <button 
+                              type="button"
+                              onClick={() => setShowIconPicker(
+                                showIconPicker?.type === 'item' && 
+                                showIconPicker?.categoryIndex === catIdx && 
+                                showIconPicker?.itemIndex === itemIdx
+                                  ? null 
+                                  : {type: 'item', categoryIndex: catIdx, itemIndex: itemIdx}
+                              )}
+                              className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 p-2 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white w-full justify-between"
+                            >
+                              <div className="flex items-center gap-2">
+                                {renderIcon(item.icon, 16)}
+                                <span>{item.icon || "Select icon"}</span>
+                              </div>
+                              <LucideIcons.ChevronDown size={16} />
+                            </button>
+                            
+                            {showIconPicker?.type === 'item' && 
+                             showIconPicker?.categoryIndex === catIdx && 
+                             showIconPicker?.itemIndex === itemIdx && (
+                              <div className="mt-2 p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700">
+                                <div className="relative mb-2">
+                                  <input
+                                    type="text"
+                                    value={iconSearch}
+                                    onChange={(e) => setIconSearch(e.target.value)}
+                                    placeholder="Search icons..."
+                                    className="border border-gray-300 dark:border-gray-600 p-2 pl-9 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                                  />
+                                  <LucideIcons.Search className="absolute left-2.5 top-3 text-gray-400" size={16} />
+                                </div>
+                                <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 max-h-40 overflow-y-auto p-2">
+                                  {filteredIcons.map(iconName => (
+                                    <button
+                                      key={iconName}
+                                      type="button"
+                                      onClick={() => {
+                                        handleChange(catIdx, itemIdx, "icon", 0, iconName);
+                                        setShowIconPicker(null);
+                                        setIconSearch("");
+                                      }}
+                                      className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded flex flex-col items-center justify-center"
+                                      title={iconName}
+                                    >
+                                      {renderIcon(iconName, 20)}
+                                      <span className="text-xs mt-1 truncate w-full">{iconName}</span>
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Item Name */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Skill Name (FR)</label>
+                              <input
+                                type="text"
+                                value={item.name.fr}
+                                onChange={(e) => handleChange(catIdx, itemIdx, "name", "fr", e.target.value)}
+                                placeholder="Nom de la compétence"
+                                className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Skill Name (EN)</label>
+                              <input
+                                type="text"
+                                value={item.name.en}
+                                onChange={(e) => handleChange(catIdx, itemIdx, "name", "en", e.target.value)}
+                                placeholder="Skill name"
+                                className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Examples */}
+                          <div>
+                            <div className="flex items-center justify-between mb-2">
+                              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400">Examples</label>
+                              <button
+                                onClick={() => addExample(catIdx, itemIdx)}
+                                className="flex items-center gap-1 bg-purple-500 text-white px-2 py-1 rounded text-xs hover:bg-purple-600 transition"
+                              >
+                                <LucideIcons.Plus size={12} />
+                                Add Example
+                              </button>
+                            </div>
+                            <div className="space-y-2">
+                              {item.examples.map((example, exIdx) => (
+                                <div key={exIdx} className="flex gap-2">
+                                  <input
+                                    type="text"
+                                    value={example}
+                                    onChange={(e) => handleChange(catIdx, itemIdx, "examples", exIdx, e.target.value)}
+                                    placeholder={`Example ${exIdx + 1}`}
+                                    className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg flex-1 bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                                  />
+                                  <button
+                                    onClick={() => removeExample(catIdx, itemIdx, exIdx)}
+                                    className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
+                                  >
+                                    <LucideIcons.X size={14} />
+                                  </button>
+                                </div>
+                              ))}
+                              {item.examples.length === 0 && (
+                                <div className="text-sm text-gray-500 dark:text-gray-400 italic">
+                                  No examples added yet
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Save Button */}
+      <div className="flex justify-end">
+        <button
+          onClick={saveData}
+          className="flex items-center gap-2 bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition"
+        >
+          <LucideIcons.Save size={18} />
+          Save Skills Data
         </button>
       </div>
     </div>

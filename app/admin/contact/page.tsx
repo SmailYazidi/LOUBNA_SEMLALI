@@ -1,6 +1,8 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import Loading from '@/components/LoadingAdmin';
+import * as LucideIcons from "lucide-react";
 
 interface ContactInfoItem {
   icon: string;
@@ -33,6 +35,26 @@ export default function ContactAdminPage() {
   const [contact, setContact] = useState<ContactData>(defaultContactData);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  
+  // Icon picker state
+  const [showIconPicker, setShowIconPicker] = useState<number | null>(null);
+  const [iconSearch, setIconSearch] = useState("");
+
+  const filteredIcons = Object.keys(LucideIcons)
+    .filter(iconName => 
+      iconName.toLowerCase().includes(iconSearch.toLowerCase()) && 
+      iconName !== "default" && 
+      iconName !== "createLucideIcon"
+    )
+    .slice(0, 50);
+
+  const renderIcon = (iconName: string, size = 20) => {
+    if (!iconName || !LucideIcons[iconName as keyof typeof LucideIcons]) {
+      return <LucideIcons.Mail size={size} />;
+    }
+    const IconComponent = LucideIcons[iconName as keyof typeof LucideIcons];
+    return <IconComponent size={size} />;
+  };
 
   useEffect(() => {
     async function fetchContact() {
@@ -93,7 +115,7 @@ export default function ContactAdminPage() {
       contactInfo: [
         ...prev.contactInfo,
         {
-          icon: "",
+          icon: "mail",
           label: { fr: "", en: "" },
           value: "",
           link: ""
@@ -121,7 +143,7 @@ export default function ContactAdminPage() {
         throw new Error("Failed to save");
       }
 
-      alert("Saved successfully!");
+      alert("Contact information saved successfully!");
     } catch (err) {
       console.error(err);
       alert("Failed to save. Please try again.");
@@ -129,183 +151,288 @@ export default function ContactAdminPage() {
   };
 
   if (loading) return <Loading />;
-  if (error) return <div className="p-6 text-red-500">{error}</div>;
+  if (error) return (
+    <div className="p-6 max-w-4xl mx-auto">
+      <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+        <div className="flex items-center gap-2">
+          <LucideIcons.AlertCircle size={20} className="text-red-500" />
+          <span className="text-red-600 dark:text-red-400">{error}</span>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="p-6 max-w-4xl mx-auto space-y-6">
-      <h1 className="text-2xl font-bold mb-6">Edit Contact Information</h1>
+    <div className="p-4 md:p-6 max-w-5xl mx-auto bg-white dark:bg-gray-900 rounded-lg shadow-md">
+      <div className="flex items-center gap-3 mb-6">
+        <LucideIcons.Mail size={24} className="text-blue-500" />
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white">
+          Contact Information Management
+        </h1>
+      </div>
 
       {/* Contact Title */}
-      <div className="space-y-2">
-        <h2 className="font-semibold">Title</h2>
-        <div className="grid md:grid-cols-2 gap-4">
+      <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
+        <div className="flex items-center gap-2 mb-3">
+          <LucideIcons.Heading size={20} className="text-gray-600 dark:text-gray-300" />
+          <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Contact Title</h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm mb-1">French</label>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">French Title</label>
             <input
               type="text"
               value={contact.contactTitle.fr}
               onChange={(e) => handleInputChange("contactTitle", "fr", "", e.target.value)}
-              className="border p-2 rounded w-full"
+              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+              placeholder="Titre en français"
             />
           </div>
           <div>
-            <label className="block text-sm mb-1">English</label>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">English Title</label>
             <input
               type="text"
               value={contact.contactTitle.en}
               onChange={(e) => handleInputChange("contactTitle", "en", "", e.target.value)}
-              className="border p-2 rounded w-full"
+              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+              placeholder="Title in English"
             />
           </div>
         </div>
       </div>
 
       {/* Contact Description */}
-      <div className="space-y-2">
-        <h2 className="font-semibold">Description</h2>
-        <div className="grid md:grid-cols-2 gap-4">
+      <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
+        <div className="flex items-center gap-2 mb-3">
+          <LucideIcons.FileText size={20} className="text-gray-600 dark:text-gray-300" />
+          <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Contact Description</h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm mb-1">French</label>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">French Description</label>
             <textarea
               value={contact.contactDescription.fr}
               onChange={(e) => handleInputChange("contactDescription", "fr", "", e.target.value)}
-              className="border p-2 rounded w-full h-32"
+              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white min-h-[120px]"
+              placeholder="Description en français"
             />
           </div>
           <div>
-            <label className="block text-sm mb-1">English</label>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">English Description</label>
             <textarea
               value={contact.contactDescription.en}
               onChange={(e) => handleInputChange("contactDescription", "en", "", e.target.value)}
-              className="border p-2 rounded w-full h-32"
+              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white min-h-[120px]"
+              placeholder="Description in English"
             />
           </div>
         </div>
       </div>
 
-      {/* Contact Info */}
-      <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <h2 className="font-semibold">Contact Information</h2>
+      {/* Contact Information */}
+      <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <LucideIcons.Contact size={20} className="text-gray-600 dark:text-gray-300" />
+            <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Contact Methods</h2>
+          </div>
           <button
             onClick={handleAddContactInfo}
-            className="px-3 py-1 bg-green-500 text-white rounded text-sm"
+            className="flex items-center gap-2 bg-green-500 text-white px-3 py-1.5 rounded-lg hover:bg-green-600 transition text-sm"
           >
+            <LucideIcons.Plus size={16} />
             Add Contact Method
           </button>
         </div>
         
         {contact.contactInfo.length === 0 ? (
-          <div className="text-gray-500 italic">No contact methods added yet</div>
+          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+            <LucideIcons.ContactRound size={24} className="mx-auto mb-2" />
+            No contact methods added yet
+          </div>
         ) : (
-          contact.contactInfo.map((info, idx) => (
-            <div key={idx} className="border p-4 rounded-lg space-y-3 relative">
-              <button
-                onClick={() => handleRemoveContactInfo(idx)}
-                className="absolute top-2 right-2 px-2 py-1 bg-red-500 text-white rounded text-xs"
-              >
-                Remove
-              </button>
-              
-              <div>
-                <label className="block text-sm mb-1">Icon</label>
-                <input
-                  type="text"
-                  value={info.icon}
-                  onChange={(e) => handleInputChange("contactInfo", idx, "icon", e.target.value)}
-                  className="border p-2 rounded w-full"
-                  placeholder="Icon name (e.g., mail, phone)"
-                />
-              </div>
-              
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm mb-1">Label (FR)</label>
-                  <input
-                    type="text"
-                    value={info.label.fr}
-                    onChange={(e) => handleInputChange("contactInfo", idx, "label.fr", e.target.value)}
-                    className="border p-2 rounded w-full"
-                  />
+          <div className="space-y-4">
+            {contact.contactInfo.map((info, idx) => (
+              <div key={idx} className="border border-gray-200 dark:border-gray-700 p-4 rounded-lg bg-white dark:bg-gray-700">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex items-center gap-2">
+                    {renderIcon(info.icon, 18)}
+                    <span className="font-medium text-gray-700 dark:text-gray-200">
+                      Contact Method #{idx + 1}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => handleRemoveContactInfo(idx)}
+                    className="flex items-center gap-1 bg-red-500 text-white px-2 py-1 rounded-lg text-xs hover:bg-red-600 transition"
+                  >
+                    <LucideIcons.Trash2 size={14} />
+                    Remove
+                  </button>
                 </div>
-                <div>
-                  <label className="block text-sm mb-1">Label (EN)</label>
-                  <input
-                    type="text"
-                    value={info.label.en}
-                    onChange={(e) => handleInputChange("contactInfo", idx, "label.en", e.target.value)}
-                    className="border p-2 rounded w-full"
-                  />
+                
+                {/* Icon Selection */}
+                <div className="mb-3">
+                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Icon</label>
+                  <button 
+                    type="button"
+                    onClick={() => setShowIconPicker(showIconPicker === idx ? null : idx)}
+                    className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 p-2 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white w-full justify-between"
+                  >
+                    <div className="flex items-center gap-2">
+                      {renderIcon(info.icon, 16)}
+                      <span>{info.icon || "Select icon"}</span>
+                    </div>
+                    <LucideIcons.ChevronDown size={16} />
+                  </button>
+                  
+                  {showIconPicker === idx && (
+                    <div className="mt-2 p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700">
+                      <div className="relative mb-2">
+                        <input
+                          type="text"
+                          value={iconSearch}
+                          onChange={(e) => setIconSearch(e.target.value)}
+                          placeholder="Search icons..."
+                          className="border border-gray-300 dark:border-gray-600 p-2 pl-9 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                        />
+                        <LucideIcons.Search className="absolute left-2.5 top-3 text-gray-400" size={16} />
+                      </div>
+                      <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 max-h-40 overflow-y-auto p-2">
+                        {filteredIcons.map(iconName => (
+                          <button
+                            key={iconName}
+                            type="button"
+                            onClick={() => {
+                              handleInputChange("contactInfo", idx, "icon", iconName);
+                              setShowIconPicker(null);
+                              setIconSearch("");
+                            }}
+                            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded flex flex-col items-center justify-center"
+                            title={iconName}
+                          >
+                            {renderIcon(iconName, 20)}
+                            <span className="text-xs mt-1 truncate w-full">{iconName}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Labels */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Label (FR)</label>
+                    <input
+                      type="text"
+                      value={info.label.fr}
+                      onChange={(e) => handleInputChange("contactInfo", idx, "label.fr", e.target.value)}
+                      className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                      placeholder="Libellé en français"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Label (EN)</label>
+                    <input
+                      type="text"
+                      value={info.label.en}
+                      onChange={(e) => handleInputChange("contactInfo", idx, "label.en", e.target.value)}
+                      className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                      placeholder="Label in English"
+                    />
+                  </div>
+                </div>
+                
+                {/* Value and Link */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Value</label>
+                    <input
+                      type="text"
+                      value={typeof info.value === 'string' ? info.value : ''}
+                      onChange={(e) => handleInputChange("contactInfo", idx, "value", e.target.value)}
+                      className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                      placeholder="Contact value (email, phone, etc.)"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Link</label>
+                    <input
+                      type="text"
+                      value={info.link}
+                      onChange={(e) => handleInputChange("contactInfo", idx, "link", e.target.value)}
+                      className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                      placeholder="mailto:, tel:, https://"
+                    />
+                  </div>
                 </div>
               </div>
-              
-              <div>
-                <label className="block text-sm mb-1">Value</label>
-                <input
-                  type="text"
-                  value={typeof info.value === 'string' ? info.value : ''}
-                  onChange={(e) => handleInputChange("contactInfo", idx, "value", e.target.value)}
-                  className="border p-2 rounded w-full"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm mb-1">Link</label>
-                <input
-                  type="text"
-                  value={info.link}
-                  onChange={(e) => handleInputChange("contactInfo", idx, "link", e.target.value)}
-                  className="border p-2 rounded w-full"
-                />
-              </div>
-            </div>
-          ))
+            ))}
+          </div>
         )}
       </div>
 
       {/* Contact Button */}
-      <div className="space-y-4">
-        <h2 className="font-semibold">Contact Button</h2>
+      <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
+        <div className="flex items-center gap-2 mb-3">
+          <LucideIcons.MousePointerClick size={20} className="text-gray-600 dark:text-gray-300" />
+          <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Contact Button</h2>
+        </div>
         
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
-            <label className="block text-sm mb-1">Text (FR)</label>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Button Text (FR)</label>
             <input
               type="text"
               value={contact.contactButton.startProject.fr}
               onChange={(e) => handleInputChange("contactButton", "fr", "startProject", e.target.value)}
-              className="border p-2 rounded w-full"
+              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+              placeholder="Texte du bouton en français"
             />
           </div>
           <div>
-            <label className="block text-sm mb-1">Text (EN)</label>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Button Text (EN)</label>
             <input
               type="text"
               value={contact.contactButton.startProject.en}
               onChange={(e) => handleInputChange("contactButton", "en", "startProject", e.target.value)}
-              className="border p-2 rounded w-full"
+              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+              placeholder="Button text in English"
             />
           </div>
         </div>
         
         <div>
-          <label className="block text-sm mb-1">Link</label>
+          <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Button Link</label>
           <input
             type="text"
             value={contact.contactButton.link}
             onChange={(e) => handleInputChange("contactButton", "", "link", e.target.value)}
-            className="border p-2 rounded w-full"
+            className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+            placeholder="Button destination URL"
           />
         </div>
+
+        {/* Button Preview */}
+        {(contact.contactButton.startProject.fr || contact.contactButton.startProject.en) && (
+          <div className="mt-4 p-3 bg-gray-100 dark:bg-gray-600 rounded-lg">
+            <span className="text-sm text-gray-600 dark:text-gray-400 block mb-2">Button Preview:</span>
+            <div className="inline-flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg">
+              <LucideIcons.Send size={16} />
+              {contact.contactButton.startProject.en || contact.contactButton.startProject.fr}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Save Button */}
-      <div className="pt-4">
+      <div className="flex justify-end">
         <button
           onClick={handleSave}
-          className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+          className="flex items-center gap-2 bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition"
         >
-          Save Changes
+          <LucideIcons.Save size={18} />
+          Save Contact Information
         </button>
       </div>
     </div>
