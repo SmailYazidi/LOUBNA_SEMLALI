@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Loading from "@/components/Loading";
+import Loading from "@/components/LoadingAdmin";
 
 export default function SettingsPage() {
   const [hasPassword, setHasPassword] = useState<boolean | null>(null);

@@ -11,17 +11,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  // Auto-open sidebar on desktop
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 1024) {
-        setSidebarOpen(true);
-      }
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+
 
   // Check session
   useEffect(() => {
@@ -55,7 +45,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <Sidebar isOpen={sidebarOpen} closeSidebar={closeSidebar} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header toggleSidebar={toggleSidebar} />
-        <main className="flex-1 overflow-y-auto p-4 mt-16">{children}</main>
+        <main className="flex-1 overflow-y-auto mt-16">{children}</main>
       </div>
     </div>
   );
