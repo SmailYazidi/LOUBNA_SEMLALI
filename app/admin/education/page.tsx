@@ -122,8 +122,8 @@ export default function EducationAdminPage() {
           Education & Experience
         </h1>
       </div>
-
-      {/* Journey Title Section */}
+{/* 
+    Journey Title Section 
       <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
         <div className="flex items-center gap-2 mb-3">
           <LucideIcons.Bookmark size={20} className="text-gray-600 dark:text-gray-300" />
@@ -151,7 +151,7 @@ export default function EducationAdminPage() {
             />
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Education Section */}
       <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
@@ -350,7 +350,7 @@ export default function EducationAdminPage() {
       </div>
 
       {/* Save Button */}
-      <div className="flex justify-end">
+      <div className="flex justify-center">
         <button
           onClick={saveData}
           className="flex items-center gap-2 bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition"

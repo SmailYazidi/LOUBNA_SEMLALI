@@ -241,7 +241,7 @@ export default function ContactAdminPage() {
             className="flex items-center gap-2 bg-green-500 text-white px-3 py-1.5 rounded-lg hover:bg-green-600 transition text-sm"
           >
             <LucideIcons.Plus size={16} />
-            Add Contact Method
+            Add
           </button>
         </div>
         
@@ -426,7 +426,7 @@ export default function ContactAdminPage() {
       </div>
 
       {/* Save Button */}
-      <div className="flex justify-end">
+      <div className="flex justify-center">
         <button
           onClick={handleSave}
           className="flex items-center gap-2 bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition"

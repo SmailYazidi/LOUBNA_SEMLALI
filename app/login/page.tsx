@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Loading from "@/components/Loading";
 import * as LucideIcons from "lucide-react";
+import Link from "next/link"; // ✅ Import Link for navigation
 
 export default function LoginPage() {
   const [password, setPassword] = useState("");
@@ -38,7 +39,6 @@ export default function LoginPage() {
     }
   };
 
-  // Show full-page loading if loading
   if (loading) return <Loading />;
 
   return (
@@ -108,6 +108,7 @@ export default function LoginPage() {
               </div>
             </div>
 
+            {/* Sign In Button */}
             <button
               type="submit"
               className="w-full flex items-center justify-center gap-2 bg-blue-500 text-white py-3 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
@@ -125,11 +126,17 @@ export default function LoginPage() {
                 </>
               )}
             </button>
+
+            {/* Portfolio Button */}
+            <Link
+              href="/" // 👈 change to "/" if you want homepage instead
+              className="w-full flex items-center justify-center gap-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white py-3 px-4 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 transition-colors font-medium"
+            >
+              <LucideIcons.Contact size={20} />
+              Portfolio
+            </Link>
           </form>
-
         </div>
-
-
       </div>
     </div>
   );

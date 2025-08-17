@@ -380,7 +380,7 @@ export default function HeroAdminPage() {
         </div>
 
         {/* Save Button */}
-        <div className="flex justify-end">
+        <div className="flex justify-center">
           <button
             onClick={saveHero}
             className="flex items-center gap-2 bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition"

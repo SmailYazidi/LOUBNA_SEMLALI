@@ -262,7 +262,7 @@ export default function AboutAdminPage() {
         </h1>
       </div>
 
-      {/* About Title */}
+      {/* About Title 
       <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
         <div className="flex items-center gap-2 mb-3">
           <LucideIcons.Type size={20} className="text-gray-600 dark:text-gray-300" />
@@ -318,12 +318,16 @@ export default function AboutAdminPage() {
 
       {/* Language List Management */}
       <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
-        <div className="flex items-center justify-between mb-4">
+             <div className="flex items-center justify-between mb-4">
+          
           <div className="flex items-center gap-2">
             <LucideIcons.Languages size={20} className="text-gray-600 dark:text-gray-300" />
             <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Languages</h2>
+            
           </div>
-          <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
+ 
+        </div>
+                 <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
             <input
               type="text"
               value={newLanguageName}
@@ -341,7 +345,7 @@ export default function AboutAdminPage() {
               Add Language
             </button>
           </div>
-        </div>
+   <br />
         
         {about.languages.list.length === 0 ? (
           <div className="text-center py-4 text-gray-500 dark:text-gray-400">
@@ -641,7 +645,7 @@ export default function AboutAdminPage() {
       </div>
 
       {/* Save Button */}
-      <div className="flex justify-end pt-4">
+      <div className="flex justify-center pt-4">
         <button
           onClick={handleSave}
           className="flex items-center gap-2 bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition"

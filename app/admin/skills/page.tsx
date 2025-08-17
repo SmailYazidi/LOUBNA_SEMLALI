@@ -197,7 +197,7 @@ export default function SkillsAdminPage() {
         </h1>
       </div>
 
-      {/* Skills Title Section */}
+{/*        Skills Title Section 
       <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
         <div className="flex items-center gap-2 mb-3">
           <LucideIcons.Heading size={20} className="text-gray-600 dark:text-gray-300" />
@@ -225,8 +225,8 @@ export default function SkillsAdminPage() {
             />
           </div>
         </div>
-      </div>
-
+      </div>*/}
+ 
       {/* Skill Categories */}
       <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
         <div className="flex items-center justify-between mb-4">
@@ -239,7 +239,7 @@ export default function SkillsAdminPage() {
             className="flex items-center gap-2 bg-green-500 text-white px-3 py-1.5 rounded-lg hover:bg-green-600 transition text-sm"
           >
             <LucideIcons.Plus size={16} />
-            Add Category
+            Add
           </button>
         </div>
 
@@ -361,7 +361,7 @@ export default function SkillsAdminPage() {
                         className="flex items-center gap-1 bg-blue-500 text-white px-2 py-1 rounded-lg text-xs hover:bg-blue-600 transition"
                       >
                         <LucideIcons.Plus size={12} />
-                        Add Skill
+                        Add
                       </button>
                     </div>
 
@@ -519,7 +519,7 @@ export default function SkillsAdminPage() {
       </div>
 
       {/* Save Button */}
-      <div className="flex justify-end">
+      <div className="flex justify-center">
         <button
           onClick={saveData}
           className="flex items-center gap-2 bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition"
