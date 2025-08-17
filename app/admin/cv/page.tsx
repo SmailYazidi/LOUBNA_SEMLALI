@@ -392,21 +392,6 @@ export default function AdminCvPage() {
         )}
       </div>
 
-      {/* Help Section */}
-      <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-        <div className="flex items-start gap-2">
-          <LucideIcons.Info size={16} className="text-blue-500 mt-0.5" />
-          <div className="text-sm text-blue-700 dark:text-blue-300">
-            <p className="font-medium mb-1">Upload Guidelines:</p>
-            <ul className="list-disc list-inside space-y-1 text-xs">
-              <li>Only PDF files are accepted</li>
-              <li>Maximum file size: 10MB per file</li>
-              <li>You can upload one or both language versions</li>
-              <li>New uploads will replace existing files</li>
-            </ul>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
