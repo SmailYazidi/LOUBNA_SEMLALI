@@ -389,7 +389,7 @@ export default function HeroAdminPage() {
             Save All Content
           </button>
         </div>
-      </div>
+      </div><br />
     </div>
   );
 }

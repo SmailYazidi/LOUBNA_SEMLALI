@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Loading from '@/components/LoadingAdmin';
+import * as LucideIcons from "lucide-react";
 
 type LocalizedText = { fr: string; en: string };
 
@@ -39,6 +40,12 @@ export default function EducationAdminPage() {
       setData(json);
     } catch (err: any) {
       setError(err.message);
+      // Fallback to empty structure
+      setData({
+        journeyTitle: { fr: "", en: "" },
+        education: [],
+        experience: []
+      });
     } finally {
       setLoading(false);
     }
@@ -63,9 +70,21 @@ export default function EducationAdminPage() {
     setData(newData);
   };
 
+  const handleYearChange = (section: "education" | "experience", index: number, value: string) => {
+    if (!data) return;
+    const newData = { ...data };
+    newData[section][index].year = value;
+    setData(newData);
+  };
+
   const addItem = (section: "education" | "experience") => {
     if (!data) return;
-    const newItem = { year: "", title: { fr: "", en: "" }, institution: { fr: "", en: "" }, description: { fr: "", en: "" } };
+    const newItem = { 
+      year: "", 
+      title: { fr: "", en: "" }, 
+      institution: { fr: "", en: "" }, 
+      description: { fr: "", en: "" } 
+    };
     setData({ ...data, [section]: [...data[section], newItem] });
   };
 
@@ -92,101 +111,253 @@ export default function EducationAdminPage() {
   };
 
   if (loading) return <Loading />;
-  if (error) return <p>Error: {error}</p>;
+  if (error) return <p className="text-red-500 p-4">Error: {error}</p>;
+  if (!data) return null;
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Education Admin</h1>
-
-      {/* Journey Title */}
-      <div className="border p-4 mb-4 rounded-md">
-        <h2 className="font-semibold mb-2">Journey Title</h2>
-        <input
-          type="text"
-          value={data.journeyTitle.fr}
-          placeholder="Title FR"
-          onChange={(e) => handleChange("journeyTitle", null, "fr", "fr", e.target.value)}
-          className="border p-1 mr-2 mb-2 w-full md:w-1/2"
-        />
-        <input
-          type="text"
-          value={data.journeyTitle.en}
-          placeholder="Title EN"
-          onChange={(e) => handleChange("journeyTitle", null, "en", "en", e.target.value)}
-          className="border p-1 mb-2 w-full md:w-1/2"
-        />
+    <div className="p-4 md:p-6 max-w-5xl mx-auto bg-white dark:bg-gray-900 rounded-lg shadow-md">
+      <div className="flex items-center gap-3 mb-6">
+        <LucideIcons.GraduationCap size={24} className="text-blue-500" />
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white">
+          Education & Experience
+        </h1>
       </div>
 
-      {/* Education */}
-      <h2 className="font-semibold mb-2">Education</h2>
-      {data.education.map((edu, index) => (
-        <div key={index} className="border p-4 mb-4 rounded-md">
-          <input
-            type="text"
-            value={edu.year}
-            placeholder="Year"
-            onChange={(e) => { const newData = { ...data }; newData.education[index].year = e.target.value; setData(newData); }}
-            className="border p-1 mb-2 w-full md:w-1/4"
-          />
-          {["title", "institution", "description"].map((field) => (
-            <div key={field} className="mb-2">
-              <input
-                type="text"
-                value={edu[field as keyof EducationItem].fr}
-                placeholder={`${field} FR`}
-                onChange={(e) => handleChange("education", index, field as keyof LocalizedText, "fr", e.target.value)}
-                className="border p-1 mr-2 mb-1 w-full md:w-1/2"
-              />
-              <input
-                type="text"
-                value={edu[field as keyof EducationItem].en}
-                placeholder={`${field} EN`}
-                onChange={(e) => handleChange("education", index, field as keyof LocalizedText, "en", e.target.value)}
-                className="border p-1 w-full md:w-1/2"
-              />
-            </div>
-          ))}
-          <button onClick={() => removeItem("education", index)} className="bg-red-500 text-white px-3 py-1 rounded">Remove</button>
+      {/* Journey Title Section */}
+      <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
+        <div className="flex items-center gap-2 mb-3">
+          <LucideIcons.Bookmark size={20} className="text-gray-600 dark:text-gray-300" />
+          <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Journey Title</h2>
         </div>
-      ))}
-      <button onClick={() => addItem("education")} className="bg-green-500 text-white px-4 py-2 rounded mb-4">Add Education</button>
-
-      {/* Experience */}
-      <h2 className="font-semibold mb-2">Experience</h2>
-      {data.experience.map((exp, index) => (
-        <div key={index} className="border p-4 mb-4 rounded-md">
-          <input
-            type="text"
-            value={exp.year}
-            placeholder="Year"
-            onChange={(e) => { const newData = { ...data }; newData.experience[index].year = e.target.value; setData(newData); }}
-            className="border p-1 mb-2 w-full md:w-1/4"
-          />
-          {["title", "institution", "description"].map((field) => (
-            <div key={field} className="mb-2">
-              <input
-                type="text"
-                value={exp[field as keyof ExperienceItem].fr}
-                placeholder={`${field} FR`}
-                onChange={(e) => handleChange("experience", index, field as keyof LocalizedText, "fr", e.target.value)}
-                className="border p-1 mr-2 mb-1 w-full md:w-1/2"
-              />
-              <input
-                type="text"
-                value={exp[field as keyof ExperienceItem].en}
-                placeholder={`${field} EN`}
-                onChange={(e) => handleChange("experience", index, field as keyof LocalizedText, "en", e.target.value)}
-                className="border p-1 w-full md:w-1/2"
-              />
-            </div>
-          ))}
-          <button onClick={() => removeItem("experience", index)} className="bg-red-500 text-white px-3 py-1 rounded">Remove</button>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">French Title</label>
+            <input
+              type="text"
+              value={data.journeyTitle.fr}
+              placeholder="Title in French"
+              onChange={(e) => handleChange("journeyTitle", null, "fr", "fr", e.target.value)}
+              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">English Title</label>
+            <input
+              type="text"
+              value={data.journeyTitle.en}
+              placeholder="Title in English"
+              onChange={(e) => handleChange("journeyTitle", null, "en", "en", e.target.value)}
+              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+            />
+          </div>
         </div>
-      ))}
-      <button onClick={() => addItem("experience")} className="bg-green-500 text-white px-4 py-2 rounded mb-4">Add Experience</button>
+      </div>
 
-      <div>
-        <button onClick={saveData} className="bg-blue-500 text-white px-4 py-2 rounded">Save Education Data</button>
+      {/* Education Section */}
+      <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <LucideIcons.GraduationCap size={20} className="text-gray-600 dark:text-gray-300" />
+            <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Education</h2>
+          </div>
+          <button 
+            onClick={() => addItem("education")}
+            className="flex items-center gap-2 bg-green-500 text-white px-3 py-1.5 rounded-lg hover:bg-green-600 transition text-sm"
+          >
+            <LucideIcons.Plus size={16} />
+            Add Education
+          </button>
+        </div>
+
+        {data.education.length === 0 ? (
+          <div className="text-center py-4 text-gray-500 dark:text-gray-400">
+            <LucideIcons.Info size={20} className="mx-auto mb-2" />
+            No education items added yet
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {data.education.map((edu, index) => (
+              <div key={index} className="border border-gray-200 dark:border-gray-700 p-4 rounded-lg bg-white dark:bg-gray-700">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Year</label>
+                    <input
+                      type="text"
+                      value={edu.year}
+                      placeholder="e.g. 2015-2019"
+                      onChange={(e) => handleYearChange("education", index, e.target.value)}
+                      className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                    />
+                  </div>
+                </div>
+
+                {["title", "institution", "description"].map((field) => (
+                  <div key={field} className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                        {`${field.charAt(0).toUpperCase() + field.slice(1)} (FR)`}
+                      </label>
+                      {field === "description" ? (
+                        <textarea
+                          value={edu[field as keyof EducationItem].fr}
+                          placeholder={`French ${field}`}
+                          onChange={(e) => handleChange("education", index, field as keyof LocalizedText, "fr", e.target.value)}
+                          className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white min-h-[100px]"
+                        />
+                      ) : (
+                        <input
+                          type="text"
+                          value={edu[field as keyof EducationItem].fr}
+                          placeholder={`French ${field}`}
+                          onChange={(e) => handleChange("education", index, field as keyof LocalizedText, "fr", e.target.value)}
+                          className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                        />
+                      )}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                        {`${field.charAt(0).toUpperCase() + field.slice(1)} (EN)`}
+                      </label>
+                      {field === "description" ? (
+                        <textarea
+                          value={edu[field as keyof EducationItem].en}
+                          placeholder={`English ${field}`}
+                          onChange={(e) => handleChange("education", index, field as keyof LocalizedText, "en", e.target.value)}
+                          className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white min-h-[100px]"
+                        />
+                      ) : (
+                        <input
+                          type="text"
+                          value={edu[field as keyof EducationItem].en}
+                          placeholder={`English ${field}`}
+                          onChange={(e) => handleChange("education", index, field as keyof LocalizedText, "en", e.target.value)}
+                          className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                        />
+                      )}
+                    </div>
+                  </div>
+                ))}
+
+                <button
+                  onClick={() => removeItem("education", index)}
+                  className="flex items-center gap-2 bg-red-500 text-white px-3 py-1.5 rounded-lg hover:bg-red-600 transition text-sm"
+                >
+                  <LucideIcons.Trash2 size={16} />
+                  Remove Education
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Experience Section */}
+      <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <LucideIcons.Briefcase size={20} className="text-gray-600 dark:text-gray-300" />
+            <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Experience</h2>
+          </div>
+          <button 
+            onClick={() => addItem("experience")}
+            className="flex items-center gap-2 bg-green-500 text-white px-3 py-1.5 rounded-lg hover:bg-green-600 transition text-sm"
+          >
+            <LucideIcons.Plus size={16} />
+            Add Experience
+          </button>
+        </div>
+
+        {data.experience.length === 0 ? (
+          <div className="text-center py-4 text-gray-500 dark:text-gray-400">
+            <LucideIcons.Info size={20} className="mx-auto mb-2" />
+            No experience items added yet
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {data.experience.map((exp, index) => (
+              <div key={index} className="border border-gray-200 dark:border-gray-700 p-4 rounded-lg bg-white dark:bg-gray-700">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Year</label>
+                    <input
+                      type="text"
+                      value={exp.year}
+                      placeholder="e.g. 2019-2022"
+                      onChange={(e) => handleYearChange("experience", index, e.target.value)}
+                      className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                    />
+                  </div>
+                </div>
+
+                {["title", "institution", "description"].map((field) => (
+                  <div key={field} className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                        {`${field.charAt(0).toUpperCase() + field.slice(1)} (FR)`}
+                      </label>
+                      {field === "description" ? (
+                        <textarea
+                          value={exp[field as keyof ExperienceItem].fr}
+                          placeholder={`French ${field}`}
+                          onChange={(e) => handleChange("experience", index, field as keyof LocalizedText, "fr", e.target.value)}
+                          className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white min-h-[100px]"
+                        />
+                      ) : (
+                        <input
+                          type="text"
+                          value={exp[field as keyof ExperienceItem].fr}
+                          placeholder={`French ${field}`}
+                          onChange={(e) => handleChange("experience", index, field as keyof LocalizedText, "fr", e.target.value)}
+                          className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                        />
+                      )}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                        {`${field.charAt(0).toUpperCase() + field.slice(1)} (EN)`}
+                      </label>
+                      {field === "description" ? (
+                        <textarea
+                          value={exp[field as keyof ExperienceItem].en}
+                          placeholder={`English ${field}`}
+                          onChange={(e) => handleChange("experience", index, field as keyof LocalizedText, "en", e.target.value)}
+                          className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white min-h-[100px]"
+                        />
+                      ) : (
+                        <input
+                          type="text"
+                          value={exp[field as keyof ExperienceItem].en}
+                          placeholder={`English ${field}`}
+                          onChange={(e) => handleChange("experience", index, field as keyof LocalizedText, "en", e.target.value)}
+                          className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                        />
+                      )}
+                    </div>
+                  </div>
+                ))}
+
+                <button
+                  onClick={() => removeItem("experience", index)}
+                  className="flex items-center gap-2 bg-red-500 text-white px-3 py-1.5 rounded-lg hover:bg-red-600 transition text-sm"
+                >
+                  <LucideIcons.Trash2 size={16} />
+                  Remove Experience
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Save Button */}
+      <div className="flex justify-end">
+        <button
+          onClick={saveData}
+          className="flex items-center gap-2 bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition"
+        >
+          <LucideIcons.Save size={18} />
+          Save All Data
+        </button>
       </div>
     </div>
   );
