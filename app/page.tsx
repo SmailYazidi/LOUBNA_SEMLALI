@@ -861,98 +861,104 @@ const getIcon = (iconName?: string) => {
 
 
 {!isJourneyDataEmpty && (
-<section
-  id="experience"
-  className={`py-16 sm:py-20 px-4 sm:px-6 lg:px-8 ${themeClasses.sectionBg}`}
->
-  <div className="container mx-auto max-w-7xl">
-    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4">
-      {t.journeyTitle}
-      <span className="absolute bottom-0 left-0 w-20 h-1 bg-[rgb(var(--portfolio-gold))]"></span>
-    </h2>
+  <section
+    id="experience"
+    className={`py-16 sm:py-20 px-4 sm:px-6 lg:px-8 ${themeClasses.sectionBg}`}
+  >
+    <div className="container mx-auto max-w-7xl">
+      <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4">
+        {t.journeyTitle}
+        <span className="absolute bottom-0 left-0 w-20 h-1 bg-[rgb(var(--portfolio-gold))]"></span>
+      </h2>
 
-    <div className="grid md:grid-cols-2 gap-12 md:gap-8">
-      {/* Education Column */}
-      <div>
-        <h3 className="text-xl sm:text-2xl font-medium mb-6 sm:mb-8 flex items-center gap-3">
-          <GraduationCap className="w-5 h-5 sm:w-6 sm:h-6 text-[rgb(var(--portfolio-gold))]" />
-          {currentLang === "fr" ? "Formation" : "Education"}
-        </h3>
-        <div className="space-y-8 relative">
-          {educationData?.education?.map((event, index) => (
-            <div key={index} className="relative pl-6">
-              <div
-                className={`absolute left-0 top-0 bottom-0 w-0.5 ${
-                  isDarkMode ? "bg-gray-700" : "bg-gray-300"
-                }`}
-              ></div>
-              <div
-                className={`absolute -left-2 top-0 w-4 h-4 rounded-full bg-[rgb(var(--portfolio-gold))]`}
-              ></div>
-              <p className={`${themeClasses.textSecondary} font-medium text-sm mb-1`}>
-                {event.year}
-              </p>
-              <h4 className="text-base sm:text-lg font-medium mb-1">
-                {event.title?.[currentLang]}
-              </h4>
-              <p className={`${themeClasses.textSecondary} text-sm mb-1`}>
-                {event.institution?.[currentLang]}
-              </p>
-              {event.description && (
-                <p className={`${themeClasses.textMuted} text-xs mt-2`}>
-                  {event.description?.[currentLang]}
-                </p>
-              )}
+      <div className="grid md:grid-cols-2 gap-12 md:gap-8">
+        {/* Education Column */}
+        { educationData?.education?.length >0  && (
+          <div>
+            <h3 className="text-xl sm:text-2xl font-medium mb-6 sm:mb-8 flex items-center gap-3">
+              <GraduationCap className="w-5 h-5 sm:w-6 sm:h-6 text-[rgb(var(--portfolio-gold))]" />
+              {currentLang === "fr" ? "Formation" : "Education"}
+            </h3>
+            <div className="space-y-8 relative">
+              {educationData?.education?.map((event, index) => (
+                <div key={index} className="relative pl-6">
+                  <div
+                    className={`absolute left-0 top-0 bottom-0 w-0.5 ${
+                      isDarkMode ? "bg-gray-700" : "bg-gray-300"
+                    }`}
+                  ></div>
+                  <div
+                    className={`absolute -left-2 top-0 w-4 h-4 rounded-full bg-[rgb(var(--portfolio-gold))]`}
+                  ></div>
+                  <p className={`${themeClasses.textSecondary} font-medium text-sm mb-1`}>
+                    {event.year}
+                  </p>
+                  <h4 className="text-base sm:text-lg font-medium mb-1">
+                    {event.title?.[currentLang]}
+                  </h4>
+                  <p className={`${themeClasses.textSecondary} text-sm mb-1`}>
+                    {event.institution?.[currentLang]}
+                  </p>
+                  {event.description && (
+                    <p className={`${themeClasses.textMuted} text-xs mt-2`}>
+                      {event.description?.[currentLang]}
+                    </p>
+                  )}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </div>
+          </div>
+        )}
 
-      {/* Experience Column */}
-      <div>
-        <h3 className="text-xl sm:text-2xl font-medium mb-6 sm:mb-8 flex items-center gap-3">
-          <Briefcase className="w-5 h-5 sm:w-6 sm:h-6 text-[rgb(var(--portfolio-gold))]" />
-          {currentLang === "fr" ? "Expérience" : "Experience"}
-        </h3>
-        <div className="space-y-8 relative">
-          {educationData?.experience?.map((event, index) => (
-            <div key={index} className="relative pl-6">
-              <div
-                className={`absolute left-0 top-0 bottom-0 w-0.5 ${
-                  isDarkMode ? "bg-gray-700" : "bg-gray-300"
-                }`}
-              ></div>
-              <div
-                className={`absolute -left-2 top-0 w-4 h-4 rounded-full bg-[rgb(var(--portfolio-gold))]`}
-              ></div>
-              <div className="flex items-center gap-2 mb-1">
-                <p className={`${themeClasses.textSecondary} font-medium text-sm`}>
-                  {event.year}
-                </p>
-                {event.duration && (
-                  <Badge className="bg-[rgb(var(--portfolio-gold))] text-[rgb(var(--portfolio-gold-foreground))] text-xs">
-                    {event.duration}
-                  </Badge>
-                )}
-              </div>
-              <h4 className="text-base sm:text-lg font-medium mb-1">
-                {event.title?.[currentLang]}
-              </h4>
-              <p className={`${themeClasses.textSecondary} text-sm mb-1`}>
-                {event.institution?.[currentLang]}
-              </p>
-              {event.description && (
-                <p className={`${themeClasses.textMuted} text-xs mt-2`}>
-                  {event.description?.[currentLang]}
-                </p>
-              )}
+        {/* Experience Column */}
+        { educationData.experience?.length >0 && (
+          <div>
+            <h3 className="text-xl sm:text-2xl font-medium mb-6 sm:mb-8 flex items-center gap-3">
+              <Briefcase className="w-5 h-5 sm:w-6 sm:h-6 text-[rgb(var(--portfolio-gold))]" />
+              {currentLang === "fr" ? "Expérience" : "Experience"}
+            </h3>
+            <div className="space-y-8 relative">
+              {educationData?.experience?.map((event, index) => (
+                <div key={index} className="relative pl-6">
+                  <div
+                    className={`absolute left-0 top-0 bottom-0 w-0.5 ${
+                      isDarkMode ? "bg-gray-700" : "bg-gray-300"
+                    }`}
+                  ></div>
+                  <div
+                    className={`absolute -left-2 top-0 w-4 h-4 rounded-full bg-[rgb(var(--portfolio-gold))]`}
+                  ></div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <p className={`${themeClasses.textSecondary} font-medium text-sm`}>
+                      {event.year}
+                    </p>
+                    {event.duration && (
+                      <Badge className="bg-[rgb(var(--portfolio-gold))] text-[rgb(var(--portfolio-gold-foreground))] text-xs">
+                        {event.duration}
+                      </Badge>
+                    )}
+                  </div>
+                  <h4 className="text-base sm:text-lg font-medium mb-1">
+                    {event.title?.[currentLang]}
+                  </h4>
+                  <p className={`${themeClasses.textSecondary} text-sm mb-1`}>
+                    {event.institution?.[currentLang]}
+                  </p>
+                  {event.description && (
+                    <p className={`${themeClasses.textMuted} text-xs mt-2`}>
+                      {event.description?.[currentLang]}
+                    </p>
+                  )}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
+        )}
       </div>
     </div>
-  </div>
-</section>)}
+  </section>
+)}
+
 
 {/* Skills Section */}
 {!isSkillsDataEmpty && (
@@ -1124,121 +1130,124 @@ const getIcon = (iconName?: string) => {
 
 {/* About Section */}
 {!isAboutDataEmpty && (
-<section id="about" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
-  <div className="container mx-auto max-w-7xl">
-    <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
-      <div>
-           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4">
-      {t.aboutTitle}
-      <span className="absolute bottom-0 left-0 w-20 h-1 bg-[rgb(var(--portfolio-gold))]"></span>
-    </h2>
-       
-        <p className={`${themeClasses.textSecondary} text-base sm:text-lg leading-relaxed mb-6 sm:mb-8`}>
-          {aboutData.aboutDescription?.[currentLang]}
-        </p>
+  <section id="about" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
+    <div className="container mx-auto max-w-7xl">
+      <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
+        <div>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4">
+            {t.aboutTitle}
+            <span className="absolute bottom-0 left-0 w-20 h-1 bg-[rgb(var(--portfolio-gold))]"></span>
+          </h2>
 
+          <p className={`${themeClasses.textSecondary} text-base sm:text-lg leading-relaxed mb-6 sm:mb-8`}>
+            {aboutData.aboutDescription?.[currentLang]}
+          </p>
 
+          {/* Personal Info */}
+          {aboutData.personalInfo && (
+            <div className="grid grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
+              {aboutData.personalInfo?.map((info, index) => {
+                const IconComponent = getIcon(info.icon);
+                return (
+                  <div key={index} className="flex items-start gap-2">
+                    {IconComponent && (
+                      <IconComponent className={`w-4 h-4 mt-0.5 text-[rgb(var(--portfolio-gold))]`} />
+                    )}
+                    <div>
+                      <p className={`${themeClasses.textMuted} text-xs sm:text-sm mb-1`}>
+                        {info.label?.[currentLang]}
+                      </p>
+                      <p className="font-medium text-sm sm:text-base">
+                        {info.value?.[currentLang]}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
 
+        <div className="space-y-8">
+          {/* Languages */}
+          {aboutData.languages && (
+            <div>
+              <h3 className="text-xl sm:text-2xl font-medium mb-4 sm:mb-6 flex items-center gap-3">
+                <LanguagesIcon className="w-5 h-5 sm:w-6 sm:h-6 text-[rgb(var(--portfolio-gold))]" />
+                {aboutData.languages?.title?.[currentLang]}
+              </h3>
+              <div className="space-y-3 sm:space-y-4">
+                {aboutData.languages?.list?.map((lang, index) => {
+                  const levelKey = lang.level.toLowerCase();
+                  const levelText = aboutData.languages?.levels?.[levelKey]?.[currentLang] || '';
+                  
+                  // Determine width based on language level
+                  const widthMap = {
+                    a1: "20%",
+                    a2: "30%",
+                    b1: "50%",
+                    b2: "70%",
+                    c1: "85%",
+                    c2: "95%",
+                    native: "100%"
+                  };
+                  
+                  const width = widthMap[levelKey] || "50%";
 
-
-
-        {/* Personal Info */}
-        <div className="grid grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
-          {aboutData.personalInfo?.map((info, index) => {
-            const IconComponent = getIcon(info.icon);
-            return (
-              <div key={index} className="flex items-start gap-2">
-                {IconComponent && (
-                  <IconComponent className={`w-4 h-4 mt-0.5 text-[rgb(var(--portfolio-gold))]`} />
-                )}
-                <div>
-                  <p className={`${themeClasses.textMuted} text-xs sm:text-sm mb-1`}>
-                    {info.label?.[currentLang]}
-                  </p>
-                  <p className="font-medium text-sm sm:text-base">
-                    {info.value?.[currentLang]}
-                  </p>
-                </div>
+                  return (
+                    <div key={index}>
+                      <div className="flex justify-between mb-1 sm:mb-2">
+                        <span className="font-medium text-sm sm:text-base capitalize">
+                          {lang.name?.[currentLang]}
+                        </span>
+                        <span className={`${themeClasses.textSecondary} text-xs sm:text-sm`}>
+                          {levelText}
+                        </span>
+                      </div>
+                      <div className={`w-full ${isDarkMode ? "bg-gray-800" : "bg-gray-200"} rounded-full h-1`}>
+                        <div
+                          className="bg-[rgb(var(--portfolio-gold))] h-1 rounded-full transition-all duration-1000"
+                          style={{ width }}
+                        ></div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-            );
-          })}
-        </div>
-      </div>
+            </div>
+          )}
 
-      <div className="space-y-8">
-        {/* Languages */}
-        <div>
-          <h3 className="text-xl sm:text-2xl font-medium mb-4 sm:mb-6 flex items-center gap-3">
-            <LanguagesIcon className="w-5 h-5 sm:w-6 sm:h-6 text-[rgb(var(--portfolio-gold))]" />
-            {aboutData.languages?.title?.[currentLang]}
-          </h3>
-          <div className="space-y-3 sm:space-y-4">
-            {aboutData.languages?.list?.map((lang, index) => {
-              const levelKey = lang.level.toLowerCase();
-              const levelText = aboutData.languages?.levels?.[levelKey]?.[currentLang] || '';
-              
-              // Determine width based on language level
-              const widthMap = {
-                a1: "20%",
-                a2: "30%",
-                b1: "50%",
-                b2: "70%",
-                c1: "85%",
-                c2: "95%",
-                native: "100%"
-              };
-              
-              const width = widthMap[levelKey] || "50%";
-
-              return (
-                <div key={index}>
-                  <div className="flex justify-between mb-1 sm:mb-2">
-                    <span className="font-medium text-sm sm:text-base capitalize">
-                      {lang.name?.[currentLang]}
-                    </span>
-                    <span className={`${themeClasses.textSecondary} text-xs sm:text-sm`}>
-                      {levelText}
-                    </span>
-                  </div>
-                  <div className={`w-full ${isDarkMode ? "bg-gray-800" : "bg-gray-200"} rounded-full h-1`}>
-                    <div
-                      className="bg-[rgb(var(--portfolio-gold))] h-1 rounded-full transition-all duration-1000"
-                      style={{ width }}
-                    ></div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Interests */}
-        <div>
-          <h3 className="text-xl sm:text-2xl font-medium mb-4 sm:mb-6 flex items-center gap-3">
-            <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-[rgb(var(--portfolio-gold))]" />
-            {t.interests}
-          </h3>
-          <div className="flex flex-wrap gap-3 sm:gap-4">
-            {aboutData.interests?.map((interest, index) => {
-              const IconComponent = getIcon(interest.icon);
-              return (
-                <Badge
-                  key={index}
-                  className={`${isDarkMode ? "bg-gray-800 text-white border-gray-700" : "bg-gray-100 text-gray-900 border-gray-300"} border px-3 sm:px-4 py-1 sm:py-2 text-sm flex items-center gap-2`}
-                >
-                  {IconComponent && (
-                    <IconComponent className="w-3 h-3" />
-                  )}
-                  {interest.name?.[currentLang]}
-                </Badge>
-              );
-            })}
-          </div>
+          {/* Interests */}
+          {aboutData.interests && (
+            <div>
+              <h3 className="text-xl sm:text-2xl font-medium mb-4 sm:mb-6 flex items-center gap-3">
+                <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-[rgb(var(--portfolio-gold))]" />
+                {t.interests}
+              </h3>
+              <div className="flex flex-wrap gap-3 sm:gap-4">
+                {aboutData.interests?.map((interest, index) => {
+                  const IconComponent = getIcon(interest.icon);
+                  return (
+                    <Badge
+                      key={index}
+                      className={`${isDarkMode ? "bg-gray-800 text-white border-gray-700" : "bg-gray-100 text-gray-900 border-gray-300"} border px-3 sm:px-4 py-1 sm:py-2 text-sm flex items-center gap-2`}
+                    >
+                      {IconComponent && (
+                        <IconComponent className="w-3 h-3" />
+                      )}
+                      {interest.name?.[currentLang]}
+                    </Badge>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
-  </div>
-</section>)}
+  </section>
+)}
+
 {/* Contact Section */}
 
 
