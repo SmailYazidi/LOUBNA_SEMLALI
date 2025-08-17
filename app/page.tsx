@@ -58,7 +58,7 @@ const translations = {
     // About
     aboutTitle: "À Propos de Moi",
    
-
+interests:"Centres d'Intérêt",
     // Footer
     rightsReserved: "Tous droits réservés",
   },
@@ -72,7 +72,7 @@ const translations = {
     about: "About",
     contact: "Contact",
     hireMe: "Hire Me",
-
+interests:"Interests",
  viewJourney: "View My CV",
 
     // Services

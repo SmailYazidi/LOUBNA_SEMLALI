@@ -253,7 +253,7 @@ export default function AboutAdminPage() {
   description: "Saved successfully!",
   className: "bg-green-500 text-white border-none", // ✅ green background, white text
 })
-      alert("Saved successfully!");
+  
     } catch (err: any) {
   toast({
     title: "Error",
@@ -261,8 +261,7 @@ export default function AboutAdminPage() {
     className: "bg-red-500 text-white border-none",
   })
 
-      console.error(err);
-      alert("Failed to save. Please try again.");
+
     }
   };
 
