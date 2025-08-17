@@ -1074,7 +1074,7 @@ const getIcon = (iconName?: string) => {
             return (
               <div key={index} className="flex items-start gap-2">
                 {IconComponent && (
-                  <IconComponent className={`w-4 h-4 mt-0.5 ${themeClasses.textSecondary}`} />
+                  <IconComponent className={`w-4 h-4 mt-0.5 text-[rgb(var(--portfolio-gold))]`} />
                 )}
                 <div>
                   <p className={`${themeClasses.textMuted} text-xs sm:text-sm mb-1`}>
@@ -1199,7 +1199,7 @@ const getIcon = (iconName?: string) => {
       href={contactData.contactButton?.link || "#contact-form"}
       className="inline-flex items-center bg-[rgb(var(--portfolio-gold))] hover:bg-[rgb(var(--portfolio-gold-hover))] text-black font-medium px-8 py-3 rounded-full text-base sm:text-lg transition-colors"
     >
-      <Send className="w-5 h-5 mr-2 text-black" />
+      <Send className={ `w-5 h-5 mr-2`} />
       {contactData.contactButton?.startProject?.[currentLang]}
     </a>
   </div>
