@@ -51,9 +51,10 @@ export default function AboutAdminPage() {
   const [about, setAbout] = useState<AboutData>(defaultAboutData);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [newLanguageName, setNewLanguageName] = useState("");
-  const [iconSearch, setIconSearch] = useState("");
 
+  const [iconSearch, setIconSearch] = useState("");
+  const [newLanguageNameFr, setNewLanguageNameFr] = useState("");
+  const [newLanguageNameEn, setNewLanguageNameEn] = useState("");
  const { toast } = useToast()
 
 
@@ -166,26 +167,26 @@ export default function AboutAdminPage() {
     });
   };
 
-  const handleAddLanguage = () => {
-    if (!newLanguageName.trim()) return;
-    
-    setAbout(prev => ({
+   const handleAddLanguage = () => {
+    if (!newLanguageNameFr.trim() || !newLanguageNameEn.trim()) return;
+
+    setAbout((prev) => ({
       ...prev,
       languages: {
         ...prev.languages,
         list: [
           ...prev.languages.list,
           {
-            name: newLanguageName.trim(),
-            level: "b1"
-          }
-        ]
-      }
+            name: { fr: newLanguageNameFr.trim(), en: newLanguageNameEn.trim() },
+            level: "b1",
+          },
+        ],
+      },
     }));
-    
-    setNewLanguageName("");
-  };
 
+    setNewLanguageNameFr("");
+    setNewLanguageNameEn("");
+  };
   const handleRemoveLanguage = (index: number) => {
     setAbout(prev => ({
       ...prev,
@@ -277,34 +278,7 @@ export default function AboutAdminPage() {
         </h1>
       </div>
 
-      {/* About Title 
-      <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
-        <div className="flex items-center gap-2 mb-3">
-          <LucideIcons.Type size={20} className="text-gray-600 dark:text-gray-300" />
-          <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Title</h2>
-        </div>
-        <div className="grid md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">French</label>
-            <input
-              type="text"
-              value={about.aboutTitle.fr}
-              onChange={(e) => handleInputChange("aboutTitle", "fr", "", e.target.value)}
-              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">English</label>
-            <input
-              type="text"
-              value={about.aboutTitle.en}
-              onChange={(e) => handleInputChange("aboutTitle", "en", "", e.target.value)}
-              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-            />
-          </div>
-        </div>
-      </div>
-
+   
       {/* About Description */}
       <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
         <div className="flex items-center gap-2 mb-3">
@@ -332,89 +306,108 @@ export default function AboutAdminPage() {
       </div>
 
       {/* Language List Management */}
-      <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
-             <div className="flex items-center justify-between mb-4">
-          
-          <div className="flex items-center gap-2">
-            <LucideIcons.Languages size={20} className="text-gray-600 dark:text-gray-300" />
-            <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Languages</h2>
-            
-          </div>
- 
+   <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <LucideIcons.Languages size={20} className="text-gray-600 dark:text-gray-300" />
+          <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Languages</h2>
         </div>
-                 <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
-            <input
-              type="text"
-              value={newLanguageName}
-              onChange={(e) => setNewLanguageName(e.target.value)}
-              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white flex-1"
-              placeholder="Language name (e.g., Français)"
-              onKeyDown={(e) => e.key === 'Enter' && handleAddLanguage()}
-            />
-            <button
-              onClick={handleAddLanguage}
-              className="flex items-center gap-2 bg-green-500 text-white px-3 py-2 rounded-lg hover:bg-green-600 transition text-sm disabled:bg-gray-400 disabled:cursor-not-allowed"
-              disabled={!newLanguageName.trim()}
-            >
-              <LucideIcons.Plus size={16} />
-              Add Language
-            </button>
-          </div>
-   <br />
-        
-        {about.languages.list.length === 0 ? (
-          <div className="text-center py-4 text-gray-500 dark:text-gray-400">
-            <LucideIcons.Info size={20} className="mx-auto mb-2" />
-            No languages added yet
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {about.languages.list.map((language, idx) => (
-              <div key={idx} className="border border-gray-200 dark:border-gray-700 p-4 rounded-lg bg-white dark:bg-gray-700">
-                <div className="flex justify-between items-start mb-3">
-                  <h3 className="font-medium text-gray-700 dark:text-white flex items-center gap-2">
-                    <LucideIcons.Circle size={12} className="text-blue-500" />
-                    Language {idx + 1}
-                  </h3>
-                  <button
-                    onClick={() => handleRemoveLanguage(idx)}
-                    className="flex items-center gap-1 bg-red-500 text-white px-2 py-1 rounded-lg hover:bg-red-600 transition text-sm"
-                  >
-                    <LucideIcons.Trash2 size={14} />
-                    Remove
-                  </button>
+      </div>
+
+      <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto mb-4">
+        <input
+          type="text"
+          value={newLanguageNameFr}
+          onChange={(e) => setNewLanguageNameFr(e.target.value)}
+          className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white flex-1"
+          placeholder="Language name (Français)"
+        />
+        <input
+          type="text"
+          value={newLanguageNameEn}
+          onChange={(e) => setNewLanguageNameEn(e.target.value)}
+          className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white flex-1"
+          placeholder="Language name (English)"
+          onKeyDown={(e) => e.key === "Enter" && handleAddLanguage()}
+        />
+        <button
+          onClick={handleAddLanguage}
+          className="flex items-center gap-2 bg-green-500 text-white px-3 py-2 rounded-lg hover:bg-green-600 transition text-sm disabled:bg-gray-400 disabled:cursor-not-allowed"
+          disabled={!newLanguageNameFr.trim() || !newLanguageNameEn.trim()}
+        >
+          <LucideIcons.Plus size={16} />
+          Add Language
+        </button>
+      </div>
+
+      {about.languages.list.length === 0 ? (
+        <div className="text-center py-4 text-gray-500 dark:text-gray-400">
+          <LucideIcons.Info size={20} className="mx-auto mb-2" />
+          No languages added yet
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {about.languages.list.map((language, idx) => (
+            <div key={idx} className="border border-gray-200 dark:border-gray-700 p-4 rounded-lg bg-white dark:bg-gray-700">
+              <div className="flex justify-between items-start mb-3">
+                <h3 className="font-medium text-gray-700 dark:text-white flex items-center gap-2">
+                  <LucideIcons.Circle size={12} className="text-blue-500" />
+                  Language {idx + 1}
+                </h3>
+                <button
+                  onClick={() => handleRemoveLanguage(idx)}
+                  className="flex items-center gap-1 bg-red-500 text-white px-2 py-1 rounded-lg hover:bg-red-600 transition text-sm"
+                >
+                  <LucideIcons.Trash2 size={14} />
+                  Remove
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                    Language Name (Fr)
+                  </label>
+                  <input
+                    type="text"
+                    value={language.name.fr}
+                    onChange={(e) => handleInputChange("languages", idx, "name.fr", e.target.value)}
+                    className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                  />
                 </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Language Name</label>
-                    <input
-                      type="text"
-                      value={language.name}
-                      onChange={(e) => handleInputChange("languages", idx, "list.name", e.target.value)}
-                      className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Proficiency Level</label>
-                    <select
-                      value={language.level}
-                      onChange={(e) => handleInputChange("languages", idx, "list.level", e.target.value)}
-                      className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-                    >
-                      {Object.entries(about.languages.levels).map(([levelKey, level]) => (
-                        <option key={levelKey} value={levelKey}>
-                          {level.fr} / {level.en}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                    Language Name (En)
+                  </label>
+                  <input
+                    type="text"
+                    value={language.name.en}
+                    onChange={(e) => handleInputChange("languages", idx, "name.en", e.target.value)}
+                    className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                    Proficiency Level
+                  </label>
+                  <select
+                    value={language.level}
+                    onChange={(e) => handleInputChange("languages", idx, "level", e.target.value)}
+                    className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                  >
+                    {Object.entries(about.languages.levels).map(([levelKey, level]) => (
+                      <option key={levelKey} value={levelKey}>
+                        {level.fr} / {level.en}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
-      </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
 
       {/* Personal Info */}
       <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">

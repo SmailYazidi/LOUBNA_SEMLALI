@@ -15,7 +15,7 @@ export default function AdminCvPage() {
   const [loading, setLoading] = useState(true);
   const [uploadProgress, setUploadProgress] = useState<{ fr?: number; en?: number }>({});
  const { toast } = useToast()
- 
+
   // Fetch existing CV URLs
   useEffect(() => {
     const fetchCvUrls = async () => {
@@ -263,7 +263,7 @@ export default function AdminCvPage() {
         </div>
 
         {/* Upload Button */}
-        <div className="mt-6 flex justify-end">
+        <div className="mt-6 flex justify-center">
           <button
             onClick={handleUpload}
             disabled={isUploading || (!cvFiles.fr && !cvFiles.en)}

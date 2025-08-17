@@ -96,30 +96,45 @@ export default function EducationAdminPage() {
     setData({ ...data, [section]: updatedList });
   };
 
-  const saveData = async () => {
-    if (!data) return;
-    try {
-      const res = await fetch("/api/education", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      if (!res.ok) throw new Error("Failed to save education data");
-     
-   toast({
-  title: "Success",
-  description: "Saved successfully!!",
-  className: "bg-green-500 text-white border-none", // ✅ green background, white text
-})
-      fetchEducation();
-    } catch (err: any) {
-   toast({
-    title: "Error",
-    description: err?.message || "Something went wrong!",
-    className: "bg-red-500 text-white border-none",
-  })
+const saveData = async () => {
+  if (!data) return;
+  
+  try {
+    const res = await fetch("/api/education", {
+      method: "PUT",
+      headers: { 
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        journeyTitle: data.journeyTitle,
+        education: data.education,
+        experience: data.experience
+      }),
+    });
+
+    const responseData = await res.json();
+    
+    if (!res.ok) {
+      throw new Error(responseData.error || "Failed to save education data");
     }
-  };
+
+    toast({
+      title: "Success",
+      description: "Saved successfully!!",
+      className: "bg-green-500 text-white border-none",
+    });
+    
+    // Refresh data after successful save
+    await fetchEducation();
+  } catch (err: any) {
+    console.error("Save error:", err);
+    toast({
+      title: "Error",
+      description: err?.message || "Something went wrong!",
+      className: "bg-red-500 text-white border-none",
+    });
+  }
+};
 
   if (loading) return <Loading />;
   if (error) return <p className="text-red-500 p-4">Error: {error}</p>;

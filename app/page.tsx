@@ -1095,7 +1095,7 @@ const getIcon = (iconName?: string) => {
         <div>
           <h3 className="text-xl sm:text-2xl font-medium mb-4 sm:mb-6 flex items-center gap-3">
             <LanguagesIcon className="w-5 h-5 sm:w-6 sm:h-6 text-[rgb(var(--portfolio-gold))]" />
-            {aboutData.languages?.title?.[currentLang] || t.languages}
+            {aboutData.languages?.title?.[currentLang]}
           </h3>
           <div className="space-y-3 sm:space-y-4">
             {aboutData.languages?.list?.map((lang, index) => {
@@ -1119,7 +1119,7 @@ const getIcon = (iconName?: string) => {
                 <div key={index}>
                   <div className="flex justify-between mb-1 sm:mb-2">
                     <span className="font-medium text-sm sm:text-base capitalize">
-                      {lang.name}
+                      {lang.name?.[currentLang]}
                     </span>
                     <span className={`${themeClasses.textSecondary} text-xs sm:text-sm`}>
                       {levelText}

@@ -5,19 +5,57 @@ export async function GET() {
   try {
     const db = await connectDB();
     const educationData = await db.collection("education").findOne({});
-    return NextResponse.json(educationData || { journeyTitle: { fr: "", en: "" }, education: [], experience: [] });
+    
+    // Ensure we always return a proper structure
+    const defaultData = { 
+      journeyTitle: { fr: "", en: "" }, 
+      education: [], 
+      experience: [] 
+    };
+    
+    return NextResponse.json(educationData || defaultData);
   } catch (err) {
-    return NextResponse.json({ error: "Failed to fetch education data" }, { status: 500 });
+    console.error("Error fetching education data:", err);
+    return NextResponse.json(
+      { error: "Failed to fetch education data" }, 
+      { status: 500 }
+    );
   }
 }
 
 export async function PUT(request: Request) {
   try {
     const data = await request.json();
+    
+    // Validate the data structure
+    if (!data || typeof data !== 'object') {
+      return NextResponse.json(
+        { error: "Invalid data format" },
+        { status: 400 }
+      );
+    }
+
     const db = await connectDB();
-    await db.collection("education").updateOne({}, { $set: data }, { upsert: true });
-    return NextResponse.json({ message: "Education data updated successfully" });
+    
+    // Use replaceOne instead of updateOne to ensure complete document replacement
+    const result = await db.collection("education").replaceOne(
+      {}, 
+      data, 
+      { upsert: true }
+    );
+
+    console.log("Update result:", result);
+    
+    return NextResponse.json({ 
+      success: true,
+      message: "Education data updated successfully",
+      data: result 
+    });
   } catch (err) {
-    return NextResponse.json({ error: "Failed to update education data" }, { status: 500 });
+    console.error("Error updating education data:", err);
+    return NextResponse.json(
+      { error: "Failed to update education data" }, 
+      { status: 500 }
+    );
   }
 }

@@ -483,36 +483,42 @@ export default function SkillsAdminPage() {
                           {/* Examples */}
                           <div>
                             <div className="flex items-center justify-between mb-2">
-                              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400">Examples</label>
+                              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400">Description</label>
                               <button
                                 onClick={() => addExample(catIdx, itemIdx)}
                                 className="flex items-center gap-1 bg-purple-500 text-white px-2 py-1 rounded text-xs hover:bg-purple-600 transition"
                               >
                                 <LucideIcons.Plus size={12} />
-                                Add Example
+                                Add Description
                               </button>
                             </div>
                             <div className="space-y-2">
                               {item.examples.map((example, exIdx) => (
-                                <div key={exIdx} className="flex gap-2">
-                                  <input
-                                    type="text"
-                                    value={example}
-                                    onChange={(e) => handleChange(catIdx, itemIdx, "examples", exIdx, e.target.value)}
-                                    placeholder={`Example ${exIdx + 1}`}
-                                    className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg flex-1 bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-                                  />
-                                  <button
-                                    onClick={() => removeExample(catIdx, itemIdx, exIdx)}
-                                    className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
-                                  >
-                                    <LucideIcons.X size={14} />
-                                  </button>
-                                </div>
+                             <div
+  key={exIdx}
+  className="flex items-center gap-2 w-full"
+>
+  <input
+    type="text"
+    value={example}
+    onChange={(e) =>
+      handleChange(catIdx, itemIdx, "examples", exIdx, e.target.value)
+    }
+    placeholder={`Example ${exIdx + 1}`}
+    className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg flex-1 min-w-0 bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+  />
+  <button
+    onClick={() => removeExample(catIdx, itemIdx, exIdx)}
+    className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition flex-shrink-0"
+  >
+    <LucideIcons.X size={14} />
+  </button>
+</div>
+
                               ))}
                               {item.examples.length === 0 && (
                                 <div className="text-sm text-gray-500 dark:text-gray-400 italic">
-                                  No examples added yet
+                                  No Description added yet
                                 </div>
                               )}
                             </div>
