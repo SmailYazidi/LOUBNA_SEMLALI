@@ -122,11 +122,28 @@ export default function Portfolio() {
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [activeSection, setActiveSection] = useState("home")
-  const [isDarkMode, setIsDarkMode] = useState(true)
-  const [currentLang, setCurrentLang] = useState<"fr" | "en">("fr")
+
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+
+
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = sessionStorage.getItem('darkMode');
+      return saved !== null ? JSON.parse(saved) : true;
+    }
+    return true;
+  });
+
+  const [currentLang, setCurrentLang] = useState<"fr" | "en">(() => {
+    if (typeof window !== 'undefined') {
+      const saved = sessionStorage.getItem('language');
+      return saved !== null ? saved as "fr" | "en" : "fr";
+    }
+    return "fr";
+  });
+
 
   const t = translations[currentLang]
 
@@ -137,15 +154,29 @@ export default function Portfolio() {
     }
     setIsMenuOpen(false)
   }
+  useEffect(() => {
+    sessionStorage.setItem('darkMode', JSON.stringify(isDarkMode));
+  }, [isDarkMode]);
 
+  useEffect(() => {
+    sessionStorage.setItem('language', currentLang);
+    document.documentElement.lang = currentLang;
+  }, [currentLang]);
+
+
+  // Modify your theme toggle function to persist the setting
   const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode)
-  }
+    const newMode = !isDarkMode;
+    setIsDarkMode(newMode);
+    sessionStorage.setItem('darkMode', JSON.stringify(newMode));
+  };
 
+  // Modify your language change function to persist the setting
   const changeLanguage = (lang: "fr" | "en") => {
-    setCurrentLang(lang)
-    setIsLangMenuOpen(false)
-  }
+    setCurrentLang(lang);
+    setIsLangMenuOpen(false);
+    sessionStorage.setItem('language', lang);
+  };
 
 
   useEffect(() => {
@@ -344,7 +375,7 @@ const getIcon = (iconName?: string) => {
   return LucideIcons[pascalCase] || null; // لو الأيقونة مش موجودة، رجع null
 };
 
-  if (heroLoading || servicesLoading || photoLoading || educationLoading || aboutLoading || contactLoading || projetsLoading) return <Loading/>;
+  if (heroLoading || servicesLoading || photoLoading || educationLoading || aboutLoading || contactLoading || projetsLoading || skillsLoading) return <Loading/>;
   return (
 
     <div
