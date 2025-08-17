@@ -127,7 +127,7 @@ export default function AdminCvPage() {
       <div className="flex items-center gap-3 mb-6">
         <LucideIcons.FileText size={24} className="text-blue-500" />
         <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white">
-          CV Management
+          CV 
         </h1>
       </div>
 
