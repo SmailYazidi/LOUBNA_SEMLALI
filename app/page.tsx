@@ -1,6 +1,5 @@
 "use client"
-import Head from 'next/head';
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -8,8 +7,6 @@ import Loading from '@/components/Loading';
 import Image from "next/image"
 import {
   Mail,
-  Phone,
-  MapPin,
   Star,
   Menu,
   X,
@@ -21,7 +18,6 @@ import {
   Sun,
   Moon,
   ChevronDown,
-  Github,
   Link,
   Search,
 } from "lucide-react"
@@ -114,6 +110,8 @@ export default function Portfolio() {
  const [projetsLoading, setProjetsLoading] = useState(true);
    const [projetsData, setProjetsData] = useState<any>(null);
 
+ const [usernameLoading, setUsernameLoading] = useState(true);
+   const [usernameData, setUsernameData] = useState<any>(null);
 
 
 
@@ -206,6 +204,26 @@ export default function Portfolio() {
         setHeroLoading(false);
       });
   }, []);
+
+ useEffect(() => {
+  // Fetch username
+     fetch("/api/username")
+       .then((res) => res.json())
+      .then((data) => {
+      setUsernameData(data || "");
+       setUsernameLoading(false);
+         })
+      .catch((err) => {
+        console.error("Error fetching username data:", err);
+        setUsernameLoading(false);
+      });
+  }, []);
+
+
+
+  
+
+
  useEffect(() => {
     fetch("/api/about_me")
       .then((res) => res.json())
@@ -292,11 +310,6 @@ export default function Portfolio() {
 
 
   useEffect(() => {
-    document.documentElement.lang = currentLang
-    document.documentElement.dir = currentLang === "fr" ? "ltr" : "ltr" // Assuming French is LTR, Arabic would be RTL
-  }, [currentLang])
-
-  useEffect(() => {
     const handleScroll = () => {
       const sections = ["home", "services", "experience", "skills", "projects", "about", "contact"]
       const scrollPosition = window.scrollY + 110
@@ -346,7 +359,7 @@ export default function Portfolio() {
     { code: "en", label: "English", flag: "🇺🇸" },
   ]
 
-  // Theme classes
+ 
   const themeClasses = {
     bg: isDarkMode ? "bg-[#0a0a0a]" : "bg-white",
     text: isDarkMode ? "text-white" : "text-gray-900",
@@ -362,7 +375,7 @@ export default function Portfolio() {
     accentGold: "rgb(var(--portfolio-gold))",
     accentGoldHover: "rgb(var(--portfolio-gold-hover))",
     accentGoldForeground: "rgb(var(--portfolio-gold-foreground))",
-    accentRed: "var(--portfolio-red)", // Using the new CSS variable
+    accentRed: "var(--portfolio-red)",
     accentRedForeground: "var(--portfolio-red-foreground)",
   }
 
@@ -370,12 +383,12 @@ export default function Portfolio() {
 
 
 const getIcon = (iconName?: string) => {
-  if (!iconName) return null; // لو مافي أي اسم أيقونة، رجع null
+  if (!iconName) return null; 
   const pascalCase = iconName.charAt(0).toUpperCase() + iconName.slice(1);
-  return LucideIcons[pascalCase] || null; // لو الأيقونة مش موجودة، رجع null
+  return LucideIcons[pascalCase] || null; 
 };
 
-  if (heroLoading || servicesLoading || photoLoading || educationLoading || aboutLoading || contactLoading || projetsLoading || skillsLoading) return <Loading/>;
+  if (heroLoading || servicesLoading || photoLoading || educationLoading || aboutLoading || contactLoading || projetsLoading || skillsLoading || usernameLoading) return <Loading/>;
   return (
 
     <div
@@ -402,7 +415,7 @@ const getIcon = (iconName?: string) => {
   </span>
 </div> */}
 
-<span className="text-base sm:text-xl font-medium">LOUBNA SEMLALI</span>
+<span className="text-base sm:text-xl font-medium">{usernameData.name}</span>
 </div>
 
 
@@ -1202,7 +1215,7 @@ const getIcon = (iconName?: string) => {
               >
                 <span className={`${isDarkMode ? "text-black" : "text-white"} font-bold text-sm`}>L</span>
               </div>
-              <span className={themeClasses.textSecondary}>© 2025 LOUBNA SEMLALI</span>
+              <span className={themeClasses.textSecondary}>© 2025 {usernameData.name}</span>
             </div>
             <p className={`${themeClasses.textMuted} text-xs sm:text-sm`}>{t.rightsReserved}</p>
           </div>

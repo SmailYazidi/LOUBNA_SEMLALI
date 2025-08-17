@@ -1,8 +1,23 @@
-'use client';
+"use client";
+import { useEffect, useState } from "react";
 
 export default function Loading() {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    // Check session storage after component mounts
+    const savedDarkMode = sessionStorage.getItem('darkMode');
+    setIsDarkMode(savedDarkMode ? JSON.parse(savedDarkMode) : false);
+  }, []);
+
+  const themeClasses = {
+    bg: isDarkMode ? "bg-[#0a0a0a]" : "bg-white",
+    text: isDarkMode ? "text-white" : "text-gray-900",
+    dotColor: isDarkMode ? "rgb(255, 255, 255)" : "rgb(0, 0, 0)"
+  };
+
   return (
-    <div className="bg-white text-gray-900  min-h-screen w-full flex flex-col items-center justify-center px-4 py-8">
+    <div className={`min-h-screen w-full flex flex-col items-center justify-center px-4 py-8 ${themeClasses.bg} ${themeClasses.text}`}>
       <div className="loading-dots" aria-label="Loading">
         <span></span>
         <span></span>
@@ -20,7 +35,7 @@ export default function Loading() {
         .loading-dots span {
           width: 8px;
           height: 8px;
-          background-color:rgb(0, 0, 0); /* blue color */
+          background-color: ${themeClasses.dotColor};
           border-radius: 50%;
           animation: bounce 1s infinite ease-in-out both;
         }
