@@ -278,7 +278,33 @@ export default function AboutAdminPage() {
         </h1>
       </div>
 
-   
+      <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
+        <div className="flex items-center gap-2 mb-3">
+          <LucideIcons.Type size={20} className="text-gray-600 dark:text-gray-300" />
+          <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Title</h2>
+        </div>
+        <div className="grid md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">French</label>
+            <input
+              type="text"
+              value={about.aboutTitle.fr}
+              onChange={(e) => handleInputChange("aboutTitle", "fr", "", e.target.value)}
+              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">English</label>
+            <input
+              type="text"
+              value={about.aboutTitle.en}
+              onChange={(e) => handleInputChange("aboutTitle", "en", "", e.target.value)}
+              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+            />
+          </div>
+        </div>
+      </div>
+
       {/* About Description */}
       <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
         <div className="flex items-center gap-2 mb-3">

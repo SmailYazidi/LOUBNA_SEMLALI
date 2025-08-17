@@ -380,14 +380,77 @@ export default function Portfolio() {
   }
 
 
-
+const isJourneyDataEmpty =
+  !educationData ||
+  !educationData.journeyTitle?.[currentLang]?.trim() ||
+  (!educationData.education?.length && !educationData.experience?.length);
+  const isContactDataEmpty =
+  !contactData ||
+  !(
+  
+    (contactData.contactDescription?.[currentLang]?.trim() !== "") ||
+    (contactData.contactInfo && contactData.contactInfo.length > 0 &&
+      contactData.contactInfo.some(info =>
+        (info.label?.[currentLang]?.trim() !== "") ||
+        (info.value?.trim() !== "")
+      )
+    ) ||
+    (contactData.contactButton?.startProject?.[currentLang]?.trim() !== "")
+  );
+const isAboutDataEmpty =
+  !aboutData ||
+  !(
+ 
+    (aboutData.aboutDescription?.[currentLang]?.trim() !== "") ||
+    (aboutData.personalInfo && aboutData.personalInfo.length > 0 &&
+      aboutData.personalInfo.some(info =>
+        (info.label?.[currentLang]?.trim() !== "") ||
+        (info.value?.[currentLang]?.trim() !== "")
+      )
+    ) ||
+    (aboutData.languages?.list && aboutData.languages.list.length > 0 &&
+      aboutData.languages.list.some(language =>
+        (language.name?.[currentLang]?.trim() !== "") ||
+        (language.level?.trim() !== "")
+      )
+    ) ||
+    (aboutData.interests && aboutData.interests.length > 0 &&
+      aboutData.interests.some(interest =>
+        (interest.name?.[currentLang]?.trim() !== "")
+      )
+    )
+  );
+const isSkillsDataEmpty =
+  !skillsData ||
+  !(
+  /*   (skillsData.skillsTitle?.[currentLang]?.trim() !== "") || */
+    (skillsData.skills && skillsData.skills.length > 0 &&
+      skillsData.skills.some(skill =>
+        (skill.title?.[currentLang]?.trim() !== "") ||
+        (skill.items && skill.items.length > 0 &&
+          skill.items.some(item =>
+            (item.name?.[currentLang]?.trim() !== "") ||
+            (item.examples && item.examples.some(ex => ex[currentLang]?.trim() !== ""))
+          )
+        )
+      )
+    )
+  );
+const isHeroDataEmpty =
+  !heroData ||
+  !(
+    (heroData.specialist?.[currentLang] && heroData.specialist[currentLang].trim() !== "") ||
+    (heroData.heroTitle?.[currentLang] && heroData.heroTitle[currentLang].trim() !== "") ||
+    (heroData.heroDescription?.[currentLang] && heroData.heroDescription[currentLang].trim() !== "") ||
+    (heroData.heroButtons && heroData.heroButtons.length > 0)
+  );
 
 const getIcon = (iconName?: string) => {
   if (!iconName) return null; 
   const pascalCase = iconName.charAt(0).toUpperCase() + iconName.slice(1);
   return LucideIcons[pascalCase] || null; 
 };
-
+ console.log(servicesData)
   if (heroLoading || servicesLoading || photoLoading || educationLoading || aboutLoading || contactLoading || projetsLoading || skillsLoading || usernameLoading) return <Loading/>;
   return (
 
@@ -464,7 +527,7 @@ const getIcon = (iconName?: string) => {
     variant="ghost"
     size="sm"
     onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
-    className="p-2 hover:bg-[rgb(var(--portfolio-gold-hover))] flex items-center gap-2"
+    className="p-2 hover:bg-[#d6a904] flex items-center gap-2"
   >
   <span className="text-xs font-medium">{currentLang.toUpperCase()}</span>
 <ChevronDown
@@ -481,7 +544,7 @@ const getIcon = (iconName?: string) => {
           key={option.code}
           onClick={() => changeLanguage(option.code as "fr" | "en")}
           className={`w-full px-4 py-2 text-left text-sm flex items-center gap-3 
-            hover:bg-[rgb(var(--portfolio-gold-hover))] transition-colors
+           hover:bg-[#d6a904] transition-colors
             ${currentLang === option.code
               ? "text-[rgb(var(--portfolio-gold))]"
               : themeClasses.text
@@ -502,7 +565,7 @@ const getIcon = (iconName?: string) => {
   variant="ghost"
   size="sm"
   onClick={toggleTheme}
-  className="p-2 hover:bg-[rgb(var(--portfolio-gold-hover))]"
+  className="p-2  hover:bg-[#d6a904]"
 >
   {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
 </Button>
@@ -512,7 +575,7 @@ const getIcon = (iconName?: string) => {
   variant="ghost"
   size="sm"
   onClick={() => setIsSearchOpen(!isSearchOpen)}
-  className="p-2 hover:bg-[rgb(var(--portfolio-gold-hover))]"
+  className="p-2 hover:bg-[#d6a904]"
 >
   {isSearchOpen ? <X className="w-5 h-5" /> : <Search className="w-5 h-5" />}
 </Button>
@@ -522,7 +585,7 @@ const getIcon = (iconName?: string) => {
               {/* Hire Me */}
               <Button
                 className={`${isDarkMode
-                  ? "bg-[rgb(var(--portfolio-gold))] hover:bg-[rgb(var(--portfolio-gold-hover))] text-black"
+                  ? "bg-[#EFBF04] hover:bg-[#d6a904] text-black"
                   : "bg-gray-900 hover:bg-gray-800 text-white"
                   } font-medium px-6 py-2 rounded-full`}
                 onClick={() => scrollToSection("contact")}
@@ -536,7 +599,7 @@ const getIcon = (iconName?: string) => {
   variant="ghost"
   size="sm"
   onClick={toggleTheme}
-  className="p-2 hover:bg-[rgb(var(--portfolio-gold-hover))]"
+  className="p-2 hover:bg-[#d6a904]"
 >
   {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
 </Button>
@@ -545,7 +608,7 @@ const getIcon = (iconName?: string) => {
   variant="ghost"
   size="sm"
   onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
-  className="p-2 hover:bg-[rgb(var(--portfolio-gold-hover))] transition-colors flex items-center gap-1"
+  className="p-2 hover:bg-[#d6a904] transition-colors flex items-center gap-1"
 >  <span className="text-xs font-medium">{currentLang.toUpperCase()}</span>
 <ChevronDown
     className={`w-3 h-3 mb-1 transition-transform ${isLangMenuOpen ? "rotate-180" : ""}`}
@@ -562,7 +625,7 @@ const getIcon = (iconName?: string) => {
           key={option.code}
           onClick={() => changeLanguage(option.code as "fr" | "en")}
           className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 
-            hover:bg-[rgb(var(--portfolio-gold-hover))] transition-colors
+            hover:bg-[#d6a904] transition-colors
             ${currentLang === option.code
               ? "text-[rgb(var(--portfolio-gold))]"
               : themeClasses.text
@@ -584,7 +647,7 @@ const getIcon = (iconName?: string) => {
   variant="ghost"
   size="sm"
   onClick={() => setIsSearchOpen(!isSearchOpen)}
-  className="p-2 hover:bg-[rgb(var(--portfolio-gold-hover))]"
+  className="p-2 hover:bg-[#d6a904]"
 >
   {isSearchOpen ? <X className="w-6 h-6" /> : <Search className="w-6 h-6" />}
 </Button>
@@ -617,7 +680,7 @@ const getIcon = (iconName?: string) => {
 
                   <Button
                     className={`w-full ${isDarkMode
-                      ? "bg-[rgb(var(--portfolio-gold))] hover:bg-[rgb(var(--portfolio-gold-hover))] text-black"
+                      ? "bg-[#EFBF04] hover:bg-[#d6a904]text-black"
                       : "bg-gray-900 hover:bg-gray-800 text-white"
                       } font-medium py-2 rounded-full`}
                     onClick={() => scrollToSection("contact")}
@@ -662,6 +725,7 @@ const getIcon = (iconName?: string) => {
 
 
       {/* Hero Section */}
+{!isHeroDataEmpty && (
       <section id="home" className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto max-w-7xl">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
@@ -682,11 +746,13 @@ const getIcon = (iconName?: string) => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
              
 
-                <Button
-                  className="bg-[rgb(var(--portfolio-gold))] hover:bg-[rgb(var(--portfolio-gold-hover))] text-gray-900 font-medium px-8 py-3 rounded-full"
-                onClick={() => window.location.href = "/cv"} >
-                  {t.viewJourney}
-                </Button>
+           <Button
+  className="bg-[#EFBF04] hover:bg-[#d6a904] text-gray-900 font-medium px-8 py-3 rounded-full"
+  onClick={() => window.location.href = '/cv'}
+>
+  {t.viewJourney}
+</Button>
+
 
              {heroData.heroButtons.map((button, index) => {
   const Icon = getIcon(button.icon);
@@ -751,7 +817,11 @@ const getIcon = (iconName?: string) => {
 </div>
           </div>
         </div>
-      </section>
+      </section>)}
+   {/*  services */}
+
+
+{Array.isArray(servicesData?.servicesList) && servicesData.servicesList.length > 0 && (
 
 <section id="services" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
   <div className="container mx-auto max-w-7xl">
@@ -784,13 +854,19 @@ const getIcon = (iconName?: string) => {
       )}
     </div>
   </div>
-</section>
+</section>)}
 
 
 
 
 
 {/* Experience & Education Timeline Section */}
+
+
+{(
+  (Array.isArray(educationData?.education) && educationData.education.length > 0) ||
+  (Array.isArray(educationData?.experience) && educationData.experience.length > 0)
+) && (
 <section
   id="experience"
   className={`py-16 sm:py-20 px-4 sm:px-6 lg:px-8 ${themeClasses.sectionBg}`}
@@ -882,9 +958,10 @@ const getIcon = (iconName?: string) => {
       </div>
     </div>
   </div>
-</section>
+</section>)}
 
 {/* Skills Section */}
+{!isSkillsDataEmpty && (
 <section id="skills" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
   <div className="container mx-auto max-w-7xl">
     <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4">
@@ -942,11 +1019,11 @@ const getIcon = (iconName?: string) => {
       })}
     </div>
   </div>
-</section>
+</section>)}
 
 
 {/* Projects Section */}
-
+{(projetsLoading || (Array.isArray(projetsData?.projects) && projetsData.projects.length > 0)) && (
 <section
   id="projects"
   className={`py-16 sm:py-20 px-4 sm:px-6 lg:px-8 ${themeClasses.sectionBg}`}
@@ -1047,8 +1124,12 @@ const getIcon = (iconName?: string) => {
       </div>
     )}
   </div>
-</section>
+</section>)}
+
+
+
 {/* About Section */}
+{!isAboutDataEmpty && (
 <section id="about" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
   <div className="container mx-auto max-w-7xl">
     <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
@@ -1163,8 +1244,11 @@ const getIcon = (iconName?: string) => {
       </div>
     </div>
   </div>
-</section>
+</section>)}
 {/* Contact Section */}
+
+
+{!isContactDataEmpty && (
 <section id="contact" className={`py-16 sm:py-20 px-4 sm:px-6 lg:px-8 ${themeClasses.sectionBg}`}>
   <div className="container mx-auto max-w-4xl text-center">
     <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-6 sm:mb-8">
@@ -1173,37 +1257,52 @@ const getIcon = (iconName?: string) => {
     <p className={`${themeClasses.textSecondary} text-base sm:text-lg mb-10 sm:mb-12 max-w-2xl mx-auto`}>
       {contactData.contactDescription?.[currentLang]}
     </p>
+<div className="grid md:grid-cols-3 gap-6 sm:gap-8 mb-10 sm:mb-12">
+  {contactData.contactInfo?.map((info, index) => {
+    const IconComponent = getIcon(info.icon);
+    return (
+      <div key={index} className="text-center">
+        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#EFBF04] hover:bg-[#d6a904] rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+          {IconComponent && (
+            <IconComponent className="w-5 h-5 sm:w-6 sm:h-6 text-black" />
+          )}
+        </div>
+        <h3 className="font-medium text-base sm:text-lg mb-1 sm:mb-2">
+          {info.label?.[currentLang]}
+        </h3>
+        <p className={`${themeClasses.textSecondary} text-sm sm:text-base`}>
+          {info.link ? (
+            <a
+              href={info.link}
+              target={info.link.startsWith("http") ? "_blank" : "_self"}
+              rel={info.link.startsWith("http") ? "noopener noreferrer" : ""}
+              className="hover:underline"
+            >
+              {typeof info.value === "object"
+                ? info.value[currentLang]
+                : info.value}
+            </a>
+          ) : (
+            typeof info.value === "object"
+              ? info.value[currentLang]
+              : info.value
+          )}
+        </p>
+      </div>
+    );
+  })}
+</div>
 
-    <div className="grid md:grid-cols-3 gap-6 sm:gap-8 mb-10 sm:mb-12">
-      {contactData.contactInfo?.map((info, index) => {
-        const IconComponent = getIcon(info.icon);
-        return (
-          <div key={index} className="text-center">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[rgb(var(--portfolio-gold))] rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
-              {IconComponent && (
-                <IconComponent className="w-5 h-5 sm:w-6 sm:h-6 text-black" />
-              )}
-            </div>
-            <h3 className="font-medium text-base sm:text-lg mb-1 sm:mb-2">
-              {info.label?.[currentLang]}
-            </h3>
-            <p className={`${themeClasses.textSecondary} text-sm sm:text-base`}>
-              {typeof info.value === 'object' ? info.value[currentLang] : info.value}
-            </p>
-          </div>
-        );
-      })}
-    </div>
 
     <a 
       href={contactData.contactButton?.link || "#contact-form"}
-      className="inline-flex items-center bg-[rgb(var(--portfolio-gold))] hover:bg-[rgb(var(--portfolio-gold-hover))] text-black font-medium px-8 py-3 rounded-full text-base sm:text-lg transition-colors"
+      className="inline-flex items-center bg-[#EFBF04] hover:bg-[#d6a904] text-black font-medium px-8 py-3 rounded-full text-base sm:text-lg transition-colors"
     >
       <Send className={ `w-5 h-5 mr-2`} />
       {contactData.contactButton?.startProject?.[currentLang]}
     </a>
   </div>
-</section>
+</section>)}
 
       {/* Footer */}
       <footer className={`py-6 sm:py-8 px-4 sm:px-6 lg:px-8 border-t ${themeClasses.headerBorder}`}>

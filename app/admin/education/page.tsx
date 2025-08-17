@@ -148,8 +148,8 @@ const saveData = async () => {
           Education & Experience
         </h1>
       </div>
-{/* 
-    Journey Title Section 
+
+ 
       <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
         <div className="flex items-center gap-2 mb-3">
           <LucideIcons.Bookmark size={20} className="text-gray-600 dark:text-gray-300" />
@@ -177,7 +177,7 @@ const saveData = async () => {
             />
           </div>
         </div>
-      </div> */}
+      </div> 
 
       {/* Education Section */}
       <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
