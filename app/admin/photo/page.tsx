@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Loading from '@/components/LoadingAdmin';
 import * as LucideIcons from "lucide-react";
+import { useToast } from "@/hooks/use-toast"
 
 export default function AdminPhotoPage() {
   const router = useRouter();
@@ -12,7 +13,8 @@ export default function AdminPhotoPage() {
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-
+ const { toast } = useToast()
+ 
   // Fetch existing photo URL
   useEffect(() => {
     const fetchPhotoUrl = async () => {

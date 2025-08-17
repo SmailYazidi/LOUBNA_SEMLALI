@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Loading from '@/components/LoadingAdmin';
 import * as LucideIcons from "lucide-react";
+import { useToast } from "@/hooks/use-toast"
 
 type LocalizedText = { fr: string; en: string };
 
@@ -30,6 +31,7 @@ export default function EducationAdminPage() {
   const [data, setData] = useState<EducationData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+ const { toast } = useToast()
 
   const fetchEducation = async () => {
     setLoading(true);
@@ -103,10 +105,19 @@ export default function EducationAdminPage() {
         body: JSON.stringify(data),
       });
       if (!res.ok) throw new Error("Failed to save education data");
-      alert("Education data saved successfully!");
+     
+   toast({
+  title: "Success",
+  description: "Saved successfully!!",
+  className: "bg-green-500 text-white border-none", // ✅ green background, white text
+})
       fetchEducation();
     } catch (err: any) {
-      alert(err.message);
+   toast({
+    title: "Error",
+    description: err?.message || "Something went wrong!",
+    className: "bg-red-500 text-white border-none",
+  })
     }
   };
 

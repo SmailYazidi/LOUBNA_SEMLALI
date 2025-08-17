@@ -1,11 +1,12 @@
 "use client";
-
+import { Toaster } from "@/components/ui/toaster"
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getSession } from "next-auth/react";
 import Header from "@/components/header";
 import Sidebar from "@/components/sidbar";
 import Loading from '@/components/LoadingAdmin';
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -42,6 +43,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
+                <Toaster />
       <Sidebar isOpen={sidebarOpen} closeSidebar={closeSidebar} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header toggleSidebar={toggleSidebar} />

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Loading from '@/components/LoadingAdmin';
 import * as LucideIcons from "lucide-react";
-
+import { useToast } from "@/hooks/use-toast"
 interface LanguageItem {
   name: string;
   level: string;
@@ -53,6 +53,12 @@ export default function AboutAdminPage() {
   const [error, setError] = useState("");
   const [newLanguageName, setNewLanguageName] = useState("");
   const [iconSearch, setIconSearch] = useState("");
+
+ const { toast } = useToast()
+
+
+
+
   const [activeIconPicker, setActiveIconPicker] = useState<{
     type: 'personalInfo' | 'interests';
     index: number;
@@ -242,9 +248,19 @@ export default function AboutAdminPage() {
       if (!response.ok) {
         throw new Error("Failed to save");
       }
-
+   toast({
+  title: "Success",
+  description: "Saved successfully!",
+  className: "bg-green-500 text-white border-none", // ✅ green background, white text
+})
       alert("Saved successfully!");
-    } catch (err) {
+    } catch (err: any) {
+  toast({
+    title: "Error",
+    description: err?.message || "Something went wrong!",
+    className: "bg-red-500 text-white border-none",
+  })
+
       console.error(err);
       alert("Failed to save. Please try again.");
     }

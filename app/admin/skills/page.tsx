@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Loading from "@/components/LoadingAdmin";
 import * as LucideIcons from "lucide-react";
-
+import { useToast } from "@/hooks/use-toast"
 type LocalizedText = { fr: string; en: string };
 
 type SkillItem = {
@@ -27,7 +27,8 @@ export default function SkillsAdminPage() {
   const [data, setData] = useState<SkillsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  
+   const { toast } = useToast()
+
   // Icon picker state
   const [showIconPicker, setShowIconPicker] = useState<{type: 'category' | 'item', categoryIndex: number, itemIndex?: number} | null>(null);
   const [iconSearch, setIconSearch] = useState("");
@@ -167,11 +168,20 @@ export default function SkillsAdminPage() {
       
       const result = await res.json();
       console.log("Save result:", result);
-      alert("Skills data saved successfully!");
+    
+   toast({
+  title: "Success",
+  description: "Saved successfully!!",
+  className: "bg-green-500 text-white border-none", // ✅ green background, white text
+})
       fetchSkills();
     } catch (err: any) {
       console.error("Save error:", err);
-      alert(`Error: ${err.message}`);
+    toast({
+    title: "Error",
+    description: err?.message || "Something went wrong!",
+    className: "bg-red-500 text-white border-none",
+  })
     }
   };
 

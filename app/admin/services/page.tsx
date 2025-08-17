@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Loading from '@/components/LoadingAdmin';
 import * as LucideIcons from "lucide-react";
+import { useToast } from "@/hooks/use-toast"
 
 type Service = {
   title: { fr: string; en: string };
@@ -17,6 +18,7 @@ export default function ServicesAdminPage() {
   const [services, setServices] = useState<ServicesData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+ const { toast } = useToast()
 
   const fetchServices = async () => {
     setLoading(true);
@@ -70,10 +72,19 @@ export default function ServicesAdminPage() {
         body: JSON.stringify(services),
       });
       if (!res.ok) throw new Error("Failed to save services");
-      alert("Services saved successfully!");
+
+   toast({
+  title: "Success",
+  description: "Saved successfully!!",
+  className: "bg-green-500 text-white border-none", // ✅ green background, white text
+})
       fetchServices();
     } catch (err: any) {
-      alert(err.message);
+    toast({
+    title: "Error",
+    description: err?.message || "Something went wrong!",
+    className: "bg-red-500 text-white border-none",
+  })
     }
   };
 

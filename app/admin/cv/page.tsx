@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Loading from '@/components/LoadingAdmin';
 import * as LucideIcons from "lucide-react";
+import { useToast } from "@/hooks/use-toast"
 
 export default function AdminCvPage() {
   const router = useRouter();
@@ -13,7 +14,8 @@ export default function AdminCvPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [uploadProgress, setUploadProgress] = useState<{ fr?: number; en?: number }>({});
-
+ const { toast } = useToast()
+ 
   // Fetch existing CV URLs
   useEffect(() => {
     const fetchCvUrls = async () => {

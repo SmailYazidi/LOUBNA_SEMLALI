@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react";
 import * as LucideIcons from "lucide-react";
+import { useToast } from "@/hooks/use-toast"
 
 export default function ProjetsPage() {
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+ const { toast } = useToast()
 
   // Form states
   const [titleFr, setTitleFr] = useState("");
@@ -57,7 +59,13 @@ export default function ProjetsPage() {
       setProjects(data.projects || []);
     } catch (e) {
       console.error("Fetch error:", e);
-      alert("Failed to load projects");
+toast({
+    title: "Error",
+    description: "Failed to load projects!",
+    className: "bg-red-500 text-white border-none",
+  })
+
+   
     } finally {
       setLoading(false);
     }
@@ -114,7 +122,12 @@ export default function ProjetsPage() {
     e.preventDefault();
     
     if (!titleFr || !titleEn) {
-      alert("Please provide titles in both languages");
+      toast({
+    title: "Error",
+    description: "Please provide titles in both languages",
+    className: "bg-red-500 text-white border-none",
+  })
+   
       return;
     }
 
@@ -152,7 +165,12 @@ export default function ProjetsPage() {
       if (!res.ok) {
         const errorData = await res.json();
         console.error("Save failed:", errorData);
-        alert(`Save failed: ${errorData.error || 'Unknown error'}`);
+        toast({
+    title: "Error",
+    description: errorData?.error || "Something went wrong!",
+    className: "bg-red-500 text-white border-none",
+  })
+    
         return;
       }
 
@@ -160,7 +178,12 @@ export default function ProjetsPage() {
       resetForm();
     } catch (error) {
       console.error("Network error:", error);
-      alert("Network error - check console");
+      toast({
+    title: "Error",
+    description: "Network error - check console!",
+    className: "bg-red-500 text-white border-none",
+  })
+    
     }
   };
 
@@ -194,11 +217,21 @@ export default function ProjetsPage() {
         await fetchProjects();
       } else {
         const errorData = await res.json();
-        alert(`Delete failed: ${errorData.error || 'Unknown error'}`);
+toast({
+    title: "Error",
+    description: errorData?.error || "Something went wrong!",
+    className: "bg-red-500 text-white border-none",
+  })
+
       }
     } catch (error) {
       console.error("Delete error:", error);
-      alert("Delete failed - check console");
+      toast({
+    title: "Error",
+    description:"Delete failed - check console!",
+    className: "bg-red-500 text-white border-none",
+  })
+
     }
   };
 

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Loading from '@/components/LoadingAdmin';
 import * as LucideIcons from "lucide-react";
-
+import { useToast } from "@/hooks/use-toast"
 type HeroButton = {
   text: { fr: string; en: string };
   link: string;
@@ -24,7 +24,7 @@ export default function HeroAdminPage() {
   const [error, setError] = useState("");
   const [iconSearch, setIconSearch] = useState("");
   const [activeIconPickerIndex, setActiveIconPickerIndex] = useState<number | null>(null);
-
+  const { toast } = useToast()
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -64,10 +64,20 @@ export default function HeroAdminPage() {
       });
       
       if (!res.ok) throw new Error("Failed to save hero content");
-      alert("Hero content saved successfully!");
+   toast({
+  title: "Success",
+  description: "Hero content saved successfully!",
+  className: "bg-green-500 text-white border-none", // ✅ green background, white text
+})
+
       fetchData();
     } catch (err: any) {
-      alert(err.message);
+      toast({
+    title: "Error",
+    description: err.message || "Something went wrong!",
+    className: "bg-red-500 text-white border-none",
+  })
+
     }
   };
 
@@ -80,10 +90,24 @@ export default function HeroAdminPage() {
       });
       
       if (!res.ok) throw new Error("Failed to save username");
-      alert("Username saved successfully!");
+    
+   toast({
+  title: "Success",
+  description: "Username saved successfully!",
+  className: "bg-green-500 text-white border-none", // ✅ green background, white text
+})
+
+  
       fetchData(); // Refresh data to show new username
     } catch (err: any) {
-      alert(err.message);
+
+  toast({
+    title: "Error",
+    description: err.message || "Something went wrong!",
+    className: "bg-red-500 text-white border-none",
+  })
+
+  
     }
   };
 

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Loading from "@/components/LoadingAdmin";
 import * as LucideIcons from "lucide-react";
-
+import { useToast } from "@/hooks/use-toast"
 export default function SettingsPage() {
   const [hasPassword, setHasPassword] = useState<boolean | null>(null);
   const [currentPassword, setCurrentPassword] = useState("");
@@ -17,7 +17,8 @@ export default function SettingsPage() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const router = useRouter();
-
+ const { toast } = useToast()
+ 
   useEffect(() => {
     const checkPassword = async () => {
       try {
