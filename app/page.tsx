@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import Loading from '@/components/Loading';
 import Image from "next/image"
 import {
-  Mail,
+  Send,
   Star,
   Menu,
   X,
@@ -1199,7 +1199,7 @@ const getIcon = (iconName?: string) => {
       href={contactData.contactButton?.link || "#contact-form"}
       className="inline-flex items-center bg-[rgb(var(--portfolio-gold))] hover:bg-[rgb(var(--portfolio-gold-hover))] text-black font-medium px-8 py-3 rounded-full text-base sm:text-lg transition-colors"
     >
-      <Mail className="w-5 h-5 mr-2 text-black" />
+      <Send className="w-5 h-5 mr-2 text-black" />
       {contactData.contactButton?.startProject?.[currentLang]}
     </a>
   </div>

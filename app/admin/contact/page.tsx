@@ -424,7 +424,7 @@ export default function ContactAdminPage() {
         {(contact.contactButton.startProject.fr || contact.contactButton.startProject.en) && (
           <div className="mt-4 p-3 bg-gray-100 dark:bg-gray-600 rounded-lg">
             <span className="text-sm text-gray-600 dark:text-gray-400 block mb-2">Button Preview:</span>
-            <div className="inline-flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg">
+            <div className="inline-flex items-center gap-2 bg-[rgb(var(--portfolio-gold))] hover:bg-[rgb(var(--portfolio-gold-hover))] text-white px-4 py-2 rounded-lg">
               <LucideIcons.Send size={16} />
               {contact.contactButton.startProject.en || contact.contactButton.startProject.fr}
             </div>
