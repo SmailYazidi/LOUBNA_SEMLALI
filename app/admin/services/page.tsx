@@ -18,7 +18,8 @@ export default function ServicesAdminPage() {
   const [services, setServices] = useState<ServicesData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
- const { toast } = useToast()
+  const [expandedServices, setExpandedServices] = useState<Set<number>>(new Set());
+  const { toast } = useToast()
 
   const fetchServices = async () => {
     setLoading(true);
@@ -40,6 +41,16 @@ export default function ServicesAdminPage() {
     fetchServices();
   }, []);
 
+  const toggleAccordion = (index: number) => {
+    const newExpanded = new Set(expandedServices);
+    if (newExpanded.has(index)) {
+      newExpanded.delete(index);
+    } else {
+      newExpanded.add(index);
+    }
+    setExpandedServices(newExpanded);
+  };
+
   const handleServiceChange = (index: number, field: "title" | "description", lang: "fr" | "en", value: string) => {
     if (!services) return;
     const updatedList = [...services.servicesList];
@@ -49,18 +60,32 @@ export default function ServicesAdminPage() {
 
   const addService = () => {
     if (!services) return;
+    const newIndex = services.servicesList.length;
     setServices({
       servicesList: [
         ...services.servicesList,
         { title: { fr: "", en: "" }, description: { fr: "", en: "" } },
       ],
     });
+    // Automatically expand the new service
+    setExpandedServices(prev => new Set([...prev, newIndex]));
   };
 
   const removeService = (index: number) => {
     if (!services) return;
     const updatedList = services.servicesList.filter((_, i) => i !== index);
     setServices({ servicesList: updatedList });
+    
+    // Update expanded services indices
+    const newExpanded = new Set<number>();
+    expandedServices.forEach(expandedIndex => {
+      if (expandedIndex < index) {
+        newExpanded.add(expandedIndex);
+      } else if (expandedIndex > index) {
+        newExpanded.add(expandedIndex - 1);
+      }
+    });
+    setExpandedServices(newExpanded);
   };
 
   const saveServices = async () => {
@@ -73,18 +98,18 @@ export default function ServicesAdminPage() {
       });
       if (!res.ok) throw new Error("Failed to save services");
 
-   toast({
-  title: "Success",
-  description: "Saved successfully!!",
-  className: "bg-green-500 text-white border-none", // ✅ green background, white text
-})
+      toast({
+        title: "Success",
+        description: "Saved successfully!!",
+        className: "bg-green-500 text-white border-none",
+      })
       fetchServices();
     } catch (err: any) {
-    toast({
-    title: "Error",
-    description: err?.message || "Something went wrong!",
-    className: "bg-red-500 text-white border-none",
-  })
+      toast({
+        title: "Error",
+        description: err?.message || "Something went wrong!",
+        className: "bg-red-500 text-white border-none",
+      })
     }
   };
 
@@ -122,68 +147,117 @@ export default function ServicesAdminPage() {
             No services added yet
           </div>
         ) : (
-          <div className="space-y-4">
-            {services.servicesList.map((service, index) => (
-              <div key={index} className="border border-gray-200 dark:border-gray-700 p-4 rounded-lg bg-white dark:bg-gray-700">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-medium text-lg flex items-center gap-2 text-gray-700 dark:text-white">
-                    <LucideIcons.Circle size={12} className="text-blue-500" />
-                    Service {index + 1}
-                  </h3>
-                  <button
-                    onClick={() => removeService(index)}
-                    className="flex items-center gap-1 bg-red-500 text-white px-2 py-1 rounded-lg hover:bg-red-600 transition text-sm"
+          <div className="space-y-3">
+            {services.servicesList.map((service, index) => {
+              const isExpanded = expandedServices.has(index);
+              const hasContent = service.title.fr || service.title.en || service.description.fr || service.description.en;
+              const displayTitle = service.title.en || service.title.fr || `Service ${index + 1}`;
+              
+              return (
+                <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-700 overflow-hidden">
+                  {/* Accordion Header */}
+                  <div 
+                    onClick={() => toggleAccordion(index)}
+                    className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                   >
-                    <LucideIcons.Trash2 size={14} />
-                    Remove
-                  </button>
-                </div>
+                    <div className="flex items-center gap-3 flex-1">
+                      <LucideIcons.Circle size={12} className="text-blue-500 flex-shrink-0" />
+                      <h3 className="font-medium text-lg text-gray-700 dark:text-white">
+                        {hasContent ? displayTitle : `Service ${index + 1}`}
+                      </h3>
+                      {!hasContent && (
+                        <span className="text-xs bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 px-2 py-1 rounded">
+                          Empty
+                        </span>
+                      )}
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeService(index);
+                        }}
+                        className="flex items-center gap-1 bg-red-500 text-white px-2 py-1 rounded-lg hover:bg-red-600 transition text-sm"
+                      >
+                        <LucideIcons.Trash2 size={14} />
+                        Remove
+                      </button>
+                      
+                      <LucideIcons.ChevronDown 
+                        size={20} 
+                        className={`text-gray-500 transition-transform duration-200 ${
+                          isExpanded ? 'rotate-180' : ''
+                        }`}
+                      />
+                    </div>
+                  </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Title (FR)</label>
-                    <input
-                      type="text"
-                      value={service.title.fr}
-                      placeholder="Service title in French"
-                      onChange={(e) => handleServiceChange(index, "title", "fr", e.target.value)}
-                      className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Title (EN)</label>
-                    <input
-                      type="text"
-                      value={service.title.en}
-                      placeholder="Service title in English"
-                      onChange={(e) => handleServiceChange(index, "title", "en", e.target.value)}
-                      className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-                    />
-                  </div>
-                </div>
+                  {/* Accordion Content */}
+                  <div className={`transition-all duration-300 ease-in-out ${
+                    isExpanded ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'
+                  } overflow-hidden`}>
+                    <div className="p-4 pt-0 border-t border-gray-200 dark:border-gray-600">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                            <LucideIcons.Globe size={14} className="inline mr-1" />
+                            Title (FR)
+                          </label>
+                          <input
+                            type="text"
+                            value={service.title.fr}
+                            placeholder="Service title in French"
+                            onChange={(e) => handleServiceChange(index, "title", "fr", e.target.value)}
+                            className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                            <LucideIcons.Globe size={14} className="inline mr-1" />
+                            Title (EN)
+                          </label>
+                          <input
+                            type="text"
+                            value={service.title.en}
+                            placeholder="Service title in English"
+                            onChange={(e) => handleServiceChange(index, "title", "en", e.target.value)}
+                            className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                          />
+                        </div>
+                      </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Description (FR)</label>
-                    <textarea
-                      value={service.description.fr}
-                      placeholder="Service description in French"
-                      onChange={(e) => handleServiceChange(index, "description", "fr", e.target.value)}
-                      className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white min-h-[100px]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Description (EN)</label>
-                    <textarea
-                      value={service.description.en}
-                      placeholder="Service description in English"
-                      onChange={(e) => handleServiceChange(index, "description", "en", e.target.value)}
-                      className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white min-h-[100px]"
-                    />
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                            <LucideIcons.FileText size={14} className="inline mr-1" />
+                            Description (FR)
+                          </label>
+                          <textarea
+                            value={service.description.fr}
+                            placeholder="Service description in French"
+                            onChange={(e) => handleServiceChange(index, "description", "fr", e.target.value)}
+                            className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white min-h-[100px] focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                            <LucideIcons.FileText size={14} className="inline mr-1" />
+                            Description (EN)
+                          </label>
+                          <textarea
+                            value={service.description.en}
+                            placeholder="Service description in English"
+                            onChange={(e) => handleServiceChange(index, "description", "en", e.target.value)}
+                            className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white min-h-[100px] focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

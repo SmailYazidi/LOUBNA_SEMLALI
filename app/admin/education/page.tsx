@@ -31,7 +31,9 @@ export default function EducationAdminPage() {
   const [data, setData] = useState<EducationData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
- const { toast } = useToast()
+  const [expandedEducation, setExpandedEducation] = useState<Set<number>>(new Set());
+  const [expandedExperience, setExpandedExperience] = useState<Set<number>>(new Set());
+  const { toast } = useToast()
 
   const fetchEducation = async () => {
     setLoading(true);
@@ -54,6 +56,26 @@ export default function EducationAdminPage() {
   };
 
   useEffect(() => { fetchEducation(); }, []);
+
+  const toggleAccordion = (section: "education" | "experience", index: number) => {
+    if (section === "education") {
+      const newExpanded = new Set(expandedEducation);
+      if (newExpanded.has(index)) {
+        newExpanded.delete(index);
+      } else {
+        newExpanded.add(index);
+      }
+      setExpandedEducation(newExpanded);
+    } else {
+      const newExpanded = new Set(expandedExperience);
+      if (newExpanded.has(index)) {
+        newExpanded.delete(index);
+      } else {
+        newExpanded.add(index);
+      }
+      setExpandedExperience(newExpanded);
+    }
+  };
 
   const handleChange = (
     section: "journeyTitle" | "education" | "experience",
@@ -87,54 +109,109 @@ export default function EducationAdminPage() {
       institution: { fr: "", en: "" }, 
       description: { fr: "", en: "" } 
     };
+    const newIndex = data[section].length;
     setData({ ...data, [section]: [...data[section], newItem] });
+    
+    // Automatically expand the new item
+    if (section === "education") {
+      setExpandedEducation(prev => new Set([...prev, newIndex]));
+    } else {
+      setExpandedExperience(prev => new Set([...prev, newIndex]));
+    }
   };
 
   const removeItem = (section: "education" | "experience", index: number) => {
     if (!data) return;
     const updatedList = data[section].filter((_, i) => i !== index);
     setData({ ...data, [section]: updatedList });
+    
+    // Update expanded indices
+    if (section === "education") {
+      const newExpanded = new Set<number>();
+      expandedEducation.forEach(expandedIndex => {
+        if (expandedIndex < index) {
+          newExpanded.add(expandedIndex);
+        } else if (expandedIndex > index) {
+          newExpanded.add(expandedIndex - 1);
+        }
+      });
+      setExpandedEducation(newExpanded);
+    } else {
+      const newExpanded = new Set<number>();
+      expandedExperience.forEach(expandedIndex => {
+        if (expandedIndex < index) {
+          newExpanded.add(expandedIndex);
+        } else if (expandedIndex > index) {
+          newExpanded.add(expandedIndex - 1);
+        }
+      });
+      setExpandedExperience(newExpanded);
+    }
   };
 
-const saveData = async () => {
-  if (!data) return;
-  
-  try {
-    const res = await fetch("/api/education", {
-      method: "PUT",
-      headers: { 
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        journeyTitle: data.journeyTitle,
-        education: data.education,
-        experience: data.experience
-      }),
-    });
-
-    const responseData = await res.json();
+  const saveData = async () => {
+    if (!data) return;
     
-    if (!res.ok) {
-      throw new Error(responseData.error || "Failed to save education data");
+    try {
+      const res = await fetch("/api/education", {
+        method: "PUT",
+        headers: { 
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          journeyTitle: data.journeyTitle,
+          education: data.education,
+          experience: data.experience
+        }),
+      });
+
+      const responseData = await res.json();
+      
+      if (!res.ok) {
+        throw new Error(responseData.error || "Failed to save education data");
+      }
+
+      toast({
+        title: "Success",
+        description: "Saved successfully!!",
+        className: "bg-green-500 text-white border-none",
+      });
+      
+      // Refresh data after successful save
+      await fetchEducation();
+    } catch (err: any) {
+      console.error("Save error:", err);
+      toast({
+        title: "Error",
+        description: err?.message || "Something went wrong!",
+        className: "bg-red-500 text-white border-none",
+      });
     }
+  };
 
-    toast({
-      title: "Success",
-      description: "Saved successfully!!",
-      className: "bg-green-500 text-white border-none",
-    });
+  const getItemDisplayTitle = (item: EducationItem | ExperienceItem, index: number, section: string) => {
+    const title = item.title.en || item.title.fr;
+    const institution = item.institution.en || item.institution.fr;
+    const year = item.year;
     
-    // Refresh data after successful save
-    await fetchEducation();
-  } catch (err: any) {
-    console.error("Save error:", err);
-    toast({
-      title: "Error",
-      description: err?.message || "Something went wrong!",
-      className: "bg-red-500 text-white border-none",
-    });
-  }
-};
+    if (title && institution && year) {
+      return `${title} - ${institution} (${year})`;
+    } else if (title && year) {
+      return `${title} (${year})`;
+    } else if (title) {
+      return title;
+    } else if (year) {
+      return `${section} ${index + 1} - ${year}`;
+    } else {
+      return `${section} ${index + 1}`;
+    }
+  };
+
+  const hasContent = (item: EducationItem | ExperienceItem) => {
+    return item.year || item.title.fr || item.title.en || 
+           item.institution.fr || item.institution.en || 
+           item.description.fr || item.description.en;
+  };
 
   if (loading) return <Loading />;
   if (error) return <p className="text-red-500 p-4">Error: {error}</p>;
@@ -149,36 +226,6 @@ const saveData = async () => {
         </h1>
       </div>
 
- 
-    {/*   <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
-        <div className="flex items-center gap-2 mb-3">
-          <LucideIcons.Bookmark size={20} className="text-gray-600 dark:text-gray-300" />
-          <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Journey Title</h2>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div>
-            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">French Title</label>
-            <input
-              type="text"
-              value={data.journeyTitle.fr}
-              placeholder="Title in French"
-              onChange={(e) => handleChange("journeyTitle", null, "fr", "fr", e.target.value)}
-              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">English Title</label>
-            <input
-              type="text"
-              value={data.journeyTitle.en}
-              placeholder="Title in English"
-              onChange={(e) => handleChange("journeyTitle", null, "en", "en", e.target.value)}
-              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-            />
-          </div>
-        </div>
-      </div> 
- */}
       {/* Education Section */}
       <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
         <div className="flex items-center justify-between mb-4">
@@ -201,78 +248,130 @@ const saveData = async () => {
             No education items added yet
           </div>
         ) : (
-          <div className="space-y-4">
-            {data.education.map((edu, index) => (
-              <div key={index} className="border border-gray-200 dark:border-gray-700 p-4 rounded-lg bg-white dark:bg-gray-700">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-3">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Year</label>
-                    <input
-                      type="text"
-                      value={edu.year}
-                      placeholder="e.g. 2015-2019"
-                      onChange={(e) => handleYearChange("education", index, e.target.value)}
-                      className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-                    />
+          <div className="space-y-3">
+            {data.education.map((edu, index) => {
+              const isExpanded = expandedEducation.has(index);
+              const itemHasContent = hasContent(edu);
+              const displayTitle = getItemDisplayTitle(edu, index, "Education");
+              
+              return (
+                <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-700 overflow-hidden">
+                  {/* Accordion Header */}
+                  <div 
+                    onClick={() => toggleAccordion("education", index)}
+                    className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+                  >
+                    <div className="flex items-center gap-3 flex-1">
+                      <LucideIcons.GraduationCap size={16} className="text-blue-500 flex-shrink-0" />
+                      <h3 className="font-medium text-lg text-gray-700 dark:text-white">
+                        {displayTitle}
+                      </h3>
+                      {!itemHasContent && (
+                        <span className="text-xs bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 px-2 py-1 rounded">
+                          Empty
+                        </span>
+                      )}
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeItem("education", index);
+                        }}
+                        className="flex items-center gap-1 bg-red-500 text-white px-2 py-1 rounded-lg hover:bg-red-600 transition text-sm"
+                      >
+                        <LucideIcons.Trash2 size={14} />
+                        Remove
+                      </button>
+                      
+                      <LucideIcons.ChevronDown 
+                        size={20} 
+                        className={`text-gray-500 transition-transform duration-200 ${
+                          isExpanded ? 'rotate-180' : ''
+                        }`}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Accordion Content */}
+                  <div className={`transition-all duration-300 ease-in-out ${
+                    isExpanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
+                  } overflow-hidden`}>
+                    <div className="p-4 pt-0 border-t border-gray-200 dark:border-gray-600">
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                            <LucideIcons.Calendar size={14} className="inline mr-1" />
+                            Year
+                          </label>
+                          <input
+                            type="text"
+                            value={edu.year}
+                            placeholder="e.g. 2015-2019"
+                            onChange={(e) => handleYearChange("education", index, e.target.value)}
+                            className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                          />
+                        </div>
+                      </div>
+
+                      {["title", "institution", "description"].map((field) => (
+                        <div key={field} className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                              {field === "title" && <LucideIcons.Award size={14} className="inline mr-1" />}
+                              {field === "institution" && <LucideIcons.Building size={14} className="inline mr-1" />}
+                              {field === "description" && <LucideIcons.FileText size={14} className="inline mr-1" />}
+                              {`${field.charAt(0).toUpperCase() + field.slice(1)} (FR)`}
+                            </label>
+                            {field === "description" ? (
+                              <textarea
+                                value={edu[field as keyof EducationItem].fr}
+                                placeholder={`French ${field}`}
+                                onChange={(e) => handleChange("education", index, field as keyof LocalizedText, "fr", e.target.value)}
+                                className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white min-h-[100px] focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                              />
+                            ) : (
+                              <input
+                                type="text"
+                                value={edu[field as keyof EducationItem].fr}
+                                placeholder={`French ${field}`}
+                                onChange={(e) => handleChange("education", index, field as keyof LocalizedText, "fr", e.target.value)}
+                                className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                              />
+                            )}
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                              {field === "title" && <LucideIcons.Award size={14} className="inline mr-1" />}
+                              {field === "institution" && <LucideIcons.Building size={14} className="inline mr-1" />}
+                              {field === "description" && <LucideIcons.FileText size={14} className="inline mr-1" />}
+                              {`${field.charAt(0).toUpperCase() + field.slice(1)} (EN)`}
+                            </label>
+                            {field === "description" ? (
+                              <textarea
+                                value={edu[field as keyof EducationItem].en}
+                                placeholder={`English ${field}`}
+                                onChange={(e) => handleChange("education", index, field as keyof LocalizedText, "en", e.target.value)}
+                                className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white min-h-[100px] focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                              />
+                            ) : (
+                              <input
+                                type="text"
+                                value={edu[field as keyof EducationItem].en}
+                                placeholder={`English ${field}`}
+                                onChange={(e) => handleChange("education", index, field as keyof LocalizedText, "en", e.target.value)}
+                                className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                              />
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
-
-                {["title", "institution", "description"].map((field) => (
-                  <div key={field} className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                        {`${field.charAt(0).toUpperCase() + field.slice(1)} (FR)`}
-                      </label>
-                      {field === "description" ? (
-                        <textarea
-                          value={edu[field as keyof EducationItem].fr}
-                          placeholder={`French ${field}`}
-                          onChange={(e) => handleChange("education", index, field as keyof LocalizedText, "fr", e.target.value)}
-                          className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white min-h-[100px]"
-                        />
-                      ) : (
-                        <input
-                          type="text"
-                          value={edu[field as keyof EducationItem].fr}
-                          placeholder={`French ${field}`}
-                          onChange={(e) => handleChange("education", index, field as keyof LocalizedText, "fr", e.target.value)}
-                          className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-                        />
-                      )}
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                        {`${field.charAt(0).toUpperCase() + field.slice(1)} (EN)`}
-                      </label>
-                      {field === "description" ? (
-                        <textarea
-                          value={edu[field as keyof EducationItem].en}
-                          placeholder={`English ${field}`}
-                          onChange={(e) => handleChange("education", index, field as keyof LocalizedText, "en", e.target.value)}
-                          className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white min-h-[100px]"
-                        />
-                      ) : (
-                        <input
-                          type="text"
-                          value={edu[field as keyof EducationItem].en}
-                          placeholder={`English ${field}`}
-                          onChange={(e) => handleChange("education", index, field as keyof LocalizedText, "en", e.target.value)}
-                          className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-                        />
-                      )}
-                    </div>
-                  </div>
-                ))}
-
-                <button
-                  onClick={() => removeItem("education", index)}
-                  className="flex items-center gap-2 bg-red-500 text-white px-3 py-1.5 rounded-lg hover:bg-red-600 transition text-sm"
-                >
-                  <LucideIcons.Trash2 size={16} />
-                  Remove Education
-                </button>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
@@ -299,78 +398,130 @@ const saveData = async () => {
             No experience items added yet
           </div>
         ) : (
-          <div className="space-y-4">
-            {data.experience.map((exp, index) => (
-              <div key={index} className="border border-gray-200 dark:border-gray-700 p-4 rounded-lg bg-white dark:bg-gray-700">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-3">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Year</label>
-                    <input
-                      type="text"
-                      value={exp.year}
-                      placeholder="e.g. 2019-2022"
-                      onChange={(e) => handleYearChange("experience", index, e.target.value)}
-                      className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-                    />
+          <div className="space-y-3">
+            {data.experience.map((exp, index) => {
+              const isExpanded = expandedExperience.has(index);
+              const itemHasContent = hasContent(exp);
+              const displayTitle = getItemDisplayTitle(exp, index, "Experience");
+              
+              return (
+                <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-700 overflow-hidden">
+                  {/* Accordion Header */}
+                  <div 
+                    onClick={() => toggleAccordion("experience", index)}
+                    className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+                  >
+                    <div className="flex items-center gap-3 flex-1">
+                      <LucideIcons.Briefcase size={16} className="text-blue-500 flex-shrink-0" />
+                      <h3 className="font-medium text-lg text-gray-700 dark:text-white">
+                        {displayTitle}
+                      </h3>
+                      {!itemHasContent && (
+                        <span className="text-xs bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 px-2 py-1 rounded">
+                          Empty
+                        </span>
+                      )}
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeItem("experience", index);
+                        }}
+                        className="flex items-center gap-1 bg-red-500 text-white px-2 py-1 rounded-lg hover:bg-red-600 transition text-sm"
+                      >
+                        <LucideIcons.Trash2 size={14} />
+                        Remove
+                      </button>
+                      
+                      <LucideIcons.ChevronDown 
+                        size={20} 
+                        className={`text-gray-500 transition-transform duration-200 ${
+                          isExpanded ? 'rotate-180' : ''
+                        }`}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Accordion Content */}
+                  <div className={`transition-all duration-300 ease-in-out ${
+                    isExpanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
+                  } overflow-hidden`}>
+                    <div className="p-4 pt-0 border-t border-gray-200 dark:border-gray-600">
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                            <LucideIcons.Calendar size={14} className="inline mr-1" />
+                            Year
+                          </label>
+                          <input
+                            type="text"
+                            value={exp.year}
+                            placeholder="e.g. 2019-2022"
+                            onChange={(e) => handleYearChange("experience", index, e.target.value)}
+                            className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                          />
+                        </div>
+                      </div>
+
+                      {["title", "institution", "description"].map((field) => (
+                        <div key={field} className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                              {field === "title" && <LucideIcons.Award size={14} className="inline mr-1" />}
+                              {field === "institution" && <LucideIcons.Building size={14} className="inline mr-1" />}
+                              {field === "description" && <LucideIcons.FileText size={14} className="inline mr-1" />}
+                              {`${field.charAt(0).toUpperCase() + field.slice(1)} (FR)`}
+                            </label>
+                            {field === "description" ? (
+                              <textarea
+                                value={exp[field as keyof ExperienceItem].fr}
+                                placeholder={`French ${field}`}
+                                onChange={(e) => handleChange("experience", index, field as keyof LocalizedText, "fr", e.target.value)}
+                                className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white min-h-[100px] focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                              />
+                            ) : (
+                              <input
+                                type="text"
+                                value={exp[field as keyof ExperienceItem].fr}
+                                placeholder={`French ${field}`}
+                                onChange={(e) => handleChange("experience", index, field as keyof LocalizedText, "fr", e.target.value)}
+                                className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                              />
+                            )}
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                              {field === "title" && <LucideIcons.Award size={14} className="inline mr-1" />}
+                              {field === "institution" && <LucideIcons.Building size={14} className="inline mr-1" />}
+                              {field === "description" && <LucideIcons.FileText size={14} className="inline mr-1" />}
+                              {`${field.charAt(0).toUpperCase() + field.slice(1)} (EN)`}
+                            </label>
+                            {field === "description" ? (
+                              <textarea
+                                value={exp[field as keyof ExperienceItem].en}
+                                placeholder={`English ${field}`}
+                                onChange={(e) => handleChange("experience", index, field as keyof LocalizedText, "en", e.target.value)}
+                                className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white min-h-[100px] focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                              />
+                            ) : (
+                              <input
+                                type="text"
+                                value={exp[field as keyof ExperienceItem].en}
+                                placeholder={`English ${field}`}
+                                onChange={(e) => handleChange("experience", index, field as keyof LocalizedText, "en", e.target.value)}
+                                className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                              />
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
-
-                {["title", "institution", "description"].map((field) => (
-                  <div key={field} className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                        {`${field.charAt(0).toUpperCase() + field.slice(1)} (FR)`}
-                      </label>
-                      {field === "description" ? (
-                        <textarea
-                          value={exp[field as keyof ExperienceItem].fr}
-                          placeholder={`French ${field}`}
-                          onChange={(e) => handleChange("experience", index, field as keyof LocalizedText, "fr", e.target.value)}
-                          className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white min-h-[100px]"
-                        />
-                      ) : (
-                        <input
-                          type="text"
-                          value={exp[field as keyof ExperienceItem].fr}
-                          placeholder={`French ${field}`}
-                          onChange={(e) => handleChange("experience", index, field as keyof LocalizedText, "fr", e.target.value)}
-                          className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-                        />
-                      )}
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                        {`${field.charAt(0).toUpperCase() + field.slice(1)} (EN)`}
-                      </label>
-                      {field === "description" ? (
-                        <textarea
-                          value={exp[field as keyof ExperienceItem].en}
-                          placeholder={`English ${field}`}
-                          onChange={(e) => handleChange("experience", index, field as keyof LocalizedText, "en", e.target.value)}
-                          className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white min-h-[100px]"
-                        />
-                      ) : (
-                        <input
-                          type="text"
-                          value={exp[field as keyof ExperienceItem].en}
-                          placeholder={`English ${field}`}
-                          onChange={(e) => handleChange("experience", index, field as keyof LocalizedText, "en", e.target.value)}
-                          className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-                        />
-                      )}
-                    </div>
-                  </div>
-                ))}
-
-                <button
-                  onClick={() => removeItem("experience", index)}
-                  className="flex items-center gap-2 bg-red-500 text-white px-3 py-1.5 rounded-lg hover:bg-red-600 transition text-sm"
-                >
-                  <LucideIcons.Trash2 size={16} />
-                  Remove Experience
-                </button>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
