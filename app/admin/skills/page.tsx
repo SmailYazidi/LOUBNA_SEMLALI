@@ -293,39 +293,63 @@ export default function SkillsAdminPage() {
                     className="bg-gray-100 dark:bg-gray-600 px-4 py-3 border-b border-gray-200 dark:border-gray-600 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-500 transition-colors"
                     onClick={() => toggleCategory(catIdx)}
                   >
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-3">
-                        {renderIcon(category.skillicon, 20)}
-                        <div className="flex flex-col gap-1">
-                          <h3 className="font-bold text-lg text-gray-800 dark:text-white">
-                            {category.title.en || `Category ${catIdx + 1}`}
-                          </h3>
-                          {category.title.fr && (
-                            <span className="text-sm text-gray-600 dark:text-gray-300">
-                              {category.title.fr}
-                            </span>
-                          )}
-                        </div>
-                        <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded-full">
-                          {category.items.length} skills
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            removeCategory(catIdx);
-                          }}
-                          className="flex items-center gap-1 bg-red-500 text-white px-2 py-1 rounded-lg text-xs hover:bg-red-600 transition"
-                        >
-                          <LucideIcons.Trash2 size={12} />
-                          Remove
-                        </button>
-                        <div className={`transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}>
-                          <LucideIcons.ChevronDown size={20} className="text-gray-600 dark:text-gray-300" />
-                        </div>
-                      </div>
-                    </div>
+          <div className="flex justify-between items-center">
+  <div className="flex items-center gap-3">
+    {renderIcon(category.skillicon, 20)}
+    <div className="flex flex-col gap-1">
+      {/* Title */}
+      <h3 className="font-bold text-lg text-gray-800 dark:text-white">
+        {/* Phone (<640px) */}
+        <span className="block sm:hidden">
+          {category.title.en
+            ? category.title.en.length > 8
+              ? category.title.en.slice(0, 8) + "..."
+              : category.title.en
+            : `Category ${catIdx + 1}`}
+        </span>
+
+        {/* Tablet (≥640px and <1024px) */}
+        <span className="hidden sm:block lg:hidden">
+          {category.title.en
+            ? category.title.en.length > 40
+              ? category.title.en.slice(0, 40) + "..."
+              : category.title.en
+            : `Category ${catIdx + 1}`}
+        </span>
+
+        {/* PC (≥1024px) */}
+        <span className="hidden lg:block">
+          {category.title.en
+            ? category.title.en.length > 60
+              ? category.title.en.slice(0, 60) + "..."
+              : category.title.en
+            : `Category ${catIdx + 1}`}
+        </span>
+      </h3>
+    </div>
+
+    <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded-full">
+      {category.items.length} skills
+    </span>
+  </div>
+
+  <div className="flex items-center gap-2">
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        removeCategory(catIdx);
+      }}
+      className="flex items-center gap-1 bg-red-500 text-white px-2 py-1 rounded-lg text-xs hover:bg-red-600 transition"
+    >
+      <LucideIcons.Trash2 size={12} />
+      Remove
+    </button>
+    <div className={`transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}>
+      <LucideIcons.ChevronDown size={20} className="text-gray-600 dark:text-gray-300" />
+    </div>
+  </div>
+</div>
+
                   </div>
 
                   {/* Accordion Content - Expandable */}

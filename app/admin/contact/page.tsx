@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Loading from '@/components/LoadingAdmin';
 import * as LucideIcons from "lucide-react";
 import { useToast } from "@/hooks/use-toast"
+
 interface ContactInfoItem {
   icon: string;
   label: { fr: string; en: string };
@@ -31,14 +32,58 @@ const defaultContactData: ContactData = {
   }
 };
 
+const Accordion = ({ 
+  title, 
+  children,
+  isOpen,
+  onToggle 
+}: {
+  title: string;
+  children: React.ReactNode;
+  isOpen: boolean;
+  onToggle: () => void;
+}) => {
+  return (
+    <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden mb-4">
+      <button
+        className="w-full flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+        onClick={onToggle}
+      >
+        <div className="flex items-center gap-2">
+          <span className="font-medium text-gray-700 dark:text-gray-200">
+            {title}
+          </span>
+        </div>
+        <LucideIcons.ChevronDown 
+          className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} 
+          size={18} 
+        />
+      </button>
+      {isOpen && (
+        <div className="p-4 bg-white dark:bg-gray-700">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+};
+
 export default function ContactAdminPage() {
   const [contact, setContact] = useState<ContactData>(defaultContactData);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-   const { toast } = useToast()
+  const { toast } = useToast()
   // Icon picker state
   const [showIconPicker, setShowIconPicker] = useState<number | null>(null);
   const [iconSearch, setIconSearch] = useState("");
+  // Accordion state
+  const [expandedItems, setExpandedItems] = useState<number[]>([]);
+  const [expandedSections, setExpandedSections] = useState({
+    title: false,
+    description: false,
+    methods: false,
+    button: false
+  });
 
   const filteredIcons = Object.keys(LucideIcons)
     .filter(iconName => 
@@ -122,12 +167,31 @@ export default function ContactAdminPage() {
         }
       ]
     }));
+    // Expand the newly added item
+    setExpandedItems(prev => [...prev, contact.contactInfo.length]);
   };
 
   const handleRemoveContactInfo = (index: number) => {
     setContact(prev => ({
       ...prev,
       contactInfo: prev.contactInfo.filter((_, i) => i !== index)
+    }));
+    // Remove from expanded items if present
+    setExpandedItems(prev => prev.filter(i => i !== index));
+  };
+
+  const toggleAccordion = (index: number) => {
+    setExpandedItems(prev => 
+      prev.includes(index) 
+        ? prev.filter(i => i !== index)
+        : [...prev, index]
+    );
+  };
+
+  const toggleSection = (section: keyof typeof expandedSections) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
     }));
   };
 
@@ -143,17 +207,17 @@ export default function ContactAdminPage() {
         throw new Error("Failed to save");
       }
 
-   toast({
-  title: "Success",
-  description: "Saved successfully!!",
-  className: "bg-green-500 text-white border-none", // ✅ green background, white text
-})
+      toast({
+        title: "Success",
+        description: "Saved successfully!!",
+        className: "bg-green-500 text-white border-none",
+      })
     } catch (err) {
-    toast({
-    title: "Error",
-    description: err?.message || "Something went wrong!",
-    className: "bg-red-500 text-white border-none",
-  })
+      toast({
+        title: "Error",
+        description: err?.message || "Something went wrong!",
+        className: "bg-red-500 text-white border-none",
+      })
     }
   };
 
@@ -178,12 +242,12 @@ export default function ContactAdminPage() {
         </h1>
       </div>
 
-      {/* Contact Title */}
-      <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
-        <div className="flex items-center gap-2 mb-3">
-          <LucideIcons.Type size={20} className="text-gray-600 dark:text-gray-300" />
-          <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Contact Title</h2>
-        </div>
+      {/* Contact Title Accordion */}
+      <Accordion
+        title="Contact Title"
+        isOpen={expandedSections.title}
+        onToggle={() => toggleSection('title')}
+      >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">French Title</label>
@@ -206,14 +270,14 @@ export default function ContactAdminPage() {
             />
           </div>
         </div>
-      </div>
+      </Accordion>
 
-      {/* Contact Description */}
-      <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
-        <div className="flex items-center gap-2 mb-3">
-          <LucideIcons.FileText size={20} className="text-gray-600 dark:text-gray-300" />
-          <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Contact Description</h2>
-        </div>
+      {/* Contact Description Accordion */}
+      <Accordion
+        title="Contact Description"
+        isOpen={expandedSections.description}
+        onToggle={() => toggleSection('description')}
+      >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">French Description</label>
@@ -234,10 +298,14 @@ export default function ContactAdminPage() {
             />
           </div>
         </div>
-      </div>
+      </Accordion>
 
-      {/* Contact Information */}
-      <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
+      {/* Contact Information Accordion */}
+      <Accordion
+        title="Contact Methods"
+        isOpen={expandedSections.methods}
+        onToggle={() => toggleSection('methods')}
+      >
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <LucideIcons.Contact size={20} className="text-gray-600 dark:text-gray-300" />
@@ -258,134 +326,134 @@ export default function ContactAdminPage() {
             No contact methods added yet
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {contact.contactInfo.map((info, idx) => (
-              <div key={idx} className="border border-gray-200 dark:border-gray-700 p-4 rounded-lg bg-white dark:bg-gray-700">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex items-center gap-2">
-                    {renderIcon(info.icon, 18)}
-                    <span className="font-medium text-gray-700 dark:text-gray-200">
-                      Contact Method #{idx + 1}
-                    </span>
+              <Accordion
+                key={idx}
+                title={`Contact Method #${idx + 1} - ${info.label.en || info.label.fr || "No label"}`}
+                isOpen={expandedItems.includes(idx)}
+                onToggle={() => toggleAccordion(idx)}
+              >
+                <div className="space-y-4">
+                  <div className="flex justify-end">
+                    <button
+                      onClick={() => handleRemoveContactInfo(idx)}
+                      className="flex items-center gap-1 bg-red-500 text-white px-2 py-1 rounded-lg text-xs hover:bg-red-600 transition"
+                    >
+                      <LucideIcons.Trash2 size={14} />
+                      Remove
+                    </button>
                   </div>
-                  <button
-                    onClick={() => handleRemoveContactInfo(idx)}
-                    className="flex items-center gap-1 bg-red-500 text-white px-2 py-1 rounded-lg text-xs hover:bg-red-600 transition"
-                  >
-                    <LucideIcons.Trash2 size={14} />
-                    Remove
-                  </button>
-                </div>
-                
-                {/* Icon Selection */}
-                <div className="mb-3">
-                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Icon</label>
-                  <button 
-                    type="button"
-                    onClick={() => setShowIconPicker(showIconPicker === idx ? null : idx)}
-                    className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 p-2 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white w-full justify-between"
-                  >
-                    <div className="flex items-center gap-2">
-                      {renderIcon(info.icon, 16)}
-                      <span>{info.icon || "Select icon"}</span>
-                    </div>
-                    <LucideIcons.ChevronDown size={16} />
-                  </button>
                   
-                  {showIconPicker === idx && (
-                    <div className="mt-2 p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700">
-                      <div className="relative mb-2">
-                        <input
-                          type="text"
-                          value={iconSearch}
-                          onChange={(e) => setIconSearch(e.target.value)}
-                          placeholder="Search icons..."
-                          className="border border-gray-300 dark:border-gray-600 p-2 pl-9 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-                        />
-                        <LucideIcons.Search className="absolute left-2.5 top-3 text-gray-400" size={16} />
+                  {/* Icon Selection */}
+                  <div className="mb-3">
+                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Icon</label>
+                    <button 
+                      type="button"
+                      onClick={() => setShowIconPicker(showIconPicker === idx ? null : idx)}
+                      className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 p-2 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white w-full justify-between"
+                    >
+                      <div className="flex items-center gap-2">
+                        {renderIcon(info.icon, 16)}
+                        <span>{info.icon || "Select icon"}</span>
                       </div>
-                      <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 max-h-40 overflow-y-auto p-2">
-                        {filteredIcons.map(iconName => (
-                          <button
-                            key={iconName}
-                            type="button"
-                            onClick={() => {
-                              handleInputChange("contactInfo", idx, "icon", iconName);
-                              setShowIconPicker(null);
-                              setIconSearch("");
-                            }}
-                            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded flex flex-col items-center justify-center"
-                            title={iconName}
-                          >
-                            {renderIcon(iconName, 20)}
-                            <span className="text-xs mt-1 truncate w-full">{iconName}</span>
-                          </button>
-                        ))}
+                      <LucideIcons.ChevronDown size={16} />
+                    </button>
+                    
+                    {showIconPicker === idx && (
+                      <div className="mt-2 p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700">
+                        <div className="relative mb-2">
+                          <input
+                            type="text"
+                            value={iconSearch}
+                            onChange={(e) => setIconSearch(e.target.value)}
+                            placeholder="Search icons..."
+                            className="border border-gray-300 dark:border-gray-600 p-2 pl-9 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                          />
+                          <LucideIcons.Search className="absolute left-2.5 top-3 text-gray-400" size={16} />
+                        </div>
+                        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 max-h-40 overflow-y-auto p-2">
+                          {filteredIcons.map(iconName => (
+                            <button
+                              key={iconName}
+                              type="button"
+                              onClick={() => {
+                                handleInputChange("contactInfo", idx, "icon", iconName);
+                                setShowIconPicker(null);
+                                setIconSearch("");
+                              }}
+                              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded flex flex-col items-center justify-center"
+                              title={iconName}
+                            >
+                              {renderIcon(iconName, 20)}
+                              <span className="text-xs mt-1 truncate w-full">{iconName}</span>
+                            </button>
+                          ))}
+                        </div>
                       </div>
+                    )}
+                  </div>
+                  
+                  {/* Labels */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Label (FR)</label>
+                      <input
+                        type="text"
+                        value={info.label.fr}
+                        onChange={(e) => handleInputChange("contactInfo", idx, "label.fr", e.target.value)}
+                        className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                        placeholder="Libellé en français"
+                      />
                     </div>
-                  )}
-                </div>
-                
-                {/* Labels */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Label (FR)</label>
-                    <input
-                      type="text"
-                      value={info.label.fr}
-                      onChange={(e) => handleInputChange("contactInfo", idx, "label.fr", e.target.value)}
-                      className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-                      placeholder="Libellé en français"
-                    />
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Label (EN)</label>
+                      <input
+                        type="text"
+                        value={info.label.en}
+                        onChange={(e) => handleInputChange("contactInfo", idx, "label.en", e.target.value)}
+                        className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                        placeholder="Label in English"
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Label (EN)</label>
-                    <input
-                      type="text"
-                      value={info.label.en}
-                      onChange={(e) => handleInputChange("contactInfo", idx, "label.en", e.target.value)}
-                      className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-                      placeholder="Label in English"
-                    />
-                  </div>
-                </div>
-                
-                {/* Value and Link */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Value</label>
-                    <input
-                      type="text"
-                      value={typeof info.value === 'string' ? info.value : ''}
-                      onChange={(e) => handleInputChange("contactInfo", idx, "value", e.target.value)}
-                      className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-                      placeholder="Contact value (email, phone, etc.)"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Link</label>
-                    <input
-                      type="text"
-                      value={info.link}
-                      onChange={(e) => handleInputChange("contactInfo", idx, "link", e.target.value)}
-                      className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-                      placeholder="mailto:, tel:, https://"
-                    />
+                  
+                  {/* Value and Link */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Value</label>
+                      <input
+                        type="text"
+                        value={typeof info.value === 'string' ? info.value : ''}
+                        onChange={(e) => handleInputChange("contactInfo", idx, "value", e.target.value)}
+                        className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                        placeholder="Contact value (email, phone, etc.)"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Link</label>
+                      <input
+                        type="text"
+                        value={info.link}
+                        onChange={(e) => handleInputChange("contactInfo", idx, "link", e.target.value)}
+                        className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                        placeholder="mailto:, tel:, https://"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
+              </Accordion>
             ))}
           </div>
         )}
-      </div>
+      </Accordion>
 
-      {/* Contact Button */}
-      <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
-        <div className="flex items-center gap-2 mb-3">
-          <LucideIcons.MousePointerClick size={20} className="text-gray-600 dark:text-gray-300" />
-          <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Contact Button</h2>
-        </div>
-        
+      {/* Contact Button Accordion */}
+      <Accordion
+        title="Contact Button"
+        isOpen={expandedSections.button}
+        onToggle={() => toggleSection('button')}
+      >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
             <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Button Text (FR)</label>
@@ -430,10 +498,10 @@ export default function ContactAdminPage() {
             </div>
           </div>
         )}
-      </div>
+      </Accordion>
 
       {/* Save Button */}
-      <div className="flex justify-center">
+      <div className="flex justify-center mt-6">
         <button
           onClick={handleSave}
           className="flex items-center gap-2 bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition"
