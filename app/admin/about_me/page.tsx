@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Loading from '@/components/LoadingAdmin';
 import * as LucideIcons from "lucide-react";
 import { useToast } from "@/hooks/use-toast"
+
 interface LanguageItem {
   name:  { fr: string; en: string };
   level: string;
@@ -47,6 +48,43 @@ const defaultAboutData: AboutData = {
   interests: [],
 };
 
+const Accordion = ({ 
+  title, 
+  icon, 
+  children,
+  defaultOpen = false 
+}: { 
+  title: string; 
+  icon: React.ReactNode; 
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+}) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  return (
+    <div className="border border-gray-200 dark:border-gray-700 rounded-lg mb-4 overflow-hidden">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center justify-between w-full p-4 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+      >
+        <div className="flex items-center gap-2">
+          {icon}
+          <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">{title}</h2>
+        </div>
+        <LucideIcons.ChevronDown 
+          size={20} 
+          className={`text-gray-500 dark:text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+        />
+      </button>
+      {isOpen && (
+        <div className="p-4 bg-white dark:bg-gray-900">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+};
+
 export default function AboutAdminPage() {
   const [about, setAbout] = useState<AboutData>(defaultAboutData);
   const [loading, setLoading] = useState(true);
@@ -55,10 +93,7 @@ export default function AboutAdminPage() {
   const [iconSearch, setIconSearch] = useState("");
   const [newLanguageNameFr, setNewLanguageNameFr] = useState("");
   const [newLanguageNameEn, setNewLanguageNameEn] = useState("");
- const { toast } = useToast()
-
-
-
+  const { toast } = useToast()
 
   const [activeIconPicker, setActiveIconPicker] = useState<{
     type: 'personalInfo' | 'interests';
@@ -116,30 +151,29 @@ export default function AboutAdminPage() {
     fetchAbout();
   }, []);
 
- const handleInputChange = (
-  section: string,
-  indexOrKey: string | number,
-  field: string,
-  value: string
-) => {
-  setAbout((prev) => {
-    const newData = JSON.parse(JSON.stringify(prev));
-    
-    if (section === "aboutTitle" || section === "aboutDescription") {
-      (newData[section] as any)[indexOrKey as string] = value;
-    } 
-    else if (section === "languages") {
-      if (typeof indexOrKey === 'number') {
-        // Handle language list items
-        if (field === "name.fr") {
-          newData.languages.list[indexOrKey].name.fr = value;
-        } else if (field === "name.en") {
-          newData.languages.list[indexOrKey].name.en = value;
-        } else if (field === "level") {
-          newData.languages.list[indexOrKey].level = value;
-        }
+  const handleInputChange = (
+    section: string,
+    indexOrKey: string | number,
+    field: string,
+    value: string
+  ) => {
+    setAbout((prev) => {
+      const newData = JSON.parse(JSON.stringify(prev));
+      
+      if (section === "aboutTitle" || section === "aboutDescription") {
+        (newData[section] as any)[indexOrKey as string] = value;
       } 
-        
+      else if (section === "languages") {
+        if (typeof indexOrKey === 'number') {
+          // Handle language list items
+          if (field === "name.fr") {
+            newData.languages.list[indexOrKey].name.fr = value;
+          } else if (field === "name.en") {
+            newData.languages.list[indexOrKey].name.en = value;
+          } else if (field === "level") {
+            newData.languages.list[indexOrKey].level = value;
+          }
+        } 
       } 
       else if (section === "personalInfo") {
         const i = indexOrKey as number;
@@ -164,7 +198,7 @@ export default function AboutAdminPage() {
     });
   };
 
-   const handleAddLanguage = () => {
+  const handleAddLanguage = () => {
     if (!newLanguageNameFr.trim() || !newLanguageNameEn.trim()) return;
 
     setAbout((prev) => ({
@@ -184,6 +218,7 @@ export default function AboutAdminPage() {
     setNewLanguageNameFr("");
     setNewLanguageNameEn("");
   };
+  
   const handleRemoveLanguage = (index: number) => {
     setAbout(prev => ({
       ...prev,
@@ -246,20 +281,17 @@ export default function AboutAdminPage() {
       if (!response.ok) {
         throw new Error("Failed to save");
       }
-   toast({
-  title: "Success",
-  description: "Saved successfully!",
-  className: "bg-green-500 text-white border-none", // ✅ green background, white text
-})
-  
+      toast({
+        title: "Success",
+        description: "Saved successfully!",
+        className: "bg-green-500 text-white border-none",
+      });
     } catch (err: any) {
-  toast({
-    title: "Error",
-    description: err?.message || "Something went wrong!",
-    className: "bg-red-500 text-white border-none",
-  })
-
-
+      toast({
+        title: "Error",
+        description: err?.message || "Something went wrong!",
+        className: "bg-red-500 text-white border-none",
+      });
     }
   };
 
@@ -275,39 +307,12 @@ export default function AboutAdminPage() {
         </h1>
       </div>
 
-   {/*    <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
-        <div className="flex items-center gap-2 mb-3">
-          <LucideIcons.Type size={20} className="text-gray-600 dark:text-gray-300" />
-          <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Title</h2>
-        </div>
-        <div className="grid md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">French</label>
-            <input
-              type="text"
-              value={about.aboutTitle.fr}
-              onChange={(e) => handleInputChange("aboutTitle", "fr", "", e.target.value)}
-              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">English</label>
-            <input
-              type="text"
-              value={about.aboutTitle.en}
-              onChange={(e) => handleInputChange("aboutTitle", "en", "", e.target.value)}
-              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-            />
-          </div>
-        </div>
-      </div> */}
-
-      {/* About Description */}
-      <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
-        <div className="flex items-center gap-2 mb-3">
-          <LucideIcons.AlignLeft size={20} className="text-gray-600 dark:text-gray-300" />
-          <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Description</h2>
-        </div>
+      {/* About Description Accordion */}
+      <Accordion 
+        title="Description" 
+        icon={<LucideIcons.AlignLeft size={20} className="text-gray-600 dark:text-gray-300" />}
+        defaultOpen={false}
+      >
         <div className="grid md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">French</label>
@@ -326,119 +331,114 @@ export default function AboutAdminPage() {
             />
           </div>
         </div>
-      </div>
+      </Accordion>
 
-      {/* Language List Management */}
-   <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <LucideIcons.Languages size={20} className="text-gray-600 dark:text-gray-300" />
-          <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Languages</h2>
+      {/* Language List Management Accordion */}
+      <Accordion 
+        title="Languages" 
+        icon={<LucideIcons.Languages size={20} className="text-gray-600 dark:text-gray-300" />}
+      >
+        <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto mb-4">
+          <input
+            type="text"
+            value={newLanguageNameFr}
+            onChange={(e) => setNewLanguageNameFr(e.target.value)}
+            className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white flex-1"
+            placeholder="Language name (Français)"
+          />
+          <input
+            type="text"
+            value={newLanguageNameEn}
+            onChange={(e) => setNewLanguageNameEn(e.target.value)}
+            className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white flex-1"
+            placeholder="Language name (English)"
+            onKeyDown={(e) => e.key === "Enter" && handleAddLanguage()}
+          />
+          <button
+            onClick={handleAddLanguage}
+            className="flex items-center gap-2 bg-green-500 text-white px-3 py-2 rounded-lg hover:bg-green-600 transition text-sm disabled:bg-gray-400 disabled:cursor-not-allowed"
+            disabled={!newLanguageNameFr.trim() || !newLanguageNameEn.trim()}
+          >
+            <LucideIcons.Plus size={16} />
+            Add Language
+          </button>
         </div>
-      </div>
 
-      <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto mb-4">
-        <input
-          type="text"
-          value={newLanguageNameFr}
-          onChange={(e) => setNewLanguageNameFr(e.target.value)}
-          className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white flex-1"
-          placeholder="Language name (Français)"
-        />
-        <input
-          type="text"
-          value={newLanguageNameEn}
-          onChange={(e) => setNewLanguageNameEn(e.target.value)}
-          className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white flex-1"
-          placeholder="Language name (English)"
-          onKeyDown={(e) => e.key === "Enter" && handleAddLanguage()}
-        />
-        <button
-          onClick={handleAddLanguage}
-          className="flex items-center gap-2 bg-green-500 text-white px-3 py-2 rounded-lg hover:bg-green-600 transition text-sm disabled:bg-gray-400 disabled:cursor-not-allowed"
-          disabled={!newLanguageNameFr.trim() || !newLanguageNameEn.trim()}
-        >
-          <LucideIcons.Plus size={16} />
-          Add Language
-        </button>
-      </div>
-
-      {about.languages.list.length === 0 ? (
-        <div className="text-center py-4 text-gray-500 dark:text-gray-400">
-          <LucideIcons.Info size={20} className="mx-auto mb-2" />
-          No languages added yet
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {about.languages.list.map((language, idx) => (
-            <div key={idx} className="border border-gray-200 dark:border-gray-700 p-4 rounded-lg bg-white dark:bg-gray-700">
-              <div className="flex justify-between items-start mb-3">
-                <h3 className="font-medium text-gray-700 dark:text-white flex items-center gap-2">
-                  <LucideIcons.Circle size={12} className="text-blue-500" />
-                  Language {idx + 1}
-                </h3>
-                <button
-                  onClick={() => handleRemoveLanguage(idx)}
-                  className="flex items-center gap-1 bg-red-500 text-white px-2 py-1 rounded-lg hover:bg-red-600 transition text-sm"
-                >
-                  <LucideIcons.Trash2 size={14} />
-                  Remove
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                    Language Name (Fr)
-                  </label>
-                  <input
-                    type="text"
-                    value={language.name.fr}
-                    onChange={(e) => handleInputChange("languages", idx, "name.fr", e.target.value)}
-                    className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                    Language Name (En)
-                  </label>
-                  <input
-                    type="text"
-                    value={language.name.en}
-                    onChange={(e) => handleInputChange("languages", idx, "name.en", e.target.value)}
-                    className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                    Proficiency Level
-                  </label>
-      <select
-  value={language.level}
-  onChange={(e) => handleInputChange("languages", idx, "level", e.target.value)}
-  className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
->
-  {Object.entries(about.languages.levels).map(([levelKey, level]) => (
-    <option key={levelKey} value={levelKey}>
-      {level.fr} / {level.en}
-    </option>
-  ))}
-</select>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-
-      {/* Personal Info */}
-      <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <LucideIcons.Info size={20} className="text-gray-600 dark:text-gray-300" />
-            <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Personal Info</h2>
+        {about.languages.list.length === 0 ? (
+          <div className="text-center py-4 text-gray-500 dark:text-gray-400">
+            <LucideIcons.Info size={20} className="mx-auto mb-2" />
+            No languages added yet
           </div>
+        ) : (
+          <div className="space-y-3">
+            {about.languages.list.map((language, idx) => (
+              <div key={idx} className="border border-gray-200 dark:border-gray-700 p-4 rounded-lg bg-white dark:bg-gray-700">
+                <div className="flex justify-between items-start mb-3">
+                  <h3 className="font-medium text-gray-700 dark:text-white flex items-center gap-2">
+                    <LucideIcons.Circle size={12} className="text-blue-500" />
+                    Language {idx + 1}
+                  </h3>
+                  <button
+                    onClick={() => handleRemoveLanguage(idx)}
+                    className="flex items-center gap-1 bg-red-500 text-white px-2 py-1 rounded-lg hover:bg-red-600 transition text-sm"
+                  >
+                    <LucideIcons.Trash2 size={14} />
+                    Remove
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                      Language Name (Fr)
+                    </label>
+                    <input
+                      type="text"
+                      value={language.name.fr}
+                      onChange={(e) => handleInputChange("languages", idx, "name.fr", e.target.value)}
+                      className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                      Language Name (En)
+                    </label>
+                    <input
+                      type="text"
+                      value={language.name.en}
+                      onChange={(e) => handleInputChange("languages", idx, "name.en", e.target.value)}
+                      className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                      Proficiency Level
+                    </label>
+                    <select
+                      value={language.level}
+                      onChange={(e) => handleInputChange("languages", idx, "level", e.target.value)}
+                      className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                    >
+                      {Object.entries(about.languages.levels).map(([levelKey, level]) => (
+                        <option key={levelKey} value={levelKey}>
+                          {level.fr} / {level.en}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </Accordion>
+
+      {/* Personal Info Accordion */}
+      <Accordion 
+        title="Personal Info" 
+        icon={<LucideIcons.Info size={20} className="text-gray-600 dark:text-gray-300" />}
+      >
+        <div className="flex justify-end mb-4">
           <button
             onClick={() => handleAddItem("personalInfo")}
             className="flex items-center gap-2 bg-green-500 text-white px-3 py-1.5 rounded-lg hover:bg-green-600 transition text-sm"
@@ -562,15 +562,14 @@ export default function AboutAdminPage() {
             ))}
           </div>
         )}
-      </div>
+      </Accordion>
 
-      {/* Interests */}
-      <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <LucideIcons.Heart size={20} className="text-gray-600 dark:text-gray-300" />
-            <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Interests</h2>
-          </div>
+      {/* Interests Accordion */}
+      <Accordion 
+        title="Interests" 
+        icon={<LucideIcons.Heart size={20} className="text-gray-600 dark:text-gray-300" />}
+      >
+        <div className="flex justify-end mb-4">
           <button
             onClick={() => handleAddItem("interests")}
             className="flex items-center gap-2 bg-green-500 text-white px-3 py-1.5 rounded-lg hover:bg-green-600 transition text-sm"
@@ -673,7 +672,7 @@ export default function AboutAdminPage() {
             ))}
           </div>
         )}
-      </div>
+      </Accordion>
 
       {/* Save Button */}
       <div className="flex justify-center pt-4">

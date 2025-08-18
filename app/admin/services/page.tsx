@@ -166,8 +166,8 @@ export default function ServicesAdminPage() {
   {/* Phone (<640px) */}
   <span className="block sm:hidden">
     {hasContent
-      ? displayTitle.length > 10
-        ? displayTitle.slice(0, 10) + "..."
+      ? displayTitle.length > 12
+        ? displayTitle.slice(0, 12) + "..."
         : displayTitle
       : `Service ${index + 1}`}
   </span>
@@ -184,18 +184,18 @@ export default function ServicesAdminPage() {
   {/* PC (≥1024px) */}
   <span className="hidden lg:block">
     {hasContent
-      ? displayTitle.length > 70
-        ? displayTitle.slice(0, 70) + "..."
+      ? displayTitle.length > 60
+        ? displayTitle.slice(0, 60) + "..."
         : displayTitle
       : `Service ${index + 1}`}
   </span>
 </h3>
-
+{/* 
                       {!hasContent && (
                         <span className="text-xs bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 px-2 py-1 rounded">
                           Empty
                         </span>
-                      )}
+                      )} */}
                     </div>
                     
                     <div className="flex items-center gap-2">

@@ -266,17 +266,17 @@ export default function EducationAdminPage() {
                    <h3 className="font-medium text-lg text-gray-700 dark:text-white">
                           {/* Phone (default: <640px) */}
                           <span className="block sm:hidden">
-                            {displayTitle.length > 8 ? displayTitle.slice(0, 10) + "..." : displayTitle}
+                            {displayTitle.length > 12 ? displayTitle.slice(0, 12) + "..." : displayTitle}
                           </span>
 
                           {/* Tablet (≥640px and <1024px) */}
                           <span className="hidden sm:block lg:hidden">
-                            {displayTitle.length > 50 ? displayTitle.slice(0, 40) + "..." : displayTitle}
+                            {displayTitle.length > 40 ? displayTitle.slice(0, 40) + "..." : displayTitle}
                           </span>
 
                           {/* PC (≥1024px) */}
                           <span className="hidden lg:block">
-                            {displayTitle.length > 100 ? displayTitle.slice(0, 60) + "..." : displayTitle}
+                            {displayTitle.length > 60 ? displayTitle.slice(0, 60) + "..." : displayTitle}
                           </span>
                         </h3>
 
@@ -430,17 +430,17 @@ export default function EducationAdminPage() {
                     <h3 className="font-medium text-lg text-gray-700 dark:text-white">
                           {/* Phone (default: <640px) */}
                           <span className="block sm:hidden">
-                            {displayTitle.length > 8 ? displayTitle.slice(0, 10) + "..." : displayTitle}
+                            {displayTitle.length > 12 ? displayTitle.slice(0, 12) + "..." : displayTitle}
                           </span>
 
                           {/* Tablet (≥640px and <1024px) */}
                           <span className="hidden sm:block lg:hidden">
-                            {displayTitle.length > 50 ? displayTitle.slice(0, 40) + "..." : displayTitle}
+                            {displayTitle.length > 40 ? displayTitle.slice(0, 40) + "..." : displayTitle}
                           </span>
 
                           {/* PC (≥1024px) */}
                           <span className="hidden lg:block">
-                            {displayTitle.length > 100 ? displayTitle.slice(0, 60) + "..." : displayTitle}
+                            {displayTitle.length > 60 ? displayTitle.slice(0, 60) + "..." : displayTitle}
                           </span>
                         </h3>
                   {/*     {!itemHasContent && (
