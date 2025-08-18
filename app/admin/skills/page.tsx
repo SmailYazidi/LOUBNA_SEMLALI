@@ -4,14 +4,14 @@ import { useEffect, useState } from "react";
 import Loading from "@/components/LoadingAdmin";
 import * as LucideIcons from "lucide-react";
 import { useToast } from "@/hooks/use-toast"
+
 type LocalizedText = { fr: string; en: string };
 
 type SkillItem = {
   name: LocalizedText;
-  examples: LocalizedText[]; // <-- change here
+  examples: LocalizedText[];
   icon: string;
 };
-
 
 type SkillCategory = {
   skillicon: string;
@@ -28,7 +28,10 @@ export default function SkillsAdminPage() {
   const [data, setData] = useState<SkillsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-   const { toast } = useToast()
+  const { toast } = useToast()
+
+  // Accordion state - tracks which categories are expanded
+  const [expandedCategories, setExpandedCategories] = useState<Set<number>>(new Set());
 
   // Icon picker state
   const [showIconPicker, setShowIconPicker] = useState<{type: 'category' | 'item', categoryIndex: number, itemIndex?: number} | null>(null);
@@ -48,6 +51,16 @@ export default function SkillsAdminPage() {
     }
     const IconComponent = LucideIcons[iconName as keyof typeof LucideIcons];
     return <IconComponent size={size} />;
+  };
+
+  const toggleCategory = (categoryIndex: number) => {
+    const newExpanded = new Set(expandedCategories);
+    if (newExpanded.has(categoryIndex)) {
+      newExpanded.delete(categoryIndex);
+    } else {
+      newExpanded.add(categoryIndex);
+    }
+    setExpandedCategories(newExpanded);
   };
 
   const fetchSkills = async () => {
@@ -73,58 +86,57 @@ export default function SkillsAdminPage() {
     fetchSkills();
   }, []);
 
-const handleChange = (
-  categoryIndex: number | null,
-  itemIndex: number | null,
-  field: keyof LocalizedText | "examples" | "skillicon" | "skillsTitle" | "icon",
-  langOrExampleIndex: "fr" | "en" | number | { exampleIndex: number; lang: "fr" | "en" },
-  value: string
-) => {
-  if (!data) return;
+  const handleChange = (
+    categoryIndex: number | null,
+    itemIndex: number | null,
+    field: keyof LocalizedText | "examples" | "skillicon" | "skillsTitle" | "icon",
+    langOrExampleIndex: "fr" | "en" | number | { exampleIndex: number; lang: "fr" | "en" },
+    value: string
+  ) => {
+    if (!data) return;
 
-  const newData = { ...data };
+    const newData = { ...data };
 
-  // Update skillsTitle (top-level)
-  if (categoryIndex === null && field === "skillsTitle" && typeof langOrExampleIndex === "string") {
-    newData.skillsTitle[langOrExampleIndex] = value;
-  } 
-  // Update category-level title or skillicon
-  else if (categoryIndex !== null && itemIndex === null) {
-    const category = newData.skills[categoryIndex];
-    if (field === "skillicon") category.skillicon = value;
-    else if (field === "title" && typeof langOrExampleIndex === "string") {
-      category.title[langOrExampleIndex] = value;
-    }
-  } 
-  // Update item-level fields
-  else if (categoryIndex !== null && itemIndex !== null) {
-    const item = newData.skills[categoryIndex].items[itemIndex];
-
-    if (field === "name" && typeof langOrExampleIndex === "string") {
-      item.name[langOrExampleIndex] = value;
+    // Update skillsTitle (top-level)
+    if (categoryIndex === null && field === "skillsTitle" && typeof langOrExampleIndex === "string") {
+      newData.skillsTitle[langOrExampleIndex] = value;
     } 
-    else if (field === "examples") {
-      // langOrExampleIndex can be a number (index) or object { exampleIndex, lang }
-      if (typeof langOrExampleIndex === "number") {
-        item.examples[langOrExampleIndex] = value;
-      } 
-      else if (
-        typeof langOrExampleIndex === "object" &&
-        "exampleIndex" in langOrExampleIndex &&
-        "lang" in langOrExampleIndex
-      ) {
-        const { exampleIndex, lang } = langOrExampleIndex;
-        item.examples[exampleIndex][lang] = value;
+    // Update category-level title or skillicon
+    else if (categoryIndex !== null && itemIndex === null) {
+      const category = newData.skills[categoryIndex];
+      if (field === "skillicon") category.skillicon = value;
+      else if (field === "title" && typeof langOrExampleIndex === "string") {
+        category.title[langOrExampleIndex] = value;
       }
     } 
-    else if (field === "icon") {
-      item.icon = value;
+    // Update item-level fields
+    else if (categoryIndex !== null && itemIndex !== null) {
+      const item = newData.skills[categoryIndex].items[itemIndex];
+
+      if (field === "name" && typeof langOrExampleIndex === "string") {
+        item.name[langOrExampleIndex] = value;
+      } 
+      else if (field === "examples") {
+        // langOrExampleIndex can be a number (index) or object { exampleIndex, lang }
+        if (typeof langOrExampleIndex === "number") {
+          item.examples[langOrExampleIndex] = value;
+        } 
+        else if (
+          typeof langOrExampleIndex === "object" &&
+          "exampleIndex" in langOrExampleIndex &&
+          "lang" in langOrExampleIndex
+        ) {
+          const { exampleIndex, lang } = langOrExampleIndex;
+          item.examples[exampleIndex][lang] = value;
+        }
+      } 
+      else if (field === "icon") {
+        item.icon = value;
+      }
     }
-  }
 
-  setData(newData);
-};
-
+    setData(newData);
+  };
 
   const addCategory = () => {
     if (!data) return;
@@ -133,13 +145,29 @@ const handleChange = (
       title: { fr: "", en: "" }, 
       items: [] 
     };
+    const newCategoryIndex = data.skills.length;
     setData({ ...data, skills: [...data.skills, newCategory] });
+    // Auto-expand the new category
+    setExpandedCategories(prev => new Set([...prev, newCategoryIndex]));
   };
 
   const removeCategory = (index: number) => {
     if (!data) return;
     const updated = data.skills.filter((_, i) => i !== index);
     setData({ ...data, skills: updated });
+    // Remove from expanded set
+    const newExpanded = new Set(expandedCategories);
+    newExpanded.delete(index);
+    // Adjust indices for categories that come after the removed one
+    const adjustedExpanded = new Set();
+    newExpanded.forEach(idx => {
+      if (idx < index) {
+        adjustedExpanded.add(idx);
+      } else if (idx > index) {
+        adjustedExpanded.add(idx - 1);
+      }
+    });
+    setExpandedCategories(adjustedExpanded);
   };
 
   const addItem = (categoryIndex: number) => {
@@ -161,13 +189,12 @@ const handleChange = (
     setData({ ...data, skills: updated });
   };
 
- const addExample = (categoryIndex: number, itemIndex: number) => {
-  if (!data) return;
-  const updated = [...data.skills];
-  updated[categoryIndex].items[itemIndex].examples.push({ fr: "", en: "" });
-  setData({ ...data, skills: updated });
-};
-
+  const addExample = (categoryIndex: number, itemIndex: number) => {
+    if (!data) return;
+    const updated = [...data.skills];
+    updated[categoryIndex].items[itemIndex].examples.push({ fr: "", en: "" });
+    setData({ ...data, skills: updated });
+  };
 
   const removeExample = (categoryIndex: number, itemIndex: number, exampleIndex: number) => {
     if (!data) return;
@@ -195,19 +222,19 @@ const handleChange = (
       const result = await res.json();
       console.log("Save result:", result);
     
-   toast({
-  title: "Success",
-  description: "Saved successfully!!",
-  className: "bg-green-500 text-white border-none", // ✅ green background, white text
-})
+      toast({
+        title: "Success",
+        description: "Saved successfully!!",
+        className: "bg-green-500 text-white border-none",
+      })
       fetchSkills();
     } catch (err: any) {
       console.error("Save error:", err);
-    toast({
-    title: "Error",
-    description: err?.message || "Something went wrong!",
-    className: "bg-red-500 text-white border-none",
-  })
+      toast({
+        title: "Error",
+        description: err?.message || "Something went wrong!",
+        className: "bg-red-500 text-white border-none",
+      })
     }
   };
 
@@ -232,38 +259,8 @@ const handleChange = (
           Skills 
         </h1>
       </div>
-
-{/*        Skills Title Section 
-      <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
-        <div className="flex items-center gap-2 mb-3">
-          <LucideIcons.Heading size={20} className="text-gray-600 dark:text-gray-300" />
-          <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Skills Title</h2>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">French Title</label>
-            <input
-              type="text"
-              value={data.skillsTitle.fr}
-              onChange={(e) => handleChange(null, null, "skillsTitle", "fr", e.target.value)}
-              placeholder="Titre en français"
-              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">English Title</label>
-            <input
-              type="text"
-              value={data.skillsTitle.en}
-              onChange={(e) => handleChange(null, null, "skillsTitle", "en", e.target.value)}
-              placeholder="Title in English"
-              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-            />
-          </div>
-        </div>
-      </div>*/}
  
-      {/* Skill Categories */}
+      {/* Skill Categories with Accordion */}
       <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
@@ -275,7 +272,7 @@ const handleChange = (
             className="flex items-center gap-2 bg-green-500 text-white px-3 py-1.5 rounded-lg hover:bg-green-600 transition text-sm"
           >
             <LucideIcons.Plus size={16} />
-            Add
+            Add Category
           </button>
         </div>
 
@@ -285,283 +282,310 @@ const handleChange = (
             No skill categories added yet
           </div>
         ) : (
-          <div className="space-y-6">
-            {data.skills.map((category, catIdx) => (
-              <div key={catIdx} className="border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-700 overflow-hidden">
-                {/* Category Header */}
-                <div className="bg-gray-100 dark:bg-gray-600 px-4 py-3 border-b border-gray-200 dark:border-gray-600">
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-2">
-                      {renderIcon(category.skillicon, 20)}
-                      <h3 className="font-bold text-lg text-gray-800 dark:text-white">
-                        Category {catIdx + 1}
-                      </h3>
-                    </div>
-                    <button
-                      onClick={() => removeCategory(catIdx)}
-                      className="flex items-center gap-1 bg-red-500 text-white px-2 py-1 rounded-lg text-xs hover:bg-red-600 transition"
-                    >
-                      <LucideIcons.Trash2 size={12} />
-                      Remove
-                    </button>
-                  </div>
-                </div>
-
-                <div className="p-4 space-y-4">
-                  {/* Category Icon */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Category Icon</label>
-                    <button 
-                      type="button"
-                      onClick={() => setShowIconPicker(
-                        showIconPicker?.type === 'category' && showIconPicker?.categoryIndex === catIdx 
-                          ? null 
-                          : {type: 'category', categoryIndex: catIdx}
-                      )}
-                      className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 p-2 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white w-full justify-between"
-                    >
-                      <div className="flex items-center gap-2">
-                        {renderIcon(category.skillicon, 16)}
-                        <span>{category.skillicon || "Select icon"}</span>
+          <div className="space-y-3">
+            {data.skills.map((category, catIdx) => {
+              const isExpanded = expandedCategories.has(catIdx);
+              
+              return (
+                <div key={catIdx} className="border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-700 overflow-hidden">
+                  {/* Accordion Header - Always Visible */}
+                  <div 
+                    className="bg-gray-100 dark:bg-gray-600 px-4 py-3 border-b border-gray-200 dark:border-gray-600 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-500 transition-colors"
+                    onClick={() => toggleCategory(catIdx)}
+                  >
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-3">
+                        {renderIcon(category.skillicon, 20)}
+                        <div className="flex flex-col gap-1">
+                          <h3 className="font-bold text-lg text-gray-800 dark:text-white">
+                            {category.title.en || `Category ${catIdx + 1}`}
+                          </h3>
+                          {category.title.fr && (
+                            <span className="text-sm text-gray-600 dark:text-gray-300">
+                              {category.title.fr}
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded-full">
+                          {category.items.length} skills
+                        </span>
                       </div>
-                      <LucideIcons.ChevronDown size={16} />
-                    </button>
-                    
-                    {showIconPicker?.type === 'category' && showIconPicker?.categoryIndex === catIdx && (
-                      <div className="mt-2 p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700">
-                        <div className="relative mb-2">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeCategory(catIdx);
+                          }}
+                          className="flex items-center gap-1 bg-red-500 text-white px-2 py-1 rounded-lg text-xs hover:bg-red-600 transition"
+                        >
+                          <LucideIcons.Trash2 size={12} />
+                          Remove
+                        </button>
+                        <div className={`transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}>
+                          <LucideIcons.ChevronDown size={20} className="text-gray-600 dark:text-gray-300" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Accordion Content - Expandable */}
+                  <div className={`transition-all duration-300 ease-in-out ${isExpanded ? 'max-h-none opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
+                    <div className="p-4 space-y-4">
+                      {/* Category Icon */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Category Icon</label>
+                        <button 
+                          type="button"
+                          onClick={() => setShowIconPicker(
+                            showIconPicker?.type === 'category' && showIconPicker?.categoryIndex === catIdx 
+                              ? null 
+                              : {type: 'category', categoryIndex: catIdx}
+                          )}
+                          className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 p-2 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white w-full justify-between"
+                        >
+                          <div className="flex items-center gap-2">
+                            {renderIcon(category.skillicon, 16)}
+                            <span>{category.skillicon || "Select icon"}</span>
+                          </div>
+                          <LucideIcons.ChevronDown size={16} />
+                        </button>
+                        
+                        {showIconPicker?.type === 'category' && showIconPicker?.categoryIndex === catIdx && (
+                          <div className="mt-2 p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700">
+                            <div className="relative mb-2">
+                              <input
+                                type="text"
+                                value={iconSearch}
+                                onChange={(e) => setIconSearch(e.target.value)}
+                                placeholder="Search icons..."
+                                className="border border-gray-300 dark:border-gray-600 p-2 pl-9 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                              />
+                              <LucideIcons.Search className="absolute left-2.5 top-3 text-gray-400" size={16} />
+                            </div>
+                            <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 max-h-40 overflow-y-auto p-2">
+                              {filteredIcons.map(iconName => (
+                                <button
+                                  key={iconName}
+                                  type="button"
+                                  onClick={() => {
+                                    handleChange(catIdx, null, "skillicon", 0, iconName);
+                                    setShowIconPicker(null);
+                                    setIconSearch("");
+                                  }}
+                                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded flex flex-col items-center justify-center"
+                                  title={iconName}
+                                >
+                                  {renderIcon(iconName, 20)}
+                                  <span className="text-xs mt-1 truncate w-full">{iconName}</span>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Category Title */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Category Title (FR)</label>
                           <input
                             type="text"
-                            value={iconSearch}
-                            onChange={(e) => setIconSearch(e.target.value)}
-                            placeholder="Search icons..."
-                            className="border border-gray-300 dark:border-gray-600 p-2 pl-9 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                            value={category.title.fr}
+                            onChange={(e) => handleChange(catIdx, null, "title", "fr", e.target.value)}
+                            placeholder="Titre de la catégorie"
+                            className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
                           />
-                          <LucideIcons.Search className="absolute left-2.5 top-3 text-gray-400" size={16} />
                         </div>
-                        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 max-h-40 overflow-y-auto p-2">
-                          {filteredIcons.map(iconName => (
-                            <button
-                              key={iconName}
-                              type="button"
-                              onClick={() => {
-                                handleChange(catIdx, null, "skillicon", 0, iconName);
-                                setShowIconPicker(null);
-                                setIconSearch("");
-                              }}
-                              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded flex flex-col items-center justify-center"
-                              title={iconName}
-                            >
-                              {renderIcon(iconName, 20)}
-                              <span className="text-xs mt-1 truncate w-full">{iconName}</span>
-                            </button>
-                          ))}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Category Title (EN)</label>
+                          <input
+                            type="text"
+                            value={category.title.en}
+                            onChange={(e) => handleChange(catIdx, null, "title", "en", e.target.value)}
+                            placeholder="Category title"
+                            className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                          />
                         </div>
                       </div>
-                    )}
-                  </div>
 
-                  {/* Category Title */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Category Title (FR)</label>
-                      <input
-                        type="text"
-                        value={category.title.fr}
-                        onChange={(e) => handleChange(catIdx, null, "title", "fr", e.target.value)}
-                        placeholder="Titre de la catégorie"
-                        className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Category Title (EN)</label>
-                      <input
-                        type="text"
-                        value={category.title.en}
-                        onChange={(e) => handleChange(catIdx, null, "title", "en", e.target.value)}
-                        placeholder="Category title"
-                        className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-                      />
-                    </div>
-                  </div>
+                      {/* Skill Items */}
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h4 className="font-medium text-gray-700 dark:text-gray-200 flex items-center gap-2">
+                            <LucideIcons.List size={16} />
+                            Skills in this category
+                          </h4>
+                          <button
+                            onClick={() => addItem(catIdx)}
+                            className="flex items-center gap-1 bg-blue-500 text-white px-2 py-1 rounded-lg text-xs hover:bg-blue-600 transition"
+                          >
+                            <LucideIcons.Plus size={12} />
+                            Add Skill
+                          </button>
+                        </div>
 
-                  {/* Skill Items */}
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-medium text-gray-700 dark:text-gray-200 flex items-center gap-2">
-                        <LucideIcons.List size={16} />
-                        Skills in this category
-                      </h4>
-                      <button
-                        onClick={() => addItem(catIdx)}
-                        className="flex items-center gap-1 bg-blue-500 text-white px-2 py-1 rounded-lg text-xs hover:bg-blue-600 transition"
-                      >
-                        <LucideIcons.Plus size={12} />
-                        Add
-                      </button>
-                    </div>
-
-                    {category.items.length === 0 ? (
-                      <div className="text-center py-4 text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                        <LucideIcons.Package size={16} className="mx-auto mb-1" />
-                        <span className="text-sm">No skills in this category yet</span>
-                      </div>
-                    ) : (
-                      category.items.map((item, itemIdx) => (
-                        <div key={itemIdx} className="border border-gray-200 dark:border-gray-600 p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
-                          <div className="flex justify-between items-center mb-3">
-                            <div className="flex items-center gap-2">
-                              {renderIcon(item.icon, 16)}
-                              <span className="font-medium text-gray-700 dark:text-gray-200">
-                                Skill {itemIdx + 1}
-                              </span>
-                            </div>
-                            <button
-                              onClick={() => removeItem(catIdx, itemIdx)}
-                              className="flex items-center gap-1 bg-red-500 text-white px-2 py-1 rounded-lg text-xs hover:bg-red-600 transition"
-                            >
-                              <LucideIcons.X size={12} />
-                              Remove
-                            </button>
+                        {category.items.length === 0 ? (
+                          <div className="text-center py-4 text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                            <LucideIcons.Package size={16} className="mx-auto mb-1" />
+                            <span className="text-sm">No skills in this category yet</span>
                           </div>
-
-                          {/* Item Icon */}
-                          <div className="mb-3">
-                            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Skill Icon</label>
-                            <button 
-                              type="button"
-                              onClick={() => setShowIconPicker(
-                                showIconPicker?.type === 'item' && 
-                                showIconPicker?.categoryIndex === catIdx && 
-                                showIconPicker?.itemIndex === itemIdx
-                                  ? null 
-                                  : {type: 'item', categoryIndex: catIdx, itemIndex: itemIdx}
-                              )}
-                              className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 p-2 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white w-full justify-between"
-                            >
-                              <div className="flex items-center gap-2">
-                                {renderIcon(item.icon, 16)}
-                                <span>{item.icon || "Select icon"}</span>
+                        ) : (
+                          category.items.map((item, itemIdx) => (
+                            <div key={itemIdx} className="border border-gray-200 dark:border-gray-600 p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
+                              <div className="flex justify-between items-center mb-3">
+                                <div className="flex items-center gap-2">
+                                  {renderIcon(item.icon, 16)}
+                                  <span className="font-medium text-gray-700 dark:text-gray-200">
+                                    Skill {itemIdx + 1}
+                                  </span>
+                                </div>
+                                <button
+                                  onClick={() => removeItem(catIdx, itemIdx)}
+                                  className="flex items-center gap-1 bg-red-500 text-white px-2 py-1 rounded-lg text-xs hover:bg-red-600 transition"
+                                >
+                                  <LucideIcons.X size={12} />
+                                  Remove
+                                </button>
                               </div>
-                              <LucideIcons.ChevronDown size={16} />
-                            </button>
-                            
-                            {showIconPicker?.type === 'item' && 
-                             showIconPicker?.categoryIndex === catIdx && 
-                             showIconPicker?.itemIndex === itemIdx && (
-                              <div className="mt-2 p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700">
-                                <div className="relative mb-2">
+
+                              {/* Item Icon */}
+                              <div className="mb-3">
+                                <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Skill Icon</label>
+                                <button 
+                                  type="button"
+                                  onClick={() => setShowIconPicker(
+                                    showIconPicker?.type === 'item' && 
+                                    showIconPicker?.categoryIndex === catIdx && 
+                                    showIconPicker?.itemIndex === itemIdx
+                                      ? null 
+                                      : {type: 'item', categoryIndex: catIdx, itemIndex: itemIdx}
+                                  )}
+                                  className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 p-2 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white w-full justify-between"
+                                >
+                                  <div className="flex items-center gap-2">
+                                    {renderIcon(item.icon, 16)}
+                                    <span>{item.icon || "Select icon"}</span>
+                                  </div>
+                                  <LucideIcons.ChevronDown size={16} />
+                                </button>
+                                
+                                {showIconPicker?.type === 'item' && 
+                                 showIconPicker?.categoryIndex === catIdx && 
+                                 showIconPicker?.itemIndex === itemIdx && (
+                                  <div className="mt-2 p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700">
+                                    <div className="relative mb-2">
+                                      <input
+                                        type="text"
+                                        value={iconSearch}
+                                        onChange={(e) => setIconSearch(e.target.value)}
+                                        placeholder="Search icons..."
+                                        className="border border-gray-300 dark:border-gray-600 p-2 pl-9 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                                      />
+                                      <LucideIcons.Search className="absolute left-2.5 top-3 text-gray-400" size={16} />
+                                    </div>
+                                    <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 max-h-40 overflow-y-auto p-2">
+                                      {filteredIcons.map(iconName => (
+                                        <button
+                                          key={iconName}
+                                          type="button"
+                                          onClick={() => {
+                                            handleChange(catIdx, itemIdx, "icon", 0, iconName);
+                                            setShowIconPicker(null);
+                                            setIconSearch("");
+                                          }}
+                                          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded flex flex-col items-center justify-center"
+                                          title={iconName}
+                                        >
+                                          {renderIcon(iconName, 20)}
+                                          <span className="text-xs mt-1 truncate w-full">{iconName}</span>
+                                        </button>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Item Name */}
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Skill Name (FR)</label>
                                   <input
                                     type="text"
-                                    value={iconSearch}
-                                    onChange={(e) => setIconSearch(e.target.value)}
-                                    placeholder="Search icons..."
-                                    className="border border-gray-300 dark:border-gray-600 p-2 pl-9 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                                    value={item.name.fr}
+                                    onChange={(e) => handleChange(catIdx, itemIdx, "name", "fr", e.target.value)}
+                                    placeholder="Nom de la compétence"
+                                    className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
                                   />
-                                  <LucideIcons.Search className="absolute left-2.5 top-3 text-gray-400" size={16} />
                                 </div>
-                                <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 max-h-40 overflow-y-auto p-2">
-                                  {filteredIcons.map(iconName => (
-                                    <button
-                                      key={iconName}
-                                      type="button"
-                                      onClick={() => {
-                                        handleChange(catIdx, itemIdx, "icon", 0, iconName);
-                                        setShowIconPicker(null);
-                                        setIconSearch("");
-                                      }}
-                                      className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded flex flex-col items-center justify-center"
-                                      title={iconName}
-                                    >
-                                      {renderIcon(iconName, 20)}
-                                      <span className="text-xs mt-1 truncate w-full">{iconName}</span>
-                                    </button>
-                                  ))}
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Skill Name (EN)</label>
+                                  <input
+                                    type="text"
+                                    value={item.name.en}
+                                    onChange={(e) => handleChange(catIdx, itemIdx, "name", "en", e.target.value)}
+                                    placeholder="Skill name"
+                                    className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                                  />
                                 </div>
                               </div>
-                            )}
-                          </div>
 
-                          {/* Item Name */}
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-                            <div>
-                              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Skill Name (FR)</label>
-                              <input
-                                type="text"
-                                value={item.name.fr}
-                                onChange={(e) => handleChange(catIdx, itemIdx, "name", "fr", e.target.value)}
-                                placeholder="Nom de la compétence"
-                                className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-                              />
+                              {/* Description */}
+                              <div>
+                                <div className="flex items-center justify-between mb-2">
+                                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-400">Description</label>
+                                  <button
+                                    onClick={() => addExample(catIdx, itemIdx)}
+                                    className="flex items-center gap-1 bg-purple-500 text-white px-2 py-1 rounded text-xs hover:bg-purple-600 transition"
+                                  >
+                                    <LucideIcons.Plus size={12} />
+                                    Add Description
+                                  </button>
+                                </div>
+                                <div className="space-y-2">
+                                  {item.examples.map((example, exIdx) => (
+                                    <div key={exIdx} className="flex flex-col gap-2 w-full">
+                                      <div className="flex items-center gap-2 w-full">
+                                        <input
+                                          type="text"
+                                          value={example.fr}
+                                          onChange={(e) =>
+                                            handleChange(catIdx, itemIdx, "examples", { exampleIndex: exIdx, lang: "fr" }, e.target.value)
+                                          }
+                                          placeholder={`Description ${exIdx + 1} (FR)`}
+                                          className="border p-2 rounded-lg flex-1 min-w-0 bg-white text-gray-800"
+                                        />
+                                        <input
+                                          type="text"
+                                          value={example.en}
+                                          onChange={(e) =>
+                                            handleChange(catIdx, itemIdx, "examples", { exampleIndex: exIdx, lang: "en" }, e.target.value)
+                                          }
+                                          placeholder={`Description ${exIdx + 1} (EN)`}
+                                          className="border p-2 rounded-lg flex-1 min-w-0 bg-white text-gray-800"
+                                        />
+                                        <button
+                                          onClick={() => removeExample(catIdx, itemIdx, exIdx)}
+                                          className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition flex-shrink-0"
+                                        >
+                                          <LucideIcons.X size={14} />
+                                        </button>
+                                      </div>
+                                    </div>
+                                  ))}
+                                  {item.examples.length === 0 && (
+                                    <div className="text-sm text-gray-500 italic">No Description added yet</div>
+                                  )}
+                                </div>
+                              </div>
                             </div>
-                            <div>
-                              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Skill Name (EN)</label>
-                              <input
-                                type="text"
-                                value={item.name.en}
-                                onChange={(e) => handleChange(catIdx, itemIdx, "name", "en", e.target.value)}
-                                placeholder="Skill name"
-                                className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-                              />
-                            </div>
-                          </div>
-
-                          {/* Description */}
-                          <div>
-                            <div className="flex items-center justify-between mb-2">
-                              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400">Description</label>
-                              <button
-                                onClick={() => addExample(catIdx, itemIdx)}
-                                className="flex items-center gap-1 bg-purple-500 text-white px-2 py-1 rounded text-xs hover:bg-purple-600 transition"
-                              >
-                                <LucideIcons.Plus size={12} />
-                                Add Description
-                              </button>
-                            </div>
-                       <div className="space-y-2">
-  {item.examples.map((example, exIdx) => (
-    <div key={exIdx} className="flex flex-col gap-2 w-full">
-      <div className="flex items-center gap-2 w-full">
-        <input
-          type="text"
-          value={example.fr}
-          onChange={(e) =>
-            handleChange(catIdx, itemIdx, "examples", { exampleIndex: exIdx, lang: "fr" }, e.target.value)
-          }
-          placeholder={`Description ${exIdx + 1} (FR)`}
-          className="border p-2 rounded-lg flex-1 min-w-0 bg-white text-gray-800"
-        />
-        <input
-          type="text"
-          value={example.en}
-          onChange={(e) =>
-            handleChange(catIdx, itemIdx, "examples", { exampleIndex: exIdx, lang: "en" }, e.target.value)
-          }
-          placeholder={`Description ${exIdx + 1} (EN)`}
-          className="border p-2 rounded-lg flex-1 min-w-0 bg-white text-gray-800"
-        />
-        <button
-          onClick={() => removeExample(catIdx, itemIdx, exIdx)}
-          className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition flex-shrink-0"
-        >
-          <LucideIcons.X size={14} />
-        </button>
-      </div>
-    </div>
-  ))}
-  {item.examples.length === 0 && (
-    <div className="text-sm text-gray-500 italic">No Description added yet</div>
-  )}
-</div>
-
-                          </div>
-                        </div>
-                      ))
-                    )}
+                          ))
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
