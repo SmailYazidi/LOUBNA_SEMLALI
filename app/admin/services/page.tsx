@@ -166,8 +166,8 @@ export default function ServicesAdminPage() {
   {/* Phone (<640px) */}
   <span className="block sm:hidden">
     {hasContent
-      ? displayTitle.length > 12
-        ? displayTitle.slice(0, 12) + "..."
+      ? displayTitle.length > 8
+        ? displayTitle.slice(0, 8) + "..."
         : displayTitle
       : `Service ${index + 1}`}
   </span>

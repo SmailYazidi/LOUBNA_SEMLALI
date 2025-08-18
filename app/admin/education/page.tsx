@@ -266,7 +266,7 @@ export default function EducationAdminPage() {
                    <h3 className="font-medium text-lg text-gray-700 dark:text-white">
                           {/* Phone (default: <640px) */}
                           <span className="block sm:hidden">
-                            {displayTitle.length > 12 ? displayTitle.slice(0, 12) + "..." : displayTitle}
+                            {displayTitle.length > 8 ? displayTitle.slice(0, 8) + "..." : displayTitle}
                           </span>
 
                           {/* Tablet (≥640px and <1024px) */}
@@ -430,7 +430,7 @@ export default function EducationAdminPage() {
                     <h3 className="font-medium text-lg text-gray-700 dark:text-white">
                           {/* Phone (default: <640px) */}
                           <span className="block sm:hidden">
-                            {displayTitle.length > 12 ? displayTitle.slice(0, 12) + "..." : displayTitle}
+                            {displayTitle.length > 8 ? displayTitle.slice(0, 8) + "..." : displayTitle}
                           </span>
 
                           {/* Tablet (≥640px and <1024px) */}

@@ -302,8 +302,8 @@ export default function SkillsAdminPage() {
         {/* Phone (<640px) */}
         <span className="block sm:hidden">
           {category.title.en
-            ? category.title.en.length > 8
-              ? category.title.en.slice(0, 8) + "..."
+            ? category.title.en.length > 6
+              ? category.title.en.slice(0, 6) + "..."
               : category.title.en
             : `Category ${catIdx + 1}`}
         </span>
