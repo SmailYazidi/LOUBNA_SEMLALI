@@ -7,7 +7,9 @@ import { useToast } from "@/hooks/use-toast"
 export default function ProjetsPage() {
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
- const { toast } = useToast()
+  const { toast } = useToast()
+  const [expandedProject, setExpandedProject] = useState<string | null>(null);
+  const [showAddForm, setShowAddForm] = useState(false);
 
   // Form states
   const [titleFr, setTitleFr] = useState("");
@@ -59,13 +61,11 @@ export default function ProjetsPage() {
       setProjects(data.projects || []);
     } catch (e) {
       console.error("Fetch error:", e);
-toast({
-    title: "Error",
-    description: "Failed to load projects!",
-    className: "bg-red-500 text-white border-none",
-  })
-
-   
+      toast({
+        title: "Error",
+        description: "Failed to load projects!",
+        className: "bg-red-500 text-white border-none",
+      })
     } finally {
       setLoading(false);
     }
@@ -116,6 +116,7 @@ toast({
     setBtnLabelFr("");
     setBtnLabelEn("");
     setBtnLink("");
+    setShowAddForm(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -123,11 +124,10 @@ toast({
     
     if (!titleFr || !titleEn) {
       toast({
-    title: "Error",
-    description: "Please provide titles in both languages",
-    className: "bg-red-500 text-white border-none",
-  })
-   
+        title: "Error",
+        description: "Please provide titles in both languages",
+        className: "bg-red-500 text-white border-none",
+      })
       return;
     }
 
@@ -166,11 +166,10 @@ toast({
         const errorData = await res.json();
         console.error("Save failed:", errorData);
         toast({
-    title: "Error",
-    description: errorData?.error || "Something went wrong!",
-    className: "bg-red-500 text-white border-none",
-  })
-    
+          title: "Error",
+          description: errorData?.error || "Something went wrong!",
+          className: "bg-red-500 text-white border-none",
+        })
         return;
       }
 
@@ -179,11 +178,10 @@ toast({
     } catch (error) {
       console.error("Network error:", error);
       toast({
-    title: "Error",
-    description: "Network error - check console!",
-    className: "bg-red-500 text-white border-none",
-  })
-    
+        title: "Error",
+        description: "Network error - check console!",
+        className: "bg-red-500 text-white border-none",
+      })
     }
   };
 
@@ -207,6 +205,7 @@ toast({
     }
     
     setFile(null);
+    setShowAddForm(true);
   };
 
   const handleDelete = async (id: string) => {
@@ -217,22 +216,24 @@ toast({
         await fetchProjects();
       } else {
         const errorData = await res.json();
-toast({
-    title: "Error",
-    description: errorData?.error || "Something went wrong!",
-    className: "bg-red-500 text-white border-none",
-  })
-
+        toast({
+          title: "Error",
+          description: errorData?.error || "Something went wrong!",
+          className: "bg-red-500 text-white border-none",
+        })
       }
     } catch (error) {
       console.error("Delete error:", error);
       toast({
-    title: "Error",
-    description:"Delete failed - check console!",
-    className: "bg-red-500 text-white border-none",
-  })
-
+        title: "Error",
+        description:"Delete failed - check console!",
+        className: "bg-red-500 text-white border-none",
+      })
     }
+  };
+
+  const toggleProject = (projectId: string) => {
+    setExpandedProject(expandedProject === projectId ? null : projectId);
   };
 
   return (
@@ -244,255 +245,267 @@ toast({
         </h1>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
-        <h2 className="font-semibold text-lg mb-4 flex items-center gap-2 text-gray-700 dark:text-white">
-          <LucideIcons.Plus size={20} className="text-gray-600 dark:text-gray-300" />
-          {editingId ? "Edit Project" : "Add New Project"}
-        </h2>
+      {/* Add New Project Button */}
+      <div className="mb-6">
+        <button
+          onClick={() => setShowAddForm(!showAddForm)}
+          className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+        >
+          <LucideIcons.Plus size={18} />
+          Add New Project
+        </button>
+      </div>
 
-        <div className="grid md:grid-cols-2 gap-4 mb-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Title (FR)</label>
-            <input
-              value={titleFr}
-              onChange={(e) => setTitleFr(e.target.value)}
-              placeholder="Titre FR"
-              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Title (EN)</label>
-            <input
-              value={titleEn}
-              onChange={(e) => setTitleEn(e.target.value)}
-              placeholder="Title EN"
-              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-              required
-            />
-          </div>
-        </div>
+      {/* Add/Edit Form - Only show when showAddForm is true */}
+      {showAddForm && (
+        <form onSubmit={handleSubmit} className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
+          <h2 className="font-semibold text-lg mb-4 flex items-center gap-2 text-gray-700 dark:text-white">
+            <LucideIcons.Plus size={20} className="text-gray-600 dark:text-gray-300" />
+            {editingId ? "Edit Project" : "Add New Project"}
+          </h2>
 
-        <div className="grid md:grid-cols-2 gap-4 mb-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Description (FR)</label>
-            <textarea
-              value={descFr}
-              onChange={(e) => setDescFr(e.target.value)}
-              placeholder="Description FR"
-              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white min-h-[100px]"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Description (EN)</label>
-            <textarea
-              value={descEn}
-              onChange={(e) => setDescEn(e.target.value)}
-              placeholder="Description EN"
-              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white min-h-[100px]"
-            />
-          </div>
-        </div>
-
-        {/* Tech stack input */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Technologies</label>
-      <div className="flex flex-col sm:flex-row gap-2 w-full">
-  <input
-    value={techInput}
-    onChange={(e) => setTechInput(e.target.value)}
-    placeholder="Add technology"
-    className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg flex-1 bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-    onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addTech())}
-  />
-  <button
-    type="button"
-    onClick={addTech}
-    className="flex items-center justify-center gap-1 bg-blue-500 text-white px-3 py-2 rounded-lg hover:bg-blue-600 transition w-full sm:w-auto"
-  >
-    <LucideIcons.Plus size={16} />
-    Add
-  </button>
-</div>
-
-          <div className="flex flex-wrap gap-2 mt-2">
-            {techStack.map((t, i) => (
-              <div key={i} className="bg-gray-200 dark:bg-gray-700 px-3 py-1 rounded-full flex items-center gap-1">
-                <span className="text-sm">{t}</span>
-                <button 
-                  type="button" 
-                  onClick={() => removeTech(i)}
-                  className="text-gray-500 hover:text-red-500"
-                >
-                  <LucideIcons.X size={14} />
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Button input */}
-        <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mb-4">
-          <h3 className="font-semibold text-lg mb-3 flex items-center gap-2 text-gray-700 dark:text-white">
-            <LucideIcons.Link size={18} className="text-gray-600 dark:text-gray-300" />
-            Project Button
-          </h3>
-          
-          <div className="grid md:grid-cols-2 gap-4 mb-3">
+          <div className="grid md:grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Label (FR)</label>
+              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Title (FR)</label>
               <input
-                value={btnLabelFr}
-                onChange={(e) => setBtnLabelFr(e.target.value)}
-                placeholder="Button Label FR"
+                value={titleFr}
+                onChange={(e) => setTitleFr(e.target.value)}
+                placeholder="Titre FR"
                 className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Label (EN)</label>
+              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Title (EN)</label>
               <input
-                value={btnLabelEn}
-                onChange={(e) => setBtnLabelEn(e.target.value)}
-                placeholder="Button Label EN"
+                value={titleEn}
+                onChange={(e) => setTitleEn(e.target.value)}
+                placeholder="Title EN"
                 className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                required
               />
             </div>
           </div>
-          
-          <div className="mb-3">
-            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Link</label>
-            <input
-              value={btnLink}
-              onChange={(e) => setBtnLink(e.target.value)}
-              placeholder="Button Link"
-              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-            />
+
+          <div className="grid md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Description (FR)</label>
+              <textarea
+                value={descFr}
+                onChange={(e) => setDescFr(e.target.value)}
+                placeholder="Description FR"
+                className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white min-h-[100px]"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Description (EN)</label>
+              <textarea
+                value={descEn}
+                onChange={(e) => setDescEn(e.target.value)}
+                placeholder="Description EN"
+                className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white min-h-[100px]"
+              />
+            </div>
           </div>
-          
-          <div className="mb-3">
-            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Icon</label>
-            <button 
-              type="button"
-              onClick={() => setShowIconPicker(!showIconPicker)}
-              className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 p-2 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white w-full justify-between"
-            >
-              <div className="flex items-center gap-2">
-                {button?.icon ? renderIcon(button.icon, 16) : <LucideIcons.ExternalLink size={16} />}
-                <span>{button?.icon || "Select icon"}</span>
-              </div>
-              <LucideIcons.ChevronDown size={16} />
-            </button>
+
+          {/* Tech stack input */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Technologies</label>
+            <div className="flex flex-col sm:flex-row gap-2 w-full">
+              <input
+                value={techInput}
+                onChange={(e) => setTechInput(e.target.value)}
+                placeholder="Add technology"
+                className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg flex-1 bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addTech())}
+              />
+              <button
+                type="button"
+                onClick={addTech}
+                className="flex items-center justify-center gap-1 bg-blue-500 text-white px-3 py-2 rounded-lg hover:bg-blue-600 transition w-full sm:w-auto"
+              >
+                <LucideIcons.Plus size={16} />
+                Add
+              </button>
+            </div>
+
+            <div className="flex flex-wrap gap-2 mt-2">
+              {techStack.map((t, i) => (
+                <div key={i} className="bg-gray-200 dark:bg-gray-700 px-3 py-1 rounded-full flex items-center gap-1">
+                  <span className="text-sm">{t}</span>
+                  <button 
+                    type="button" 
+                    onClick={() => removeTech(i)}
+                    className="text-gray-500 hover:text-red-500"
+                  >
+                    <LucideIcons.X size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Button input */}
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mb-4">
+            <h3 className="font-semibold text-lg mb-3 flex items-center gap-2 text-gray-700 dark:text-white">
+              <LucideIcons.Link size={18} className="text-gray-600 dark:text-gray-300" />
+              Project Button
+            </h3>
             
-            {showIconPicker && (
-              <div className="mt-2 p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700">
-                <div className="relative mb-2">
-                  <input
-                    type="text"
-                    value={iconSearch}
-                    onChange={(e) => setIconSearch(e.target.value)}
-                    placeholder="Search icons..."
-                    className="border border-gray-300 dark:border-gray-600 p-2 pl-9 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-                  />
-                  <LucideIcons.Search className="absolute left-2.5 top-3 text-gray-400" size={16} />
-                </div>
-                <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 max-h-40 overflow-y-auto p-2">
-                  {filteredIcons.map(iconName => (
-                    <button
-                      key={iconName}
-                      type="button"
-                      onClick={() => {
-                        if (button) {
-                          setButton({...button, icon: iconName});
-                        } else {
-                          setButton({
-                            labelFr: btnLabelFr || "Voir",
-                            labelEn: btnLabelEn || "View",
-                            link: btnLink || "#",
-                            icon: iconName
-                          });
-                        }
-                        setShowIconPicker(false);
-                        setIconSearch("");
-                      }}
-                      className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded flex flex-col items-center justify-center"
-                      title={iconName}
-                    >
-                      {renderIcon(iconName, 20)}
-                      <span className="text-xs mt-1 truncate w-full">{iconName}</span>
-                    </button>
-                  ))}
-                </div>
+            <div className="grid md:grid-cols-2 gap-4 mb-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Label (FR)</label>
+                <input
+                  value={btnLabelFr}
+                  onChange={(e) => setBtnLabelFr(e.target.value)}
+                  placeholder="Button Label FR"
+                  className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                />
               </div>
-            )}
+              <div>
+                <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Label (EN)</label>
+                <input
+                  value={btnLabelEn}
+                  onChange={(e) => setBtnLabelEn(e.target.value)}
+                  placeholder="Button Label EN"
+                  className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                />
+              </div>
+            </div>
+            
+            <div className="mb-3">
+              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Link</label>
+              <input
+                value={btnLink}
+                onChange={(e) => setBtnLink(e.target.value)}
+                placeholder="Button Link"
+                className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+              />
+            </div>
+            
+            <div className="mb-3">
+              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Icon</label>
+              <button 
+                type="button"
+                onClick={() => setShowIconPicker(!showIconPicker)}
+                className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 p-2 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white w-full justify-between"
+              >
+                <div className="flex items-center gap-2">
+                  {button?.icon ? renderIcon(button.icon, 16) : <LucideIcons.ExternalLink size={16} />}
+                  <span>{button?.icon || "Select icon"}</span>
+                </div>
+                <LucideIcons.ChevronDown size={16} />
+              </button>
+              
+              {showIconPicker && (
+                <div className="mt-2 p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700">
+                  <div className="relative mb-2">
+                    <input
+                      type="text"
+                      value={iconSearch}
+                      onChange={(e) => setIconSearch(e.target.value)}
+                      placeholder="Search icons..."
+                      className="border border-gray-300 dark:border-gray-600 p-2 pl-9 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                    />
+                    <LucideIcons.Search className="absolute left-2.5 top-3 text-gray-400" size={16} />
+                  </div>
+                  <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 max-h-40 overflow-y-auto p-2">
+                    {filteredIcons.map(iconName => (
+                      <button
+                        key={iconName}
+                        type="button"
+                        onClick={() => {
+                          if (button) {
+                            setButton({...button, icon: iconName});
+                          } else {
+                            setButton({
+                              labelFr: btnLabelFr || "Voir",
+                              labelEn: btnLabelEn || "View",
+                              link: btnLink || "#",
+                              icon: iconName
+                            });
+                          }
+                          setShowIconPicker(false);
+                          setIconSearch("");
+                        }}
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded flex flex-col items-center justify-center"
+                        title={iconName}
+                      >
+                        {renderIcon(iconName, 20)}
+                        <span className="text-xs mt-1 truncate w-full">{iconName}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={addButton}
+                className="flex items-center gap-1 bg-purple-500 text-white px-3 py-2 rounded-lg hover:bg-purple-600 transition"
+              >
+                {button ? <LucideIcons.RefreshCw size={16} /> : <LucideIcons.Plus size={16} />}
+                {button ? "Update Button" : "Add Button"}
+              </button>
+              {button && (
+                <button
+                  type="button"
+                  onClick={removeButton}
+                  className="flex items-center gap-1 bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 transition"
+                >
+                  <LucideIcons.Trash2 size={16} />
+                  Remove
+                </button>
+              )}
+            </div>
+            
+            <div className="mt-2">
+              {button ? (
+                <div className="inline-flex items-center gap-2 bg-gray-200 dark:bg-gray-700 px-3 py-1 rounded-full text-sm">
+                  {renderIcon(button.icon || "external-link", 16)}
+                  <span>{button.labelFr} / {button.labelEn}</span>
+                </div>
+              ) : (
+                <span className="text-gray-500 dark:text-gray-400">No button added</span>
+              )}
+            </div>
           </div>
-          
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Project Image</label>
+            <div className="flex items-center gap-2">
+              <label className="cursor-pointer bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-600 transition">
+                <LucideIcons.Upload size={16} className="inline mr-2" />
+                {file ? file.name : "Choose File"}
+                <input
+                  type="file"
+                  onChange={(e) => setFile(e.target.files?.[0] || null)}
+                  accept="image/*"
+                  className="hidden"
+                />
+              </label>
+              {file && (
+                <button
+                  type="button"
+                  onClick={() => setFile(null)}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  <LucideIcons.X size={16} />
+                </button>
+              )}
+            </div>
+          </div>
+
           <div className="flex gap-2">
             <button
-              type="button"
-              onClick={addButton}
-              className="flex items-center gap-1 bg-purple-500 text-white px-3 py-2 rounded-lg hover:bg-purple-600 transition"
+              type="submit"
+              className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition"
             >
-              {button ? <LucideIcons.RefreshCw size={16} /> : <LucideIcons.Plus size={16} />}
-              {button ? "Update Button" : "Add Button"}
+              {editingId ? <LucideIcons.Save size={18} /> : <LucideIcons.Plus size={18} />}
+              {editingId ? "Update Project" : "Add Project"}
             </button>
-            {button && (
-              <button
-                type="button"
-                onClick={removeButton}
-                className="flex items-center gap-1 bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 transition"
-              >
-                <LucideIcons.Trash2 size={16} />
-                Remove
-              </button>
-            )}
-          </div>
-          
-          <div className="mt-2">
-            {button ? (
-              <div className="inline-flex items-center gap-2 bg-gray-200 dark:bg-gray-700 px-3 py-1 rounded-full text-sm">
-                {renderIcon(button.icon || "external-link", 16)}
-                <span>{button.labelFr} / {button.labelEn}</span>
-              </div>
-            ) : (
-              <span className="text-gray-500 dark:text-gray-400">No button added</span>
-            )}
-          </div>
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Project Image</label>
-          <div className="flex items-center gap-2">
-            <label className="cursor-pointer bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-600 transition">
-              <LucideIcons.Upload size={16} className="inline mr-2" />
-              {file ? file.name : "Choose File"}
-              <input
-                type="file"
-                onChange={(e) => setFile(e.target.files?.[0] || null)}
-                accept="image/*"
-                className="hidden"
-              />
-            </label>
-            {file && (
-              <button
-                type="button"
-                onClick={() => setFile(null)}
-                className="text-red-500 hover:text-red-700"
-              >
-                <LucideIcons.X size={16} />
-              </button>
-            )}
-          </div>
-        </div>
-
-        <div className="flex gap-2">
-          <button
-            type="submit"
-            className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition"
-          >
-            {editingId ? <LucideIcons.Save size={18} /> : <LucideIcons.Plus size={18} />}
-            {editingId ? "Update Project" : "Add Project"}
-          </button>
-          {editingId && (
             <button
               type="button"
               onClick={resetForm}
@@ -501,9 +514,9 @@ toast({
               <LucideIcons.X size={18} />
               Cancel
             </button>
-          )}
-        </div>
-      </form>
+          </div>
+        </form>
+      )}
 
       <div className="mt-6">
         <h2 className="font-semibold text-lg mb-4 flex items-center gap-2 text-gray-700 dark:text-white">
@@ -521,69 +534,97 @@ toast({
             No projects found
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="space-y-3">
             {projects.map((p: any) => (
-              <div key={p._id} className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden bg-white dark:bg-gray-800">
-                {p.image && (
-                  <div className="h-40 bg-gray-100 dark:bg-gray-700 overflow-hidden">
-                    <img 
-                      src={p.image} 
-                      alt={`${p.title.fr} project`} 
-                      className="w-full h-full object-cover"
-                    />
+              <div key={p._id} className="border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 overflow-hidden">
+                {/* Accordion Header */}
+                <button
+                  onClick={() => toggleProject(p._id)}
+                  className="w-full p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <LucideIcons.FolderGit2 size={20} className="text-blue-500" />
+                    <h3 className="font-semibold text-lg text-gray-800 dark:text-white text-left">
+                      {p.title.fr} / {p.title.en}
+                    </h3>
                   </div>
-                )}
-                <div className="p-4">
-                  <h2 className="font-bold text-lg text-gray-800 dark:text-white">
-                    {p.title.fr} / {p.title.en}
-                  </h2>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm mt-1 line-clamp-2">
-                    {p.description.fr}
-                  </p>
-                  
-                  {p.techStack?.length > 0 && (
-                    <div className="mt-3">
-                      <div className="flex flex-wrap gap-1">
-                        {p.techStack.map((tech: string, i: number) => (
-                          <span key={i} className="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded-full text-xs">
-                            {tech}
-                          </span>
-                        ))}
+                  <LucideIcons.ChevronDown 
+                    size={20} 
+                    className={`text-gray-600 dark:text-gray-300 transition-transform ${
+                      expandedProject === p._id ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+
+                {/* Accordion Content */}
+                {expandedProject === p._id && (
+                  <div className="border-t border-gray-200 dark:border-gray-700">
+                    {p.image && (
+                      <div className="h-40 bg-gray-100 dark:bg-gray-700 overflow-hidden">
+                        <img 
+                          src={p.image} 
+                          alt={`${p.title.fr} project`} 
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                    <div className="p-4">
+                      <p className="text-gray-600 dark:text-gray-300 text-sm mb-3">
+                        <strong>FR:</strong> {p.description.fr}
+                      </p>
+                      <p className="text-gray-600 dark:text-gray-300 text-sm mb-3">
+                        <strong>EN:</strong> {p.description.en}
+                      </p>
+                      
+                      {p.techStack?.length > 0 && (
+                        <div className="mb-3">
+                          <strong className="text-sm text-gray-700 dark:text-gray-300">Technologies:</strong>
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {p.techStack.map((tech: string, i: number) => (
+                              <span key={i} className="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded-full text-xs">
+                                {tech}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {p.button && (
+                        <div className="mb-3">
+                          <strong className="text-sm text-gray-700 dark:text-gray-300">Project Link:</strong>
+                          <div className="mt-1">
+                            <a
+                              href={p.button.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 bg-blue-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-blue-600 transition"
+                            >
+                              {renderIcon(p.button.icon || "external-link", 14)}
+                              {p.button.label.fr} / {p.button.label.en}
+                            </a>
+                          </div>
+                        </div>
+                      )}
+                      
+                      <div className="flex gap-2 pt-3 border-t border-gray-200 dark:border-gray-700">
+                        <button
+                          onClick={() => handleEdit(p)}
+                          className="flex items-center gap-1 bg-yellow-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-yellow-600 transition"
+                        >
+                          <LucideIcons.Edit size={14} />
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(p._id)}
+                          className="flex items-center gap-1 bg-red-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-red-600 transition"
+                        >
+                          <LucideIcons.Trash2 size={14} />
+                          Delete
+                        </button>
                       </div>
                     </div>
-                  )}
-                  
-                  {p.button && (
-                    <div className="mt-3">
-                      <a
-                        href={p.button.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 bg-blue-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-blue-600 transition"
-                      >
-                        {renderIcon(p.button.icon || "external-link", 14)}
-                        {p.button.label.fr} / {p.button.label.en}
-                      </a>
-                    </div>
-                  )}
-                  
-                  <div className="flex gap-2 mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
-                    <button
-                      onClick={() => handleEdit(p)}
-                      className="flex items-center gap-1 bg-yellow-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-yellow-600 transition"
-                    >
-                      <LucideIcons.Edit size={14} />
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(p._id)}
-                      className="flex items-center gap-1 bg-red-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-red-600 transition"
-                    >
-                      <LucideIcons.Trash2 size={14} />
-                      Delete
-                    </button>
                   </div>
-                </div>
+                )}
               </div>
             ))}
           </div>
