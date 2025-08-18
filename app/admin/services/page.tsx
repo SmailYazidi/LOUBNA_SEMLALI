@@ -162,9 +162,35 @@ export default function ServicesAdminPage() {
                   >
                     <div className="flex items-center gap-3 flex-1">
                       <LucideIcons.Circle size={12} className="text-blue-500 flex-shrink-0" />
-                      <h3 className="font-medium text-lg text-gray-700 dark:text-white">
-                        {hasContent ? displayTitle : `Service ${index + 1}`}
-                      </h3>
+                    <h3 className="font-medium text-lg text-gray-700 dark:text-white">
+  {/* Phone (<640px) */}
+  <span className="block sm:hidden">
+    {hasContent
+      ? displayTitle.length > 10
+        ? displayTitle.slice(0, 10) + "..."
+        : displayTitle
+      : `Service ${index + 1}`}
+  </span>
+
+  {/* Tablet (≥640px and <1024px) */}
+  <span className="hidden sm:block lg:hidden">
+    {hasContent
+      ? displayTitle.length > 40
+        ? displayTitle.slice(0, 40) + "..."
+        : displayTitle
+      : `Service ${index + 1}`}
+  </span>
+
+  {/* PC (≥1024px) */}
+  <span className="hidden lg:block">
+    {hasContent
+      ? displayTitle.length > 70
+        ? displayTitle.slice(0, 70) + "..."
+        : displayTitle
+      : `Service ${index + 1}`}
+  </span>
+</h3>
+
                       {!hasContent && (
                         <span className="text-xs bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 px-2 py-1 rounded">
                           Empty

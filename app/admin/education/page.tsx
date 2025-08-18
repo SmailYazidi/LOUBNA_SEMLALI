@@ -266,25 +266,25 @@ export default function EducationAdminPage() {
                    <h3 className="font-medium text-lg text-gray-700 dark:text-white">
                           {/* Phone (default: <640px) */}
                           <span className="block sm:hidden">
-                            {displayTitle.length > 8 ? displayTitle.slice(0, 8) + "..." : displayTitle}
+                            {displayTitle.length > 8 ? displayTitle.slice(0, 10) + "..." : displayTitle}
                           </span>
 
                           {/* Tablet (≥640px and <1024px) */}
                           <span className="hidden sm:block lg:hidden">
-                            {displayTitle.length > 50 ? displayTitle.slice(0, 50) + "..." : displayTitle}
+                            {displayTitle.length > 50 ? displayTitle.slice(0, 40) + "..." : displayTitle}
                           </span>
 
                           {/* PC (≥1024px) */}
                           <span className="hidden lg:block">
-                            {displayTitle.length > 100 ? displayTitle.slice(0, 100) + "..." : displayTitle}
+                            {displayTitle.length > 100 ? displayTitle.slice(0, 60) + "..." : displayTitle}
                           </span>
                         </h3>
 
-                      {!itemHasContent && (
+                    {/*   {!itemHasContent && (
                         <span className="text-xs bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 px-2 py-1 rounded">
                           Empty
                         </span>
-                      )}
+                      )} */}
                     </div>
                     
                     <div className="flex items-center gap-2">
@@ -430,24 +430,24 @@ export default function EducationAdminPage() {
                     <h3 className="font-medium text-lg text-gray-700 dark:text-white">
                           {/* Phone (default: <640px) */}
                           <span className="block sm:hidden">
-                            {displayTitle.length > 8 ? displayTitle.slice(0, 8) + "..." : displayTitle}
+                            {displayTitle.length > 8 ? displayTitle.slice(0, 10) + "..." : displayTitle}
                           </span>
 
                           {/* Tablet (≥640px and <1024px) */}
                           <span className="hidden sm:block lg:hidden">
-                            {displayTitle.length > 50 ? displayTitle.slice(0, 50) + "..." : displayTitle}
+                            {displayTitle.length > 50 ? displayTitle.slice(0, 40) + "..." : displayTitle}
                           </span>
 
                           {/* PC (≥1024px) */}
                           <span className="hidden lg:block">
-                            {displayTitle.length > 100 ? displayTitle.slice(0, 100) + "..." : displayTitle}
+                            {displayTitle.length > 100 ? displayTitle.slice(0, 60) + "..." : displayTitle}
                           </span>
                         </h3>
-                      {!itemHasContent && (
+                  {/*     {!itemHasContent && (
                         <span className="text-xs bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 px-2 py-1 rounded">
                           Empty
                         </span>
-                      )}
+                      )} */}
                     </div>
                     
                     <div className="flex items-center gap-2">
