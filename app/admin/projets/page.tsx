@@ -207,30 +207,6 @@ const handleEdit = (p: any) => {
   setShowAddForm(true);
 };
 
-  const handleEdit = (p: any) => {
-      setIsLoading(false);
-    setEditingId(p._id);
-    setTitleFr(p.title.fr);
-    setTitleEn(p.title.en);
-    setDescFr(p.description.fr);
-    setDescEn(p.description.en);
-    setTechStack(p.techStack || []);
-    
-    if (p.button) {
-      setButton({
-        labelFr: p.button.label.fr,
-        labelEn: p.button.label.en,
-        link: p.button.link,
-        icon: p.button.icon
-      });
-    } else {
-      setButton(null);
-    }
-    
-    setFile(null);
-      setIsLoading(true);
-    setShowAddForm(true);
-  };
 
   const handleDelete = async (id: string) => {
 
