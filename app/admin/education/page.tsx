@@ -189,43 +189,23 @@ export default function EducationAdminPage() {
     }
   };
 
-const getItemDisplayTitle = (
-  item: EducationItem | ExperienceItem,
-  index: number,
-  section: string
-) => {
-  const title = item.title.en || item.title.fr;
-  const institution = item.institution.en || item.institution.fr;
-  const year = item.year;
-
-  let text: string;
-
-  if (title && institution && year) {
-    text = `${title} - ${institution} (${year})`;
-  } else if (title && year) {
-    text = `${title} (${year})`;
-  } else if (title) {
-    text = title;
-  } else if (year) {
-    text = `${section} ${index + 1} - ${year}`;
-  } else {
-    text = `${section} ${index + 1}`;
-  }
-
-  // Detect device width and set max length
-  let maxLength = 100; // default PC
-  if (typeof window !== "undefined") {
-    if (window.innerWidth < 768) {
-      maxLength = 8; // phone
-    } else if (window.innerWidth < 1024) {
-      maxLength = 50; // tablet
+  const getItemDisplayTitle = (item: EducationItem | ExperienceItem, index: number, section: string) => {
+    const title = item.title.en || item.title.fr;
+    const institution = item.institution.en || item.institution.fr;
+    const year = item.year;
+    
+    if (title && institution && year) {
+      return `${title} - ${institution} (${year})`;
+    } else if (title && year) {
+      return `${title} (${year})`;
+    } else if (title) {
+      return title;
+    } else if (year) {
+      return `${section} ${index + 1} - ${year}`;
+    } else {
+      return `${section} ${index + 1}`;
     }
-  }
-
-  // Truncate if needed
-  return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
-};
-
+  };
 
   const hasContent = (item: EducationItem | ExperienceItem) => {
     return item.year || item.title.fr || item.title.en || 
@@ -283,9 +263,23 @@ const getItemDisplayTitle = (
                   >
                     <div className="flex items-center gap-3 flex-1">
                       <LucideIcons.GraduationCap size={16} className="text-blue-500 flex-shrink-0" />
-                      <h3 className="font-medium text-lg text-gray-700 dark:text-white">
-                        {displayTitle}
-                      </h3>
+                   <h3 className="font-medium text-lg text-gray-700 dark:text-white">
+                          {/* Phone (default: <640px) */}
+                          <span className="block sm:hidden">
+                            {displayTitle.length > 8 ? displayTitle.slice(0, 8) + "..." : displayTitle}
+                          </span>
+
+                          {/* Tablet (≥640px and <1024px) */}
+                          <span className="hidden sm:block lg:hidden">
+                            {displayTitle.length > 50 ? displayTitle.slice(0, 50) + "..." : displayTitle}
+                          </span>
+
+                          {/* PC (≥1024px) */}
+                          <span className="hidden lg:block">
+                            {displayTitle.length > 100 ? displayTitle.slice(0, 100) + "..." : displayTitle}
+                          </span>
+                        </h3>
+
                       {!itemHasContent && (
                         <span className="text-xs bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 px-2 py-1 rounded">
                           Empty
@@ -433,9 +427,22 @@ const getItemDisplayTitle = (
                   >
                     <div className="flex items-center gap-3 flex-1">
                       <LucideIcons.Briefcase size={16} className="text-blue-500 flex-shrink-0" />
-                      <h3 className="font-medium text-lg text-gray-700 dark:text-white">
-                        {displayTitle}
-                      </h3>
+                    <h3 className="font-medium text-lg text-gray-700 dark:text-white">
+                          {/* Phone (default: <640px) */}
+                          <span className="block sm:hidden">
+                            {displayTitle.length > 8 ? displayTitle.slice(0, 8) + "..." : displayTitle}
+                          </span>
+
+                          {/* Tablet (≥640px and <1024px) */}
+                          <span className="hidden sm:block lg:hidden">
+                            {displayTitle.length > 50 ? displayTitle.slice(0, 50) + "..." : displayTitle}
+                          </span>
+
+                          {/* PC (≥1024px) */}
+                          <span className="hidden lg:block">
+                            {displayTitle.length > 100 ? displayTitle.slice(0, 100) + "..." : displayTitle}
+                          </span>
+                        </h3>
                       {!itemHasContent && (
                         <span className="text-xs bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 px-2 py-1 rounded">
                           Empty
