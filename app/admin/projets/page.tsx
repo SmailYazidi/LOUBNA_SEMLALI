@@ -121,7 +121,7 @@ const [isLoading, setIsLoading] = useState(false);
 
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
-  setIsLoading(true);
+  setIsLoading(true); // ✅ start loading
 
   if (!titleFr || !titleEn) {
     toast({
@@ -129,7 +129,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       description: "Please provide titles in both languages",
       className: "bg-red-500 text-white border-none",
     });
-    setIsLoading(false); // ✅ reset loading
+    setIsLoading(false); // ✅ stop loading on error
     return;
   }
 
@@ -139,7 +139,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   formData.append("descFr", descFr);
   formData.append("descEn", descEn);
   formData.append("techStack", JSON.stringify(techStack));
-
+  
   if (button) {
     formData.append("buttonIcon", button.icon || "external-link");
     formData.append("buttonLabelFr", button.labelFr);
@@ -157,7 +157,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 
   try {
     const url = editingId ? `/api/projets/${editingId}` : "/api/projets";
-    const method = editingId ? "PUT" : "POST"; // ✅ use POST for new
+    const method = "PUT";
 
     const res = await fetch(url, {
       method,
@@ -172,7 +172,7 @@ const handleSubmit = async (e: React.FormEvent) => {
         description: errorData?.error || "Something went wrong!",
         className: "bg-red-500 text-white border-none",
       });
-      setIsLoading(false); // ✅ reset loading
+      setIsLoading(false); // ✅ stop loading if save fails
       return;
     }
 
@@ -186,33 +186,33 @@ const handleSubmit = async (e: React.FormEvent) => {
       className: "bg-red-500 text-white border-none",
     });
   } finally {
-    setIsLoading(false); // ✅ always reset loading
+    setIsLoading(false); // ✅ always stop loading
   }
 };
 
 const handleEdit = (p: any) => {
+  setIsLoading(false); // ✅ keep this line as in your version
   setEditingId(p._id);
   setTitleFr(p.title.fr);
   setTitleEn(p.title.en);
   setDescFr(p.description.fr);
   setDescEn(p.description.en);
   setTechStack(p.techStack || []);
-
+  
   if (p.button) {
     setButton({
       labelFr: p.button.label.fr,
       labelEn: p.button.label.en,
       link: p.button.link,
-      icon: p.button.icon,
+      icon: p.button.icon
     });
   } else {
     setButton(null);
   }
-
+  
   setFile(null);
   setShowAddForm(true);
 };
-
 
   const handleDelete = async (id: string) => {
 
