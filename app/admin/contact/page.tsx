@@ -243,11 +243,17 @@ export default function ContactAdminPage() {
       </div>
 
       {/* Contact Title Accordion */}
-      <Accordion
-        title="Contact Title"
-        isOpen={expandedSections.title}
-        onToggle={() => toggleSection('title')}
-      >
+  <Accordion
+  title={
+    <div className="flex items-center gap-2">
+      <LucideIcons.Type size={20} className="text-gray-600 dark:text-gray-300" />
+      <span>Contact Title</span>
+    </div>
+  }
+  isOpen={expandedSections.title}
+  onToggle={() => toggleSection("title")}
+>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">French Title</label>
@@ -273,11 +279,17 @@ export default function ContactAdminPage() {
       </Accordion>
 
       {/* Contact Description Accordion */}
-      <Accordion
-        title="Contact Description"
-        isOpen={expandedSections.description}
-        onToggle={() => toggleSection('description')}
-      >
+     <Accordion
+  title={
+    <div className="flex items-center gap-2">
+      <LucideIcons.FileText size={20} className="text-gray-600 dark:text-gray-300" />
+      <span>Contact Description</span>
+    </div>
+  }
+  isOpen={expandedSections.description}
+  onToggle={() => toggleSection("description")}
+>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">French Description</label>
@@ -301,11 +313,17 @@ export default function ContactAdminPage() {
       </Accordion>
 
       {/* Contact Information Accordion */}
-      <Accordion
-        title="Contact Methods"
-        isOpen={expandedSections.methods}
-        onToggle={() => toggleSection('methods')}
-      >
+<Accordion
+  title={
+    <div className="flex items-center gap-2">
+      <LucideIcons.Phone size={20} className="text-gray-600 dark:text-gray-300" />
+      <span>Contact Methods</span>
+    </div>
+  }
+  isOpen={expandedSections.methods}
+  onToggle={() => toggleSection("methods")}
+>
+
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <LucideIcons.Contact size={20} className="text-gray-600 dark:text-gray-300" />
@@ -449,11 +467,17 @@ export default function ContactAdminPage() {
       </Accordion>
 
       {/* Contact Button Accordion */}
-      <Accordion
-        title="Contact Button"
-        isOpen={expandedSections.button}
-        onToggle={() => toggleSection('button')}
-      >
+ <Accordion
+  title={
+    <div className="flex items-center gap-2">
+      <LucideIcons.MousePointerClick size={20} className="text-gray-600 dark:text-gray-300" />
+      <span>Contact Button</span>
+    </div>
+  }
+  isOpen={expandedSections.button}
+  onToggle={() => toggleSection("button")}
+>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
             <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Button Text (FR)</label>
