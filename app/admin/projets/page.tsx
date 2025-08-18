@@ -10,7 +10,7 @@ export default function ProjetsPage() {
   const { toast } = useToast()
   const [expandedProject, setExpandedProject] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
-
+const [isLoading, setIsLoading] = useState(false);
   // Form states
   const [titleFr, setTitleFr] = useState("");
   const [titleEn, setTitleEn] = useState("");
@@ -121,7 +121,7 @@ export default function ProjetsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+      setIsLoading(true);
     if (!titleFr || !titleEn) {
       toast({
         title: "Error",
@@ -172,8 +172,9 @@ export default function ProjetsPage() {
         })
         return;
       }
-
+  setIsLoading(true);
       await fetchProjects();
+      
       resetForm();
     } catch (error) {
       console.error("Network error:", error);
@@ -186,6 +187,7 @@ export default function ProjetsPage() {
   };
 
   const handleEdit = (p: any) => {
+      setIsLoading(false);
     setEditingId(p._id);
     setTitleFr(p.title.fr);
     setTitleEn(p.title.en);
@@ -205,10 +207,12 @@ export default function ProjetsPage() {
     }
     
     setFile(null);
+      setIsLoading(true);
     setShowAddForm(true);
   };
 
   const handleDelete = async (id: string) => {
+
     if (!confirm("Delete this project?")) return;
     try {
       const res = await fetch(`/api/projets/${id}`, { method: "DELETE" });
@@ -499,13 +503,20 @@ export default function ProjetsPage() {
           </div>
 
           <div className="flex gap-2">
-            <button
-              type="submit"
-              className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition"
-            >
-              {editingId ? <LucideIcons.Save size={18} /> : <LucideIcons.Plus size={18} />}
-              {editingId ? "Update Project" : "Add Project"}
-            </button>
+          <button
+  type="submit"
+  className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+  disabled={isLoading}
+>
+  {isLoading ? (
+    <LucideIcons.Loader2 size={18} className="animate-spin" />
+  ) : editingId ? (
+    <LucideIcons.Save size={18} />
+  ) : (
+    <LucideIcons.Plus size={18} />
+  )}
+  {isLoading ? "Processing..." : editingId ? "Update Project" : "Add Project"}
+</button>
             <button
               type="button"
               onClick={resetForm}
