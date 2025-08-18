@@ -119,72 +119,93 @@ const [isLoading, setIsLoading] = useState(false);
     setShowAddForm(false);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-      setIsLoading(true);
-    if (!titleFr || !titleEn) {
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsLoading(true); // Start loading
+  
+  if (!titleFr || !titleEn) {
+    toast({
+      title: "Error",
+      description: "Please provide titles in both languages",
+      className: "bg-red-500 text-white border-none",
+    });
+    setIsLoading(false); // Reset loading on validation error
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("titleFr", titleFr);
+  formData.append("titleEn", titleEn);
+  formData.append("descFr", descFr);
+  formData.append("descEn", descEn);
+  formData.append("techStack", JSON.stringify(techStack));
+  
+  if (button) {
+    formData.append("buttonIcon", button.icon || "external-link");
+    formData.append("buttonLabelFr", button.labelFr);
+    formData.append("buttonLabelEn", button.labelEn);
+    formData.append("buttonLink", button.link);
+  }
+
+  if (file) formData.append("image", file);
+  if (editingId) formData.append("projectId", editingId);
+
+  try {
+    const url = editingId ? `/api/projets/${editingId}` : "/api/projets";
+    const method = editingId ? "PUT" : "POST";
+
+    const res = await fetch(url, {
+      method,
+      body: formData,
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      console.error("Save failed:", errorData);
       toast({
         title: "Error",
-        description: "Please provide titles in both languages",
+        description: errorData?.error || "Something went wrong!",
         className: "bg-red-500 text-white border-none",
-      })
+      });
       return;
     }
 
-    const formData = new FormData();
-    formData.append("titleFr", titleFr);
-    formData.append("titleEn", titleEn);
-    formData.append("descFr", descFr);
-    formData.append("descEn", descEn);
-    formData.append("techStack", JSON.stringify(techStack));
-    
-    if (button) {
-      formData.append("buttonIcon", button.icon || "external-link");
-      formData.append("buttonLabelFr", button.labelFr);
-      formData.append("buttonLabelEn", button.labelEn);
-      formData.append("buttonLink", button.link);
-    } else {
-      formData.append("buttonIcon", "external-link");
-      formData.append("buttonLabelFr", "");
-      formData.append("buttonLabelEn", "");
-      formData.append("buttonLink", "");
-    }
+    await fetchProjects();
+    resetForm();
+  } catch (error) {
+    console.error("Network error:", error);
+    toast({
+      title: "Error",
+      description: "Network error - check console!",
+      className: "bg-red-500 text-white border-none",
+    });
+  } finally {
+    setIsLoading(false); // Always stop loading whether success or error
+  }
+};
 
-    if (file) formData.append("image", file);
-    if (editingId) formData.append("projectId", editingId);
-
-    try {
-      const url = editingId ? `/api/projets/${editingId}` : "/api/projets";
-      const method = "PUT";
-
-      const res = await fetch(url, {
-        method,
-        body: formData,
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        console.error("Save failed:", errorData);
-        toast({
-          title: "Error",
-          description: errorData?.error || "Something went wrong!",
-          className: "bg-red-500 text-white border-none",
-        })
-        return;
-      }
-  setIsLoading(true);
-      await fetchProjects();
-      
-      resetForm();
-    } catch (error) {
-      console.error("Network error:", error);
-      toast({
-        title: "Error",
-        description: "Network error - check console!",
-        className: "bg-red-500 text-white border-none",
-      })
-    }
-  };
+const handleEdit = (p: any) => {
+  setEditingId(p._id);
+  setTitleFr(p.title.fr);
+  setTitleEn(p.title.en);
+  setDescFr(p.description.fr);
+  setDescEn(p.description.en);
+  setTechStack(p.techStack || []);
+  
+  if (p.button) {
+    setButton({
+      labelFr: p.button.label.fr,
+      labelEn: p.button.label.en,
+      link: p.button.link,
+      icon: p.button.icon
+    });
+  } else {
+    setButton(null);
+  }
+  
+  setFile(null);
+  setShowAddForm(true);
+};
 
   const handleEdit = (p: any) => {
       setIsLoading(false);
@@ -503,7 +524,7 @@ const [isLoading, setIsLoading] = useState(false);
           </div>
 
           <div className="flex gap-2">
-          <button
+<button
   type="submit"
   className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
   disabled={isLoading}
