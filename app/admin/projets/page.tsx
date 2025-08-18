@@ -544,9 +544,26 @@ export default function ProjetsPage() {
                 >
                   <div className="flex items-center gap-3">
                     <LucideIcons.FolderGit2 size={20} className="text-blue-500" />
-                    <h3 className="font-semibold text-lg text-gray-800 dark:text-white text-left">
-                      {p.title.fr} / {p.title.en}
-                    </h3>
+                   <h3 className="font-semibold text-lg text-gray-800 dark:text-white text-left">
+  {/* Phone (<640px) */}
+  <span className="block sm:hidden">
+
+    {(p.title.en?.length > 20 ? p.title.en.slice(0, 20) + "..." : p.title.en) || ""}
+  </span>
+
+  {/* Tablet (≥640px and <1024px) */}
+  <span className="hidden sm:block lg:hidden">
+  
+    {(p.title.en?.length > 40 ? p.title.en.slice(0, 40) + "..." : p.title.en) || ""}
+  </span>
+
+  {/* PC (≥1024px) */}
+  <span className="hidden lg:block">
+ 
+    {(p.title.en?.length > 60 ? p.title.en.slice(0, 60) + "..." : p.title.en) || ""}
+  </span>
+</h3>
+
                   </div>
                   <LucideIcons.ChevronDown 
                     size={20} 
