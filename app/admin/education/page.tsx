@@ -189,23 +189,43 @@ export default function EducationAdminPage() {
     }
   };
 
-  const getItemDisplayTitle = (item: EducationItem | ExperienceItem, index: number, section: string) => {
-    const title = item.title.en || item.title.fr;
-    const institution = item.institution.en || item.institution.fr;
-    const year = item.year;
-    
-    if (title && institution && year) {
-      return `${title} - ${institution} (${year})`;
-    } else if (title && year) {
-      return `${title} (${year})`;
-    } else if (title) {
-      return title;
-    } else if (year) {
-      return `${section} ${index + 1} - ${year}`;
-    } else {
-      return `${section} ${index + 1}`;
+const getItemDisplayTitle = (
+  item: EducationItem | ExperienceItem,
+  index: number,
+  section: string
+) => {
+  const title = item.title.en || item.title.fr;
+  const institution = item.institution.en || item.institution.fr;
+  const year = item.year;
+
+  let text: string;
+
+  if (title && institution && year) {
+    text = `${title} - ${institution} (${year})`;
+  } else if (title && year) {
+    text = `${title} (${year})`;
+  } else if (title) {
+    text = title;
+  } else if (year) {
+    text = `${section} ${index + 1} - ${year}`;
+  } else {
+    text = `${section} ${index + 1}`;
+  }
+
+  // Detect device width and set max length
+  let maxLength = 100; // default PC
+  if (typeof window !== "undefined") {
+    if (window.innerWidth < 768) {
+      maxLength = 8; // phone
+    } else if (window.innerWidth < 1024) {
+      maxLength = 50; // tablet
     }
-  };
+  }
+
+  // Truncate if needed
+  return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+};
+
 
   const hasContent = (item: EducationItem | ExperienceItem) => {
     return item.year || item.title.fr || item.title.en || 
