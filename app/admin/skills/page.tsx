@@ -303,7 +303,7 @@ export default function SkillsAdminPage() {
         <span className="block sm:hidden">
           {category.title.en
             ? category.title.en.length > 4
-              ? category.title.en.slice(0, 4) + "..."
+              ? category.title.en.slice(0, 4) + ".."
               : category.title.en
             : `Category ${catIdx + 1}`}
         </span>

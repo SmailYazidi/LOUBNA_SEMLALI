@@ -817,41 +817,49 @@ const getIcon = (iconName?: string) => {
 
    {/*  services */}
 
-
 {!isServicesEmpty && (
+  <section id="services" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
+    <div className="container mx-auto max-w-7xl">
+      <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4">
+        {t.servicesTitle}
+        <span className="absolute bottom-0 left-0 w-20 h-1 bg-[rgb(var(--portfolio-gold))]"></span>
+      </h2>
 
-<section id="services" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
-  <div className="container mx-auto max-w-7xl">
-    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4">
-      {t.servicesTitle}
-      <span className="absolute bottom-0 left-0 w-20 h-1 bg-[rgb(var(--portfolio-gold))]"></span>
-    </h2>
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        {Array.isArray(servicesData?.servicesList) && servicesData.servicesList.length > 0 ? (
+          servicesData.servicesList.map((service, index) => {
+            // Fallback: try currentLang, else fallback to the other language
+            const title = service.title?.[currentLang] || service.title?.[currentLang === 'fr' ? 'en' : 'fr'];
+            const description = service.description?.[currentLang] || service.description?.[currentLang === 'fr' ? 'en' : 'fr'];
 
-    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-      {Array.isArray(servicesData?.servicesList) && servicesData.servicesList.length > 0 ? (
-        servicesData.servicesList.map((service, index) => (
-          <Card
-            key={index}
-            className={`${themeClasses.cardBg} ${themeClasses.cardBorder} p-6 sm:p-8 hover:border-[rgb(var(--portfolio-gold))] transition-colors group shadow-lg`}
-          >
-            <CardContent className="p-0">
-              <div className="flex items-start justify-between mb-4 sm:mb-6">
-                <span className={`${themeClasses.textMuted} text-sm text-yellow-500`}>0{index + 1}</span>
-                <ArrowUpRight
-                  className={`w-5 h-5 ${themeClasses.textMuted} group-hover:text-[rgb(var(--portfolio-gold))] transition-colors`}
-                />
-              </div>
-              <h3 className="text-lg sm:text-xl font-medium mb-3 sm:mb-4">{service.title?.[currentLang]}</h3>
-              <p className={`${themeClasses.textSecondary} text-sm sm:text-base leading-relaxed`}>{service.description?.[currentLang]}</p>
-            </CardContent>
-          </Card>
-        ))
-      ) : (
-        <p>No services available</p>
-      )}
+            // Skip card if both titles are missing
+            if (!title) return null;
+
+            return (
+              <Card
+                key={index}
+                className={`${themeClasses.cardBg} ${themeClasses.cardBorder} p-6 sm:p-8 hover:border-[rgb(var(--portfolio-gold))] transition-colors group shadow-lg`}
+              >
+                <CardContent className="p-0">
+                  <div className="flex items-start justify-between mb-4 sm:mb-6">
+                    <span className={`${themeClasses.textMuted} text-sm text-yellow-500`}>0{index + 1}</span>
+                    <ArrowUpRight
+                      className={`w-5 h-5 ${themeClasses.textMuted} group-hover:text-[rgb(var(--portfolio-gold))] transition-colors`}
+                    />
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-medium mb-3 sm:mb-4">{title}</h3>
+                  {description && <p className={`${themeClasses.textSecondary} text-sm sm:text-base leading-relaxed`}>{description}</p>}
+                </CardContent>
+              </Card>
+            );
+          })
+        ) : (
+          <p>No services available</p>
+        )}
+      </div>
     </div>
-  </div>
-</section>)}
+  </section>
+)}
 
 
 

@@ -17,11 +17,12 @@ export default function CvPage() {
   const [isDarkMode, setIsDarkMode] = useState(true)
   const [language, setLanguage] = useState<"fr" | "en">("fr")
 
+
   // Hydrate client-side state after mount
   useEffect(() => {
     setMounted(true)
-    const savedDarkMode = sessionStorage.getItem('cvDarkMode')
-    const savedLanguage = sessionStorage.getItem('cvLanguage')
+    const savedDarkMode = sessionStorage.getItem('darkMode')
+    const savedLanguage = sessionStorage.getItem('language')
     
     setIsDarkMode(savedDarkMode ? JSON.parse(savedDarkMode) : true)
     setLanguage(savedLanguage as "fr" | "en" || "fr")
@@ -30,13 +31,13 @@ export default function CvPage() {
   // Persist preferences
   useEffect(() => {
     if (!mounted) return
-    sessionStorage.setItem('cvDarkMode', JSON.stringify(isDarkMode))
+    sessionStorage.setItem('DarkMode', JSON.stringify(isDarkMode))
     document.documentElement.classList.toggle("dark", isDarkMode)
   }, [isDarkMode, mounted])
 
   useEffect(() => {
     if (!mounted) return
-    sessionStorage.setItem('cvLanguage', language)
+    sessionStorage.setItem('Language', language)
   }, [language, mounted])
 
   // Fetch CV URLs
@@ -55,7 +56,11 @@ export default function CvPage() {
     fetchCvUrls()
   }, [])
 
-  const toggleTheme = () => setIsDarkMode(!isDarkMode)
+  const toggleTheme = () => {
+    const newMode = !isDarkMode;
+    setIsDarkMode(newMode);
+    sessionStorage.setItem('darkMode', JSON.stringify(newMode));
+  };
 
   const handleDownloadPdf = async () => {
     if (!cvUrls[language]) return
