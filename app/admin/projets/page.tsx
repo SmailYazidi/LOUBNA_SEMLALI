@@ -121,15 +121,15 @@ const [isLoading, setIsLoading] = useState(false);
 
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
-  setIsLoading(true); // Start loading
-  
+  setIsLoading(true);
+
   if (!titleFr || !titleEn) {
     toast({
       title: "Error",
       description: "Please provide titles in both languages",
       className: "bg-red-500 text-white border-none",
     });
-    setIsLoading(false); // Reset loading on validation error
+    setIsLoading(false); // ✅ reset loading
     return;
   }
 
@@ -139,12 +139,17 @@ const handleSubmit = async (e: React.FormEvent) => {
   formData.append("descFr", descFr);
   formData.append("descEn", descEn);
   formData.append("techStack", JSON.stringify(techStack));
-  
+
   if (button) {
     formData.append("buttonIcon", button.icon || "external-link");
     formData.append("buttonLabelFr", button.labelFr);
     formData.append("buttonLabelEn", button.labelEn);
     formData.append("buttonLink", button.link);
+  } else {
+    formData.append("buttonIcon", "external-link");
+    formData.append("buttonLabelFr", "");
+    formData.append("buttonLabelEn", "");
+    formData.append("buttonLink", "");
   }
 
   if (file) formData.append("image", file);
@@ -152,7 +157,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 
   try {
     const url = editingId ? `/api/projets/${editingId}` : "/api/projets";
-    const method = editingId ? "PUT" : "POST";
+    const method = editingId ? "PUT" : "POST"; // ✅ use POST for new
 
     const res = await fetch(url, {
       method,
@@ -167,6 +172,7 @@ const handleSubmit = async (e: React.FormEvent) => {
         description: errorData?.error || "Something went wrong!",
         className: "bg-red-500 text-white border-none",
       });
+      setIsLoading(false); // ✅ reset loading
       return;
     }
 
@@ -180,7 +186,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       className: "bg-red-500 text-white border-none",
     });
   } finally {
-    setIsLoading(false); // Always stop loading whether success or error
+    setIsLoading(false); // ✅ always reset loading
   }
 };
 
@@ -191,18 +197,18 @@ const handleEdit = (p: any) => {
   setDescFr(p.description.fr);
   setDescEn(p.description.en);
   setTechStack(p.techStack || []);
-  
+
   if (p.button) {
     setButton({
       labelFr: p.button.label.fr,
       labelEn: p.button.label.en,
       link: p.button.link,
-      icon: p.button.icon
+      icon: p.button.icon,
     });
   } else {
     setButton(null);
   }
-  
+
   setFile(null);
   setShowAddForm(true);
 };
