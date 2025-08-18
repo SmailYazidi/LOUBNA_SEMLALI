@@ -50,19 +50,26 @@ export async function PUT(
     const buttonLink = formData.get("buttonLink") as string;
     const file = formData.get("image") as File | null;
 
-    let imageUrl: string | undefined;
+    // Get existing project to preserve old image if needed
+    const existing = await projetsCollection.findOne(
+      { "projects._id": params.id },
+      { projection: { "projects.$": 1 } }
+    );
+    const oldProject = existing?.projects?.[0];
 
-    // Handle new image upload + old delete
+    if (!oldProject) {
+      return NextResponse.json({ error: "Project not found" }, { status: 404 });
+    }
+
+    let imageUrl = oldProject?.image; // Keep old image by default
+
+    // Handle new image upload + delete old
     if (file) {
       if (!file.type.startsWith("image/")) {
         return NextResponse.json({ error: "Only image files allowed" }, { status: 400 });
       }
 
-      const existing = await projetsCollection.findOne(
-        { "projects._id": params.id },
-        { projection: { "projects.$": 1 } }
-      );
-      const oldProject = existing?.projects?.[0];
+      // Delete old image only if uploading a new one
       if (oldProject?.image) {
         try {
           const oldUrl = new URL(oldProject.image);
@@ -81,7 +88,7 @@ export async function PUT(
         access: "public",
         addRandomSuffix: false,
       });
-      imageUrl = uploadRes.url;
+      imageUrl = uploadRes.url; // overwrite old image
     }
 
     const updatedProject = {
@@ -94,7 +101,7 @@ export async function PUT(
         label: { fr: buttonLabelFr, en: buttonLabelEn },
         link: buttonLink,
       },
-      ...(imageUrl ? { image: imageUrl } : {}),
+      image: imageUrl, // always preserves old image if no new one
       updatedAt: new Date(),
     };
 
@@ -151,3 +158,6 @@ export async function DELETE(
     return NextResponse.json({ error: "Failed to delete project" }, { status: 500 });
   }
 }
+
+
+
