@@ -5,7 +5,7 @@ import Loading from '@/components/LoadingAdmin';
 import * as LucideIcons from "lucide-react";
 import { useToast } from "@/hooks/use-toast"
 interface LanguageItem {
-  name: string;
+  name:  { fr: string; en: string };
   level: string;
 }
 
@@ -116,33 +116,30 @@ export default function AboutAdminPage() {
     fetchAbout();
   }, []);
 
-  const handleInputChange = (
-    section: string,
-    indexOrKey: string | number,
-    field: string,
-    value: string
-  ) => {
-    setAbout((prev) => {
-      const newData = JSON.parse(JSON.stringify(prev));
-      
-      if (section === "aboutTitle" || section === "aboutDescription") {
-        (newData[section] as any)[indexOrKey as string] = value;
-      } 
-      else if (section === "languages") {
-        if (field === "title") {
-          (newData.languages.title as any)[indexOrKey as string] = value;
-        } else if (field === "levelName") {
-          const [level, lang] = (indexOrKey as string).split(".");
-          newData.languages.levels[level][lang] = value;
-        } else if (field.startsWith("list.")) {
-          const [_, listField] = field.split(".");
-          const index = indexOrKey as number;
-          if (listField === "name") {
-            newData.languages.list[index].name = value;
-          } else if (listField === "level") {
-            newData.languages.list[index].level = value;
-          }
+ const handleInputChange = (
+  section: string,
+  indexOrKey: string | number,
+  field: string,
+  value: string
+) => {
+  setAbout((prev) => {
+    const newData = JSON.parse(JSON.stringify(prev));
+    
+    if (section === "aboutTitle" || section === "aboutDescription") {
+      (newData[section] as any)[indexOrKey as string] = value;
+    } 
+    else if (section === "languages") {
+      if (typeof indexOrKey === 'number') {
+        // Handle language list items
+        if (field === "name.fr") {
+          newData.languages.list[indexOrKey].name.fr = value;
+        } else if (field === "name.en") {
+          newData.languages.list[indexOrKey].name.en = value;
+        } else if (field === "level") {
+          newData.languages.list[indexOrKey].level = value;
         }
+      } 
+        
       } 
       else if (section === "personalInfo") {
         const i = indexOrKey as number;
@@ -416,17 +413,17 @@ export default function AboutAdminPage() {
                   <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
                     Proficiency Level
                   </label>
-                  <select
-                    value={language.level}
-                    onChange={(e) => handleInputChange("languages", idx, "level", e.target.value)}
-                    className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-                  >
-                    {Object.entries(about.languages.levels).map(([levelKey, level]) => (
-                      <option key={levelKey} value={levelKey}>
-                        {level.fr} / {level.en}
-                      </option>
-                    ))}
-                  </select>
+      <select
+  value={language.level}
+  onChange={(e) => handleInputChange("languages", idx, "level", e.target.value)}
+  className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+>
+  {Object.entries(about.languages.levels).map(([levelKey, level]) => (
+    <option key={levelKey} value={levelKey}>
+      {level.fr} / {level.en}
+    </option>
+  ))}
+</select>
                 </div>
               </div>
             </div>
