@@ -224,20 +224,19 @@ export default function Portfolio() {
       });
   }, []);
 
- useEffect(() => {
-  // Fetch username
-     fetch("/api/username")
-       .then((res) => res.json())
-      .then((data) => {
-      setUsernameData(data || "");
-       setUsernameLoading(false);
-         })
-      .catch((err) => {
-        console.error("Error fetching username data:", err);
-        setUsernameLoading(false);
-      });
-  }, []);
-
+useEffect(() => {
+  fetch("/api/username")
+    .then((res) => res.json())
+    .then((data) => {
+   
+      setUsernameData(data || { fr: "", en: "", ar: "" });
+      setUsernameLoading(false);
+    })
+    .catch((err) => {
+      console.error("Error fetching username data:", err);
+      setUsernameLoading(false);
+    });
+}, []);
  useEffect(() => {
     fetch("/api/about_me")
       .then((res) => res.json())
@@ -480,7 +479,7 @@ const getIcon = (iconName?: string) => {
   className="flex items-center space-x-3 cursor-pointer"
   onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
 >
-<span className="text-base sm:text-xl font-medium">{usernameData.name}</span>
+<span className="text-base sm:text-xl font-medium">{usernameData?.[currentLang]}</span>
 </div>
 
             <>
@@ -1303,7 +1302,7 @@ const getIcon = (iconName?: string) => {
         <div className="container mx-auto max-w-7xl">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center space-x-3 mb-4 md:mb-0">
-              <span className={themeClasses.textSecondary}>© 2025 {usernameData.name}</span>
+              <span className={themeClasses.textSecondary}>© 2025 {usernameData?.[currentLang]}</span>
             </div>
             <p className={`${themeClasses.textMuted} text-xs sm:text-sm`}>{t.rightsReserved}</p>
           </div>

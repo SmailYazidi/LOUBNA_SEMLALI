@@ -28,9 +28,19 @@ const defaultHero: HeroData = {
 
 export default function HeroAdminPage() {
   const [hero, setHero] = useState<HeroData>(defaultHero);
-  const [username, setUsername] = useState<string>("");
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+const [username, setUsername] = useState({
+  fr: "",
+  en: "",
+  ar: ""
+});
+
+
+
+
   const [iconSearch, setIconSearch] = useState("");
   const [activeIconPickerIndex, setActiveIconPickerIndex] = useState<number | null>(null);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
@@ -58,11 +68,7 @@ export default function HeroAdminPage() {
       const heroData = await heroRes.json();
       setHero(heroData);
 
-      // Fetch username
-      const usernameRes = await fetch("/api/username");
-      if (!usernameRes.ok) throw new Error("Failed to fetch username");
-      const { name } = await usernameRes.json();
-      setUsername(name || "");
+    
 
     } catch (err: any) {
       setError(err.message);
@@ -72,7 +78,23 @@ export default function HeroAdminPage() {
       setLoading(false);
     }
   };
-
+useEffect(() => {
+  fetch("/api/username")
+    .then((res) => res.json())
+    .then((data) => {
+      setUsername({
+        fr: data.fr || "",
+        en: data.en || "",
+        ar: data.ar || ""
+      });
+   
+      setLoading(false);
+    })
+    .catch((err) => {
+      console.error("Error fetching username data:", err);
+      setLoading(false);
+    });
+}, []);
   const saveHero = async () => {
     try {
       const res = await fetch("/api/hero", {
@@ -97,29 +119,37 @@ export default function HeroAdminPage() {
     }
   };
 
-  const saveUsername = async () => {
-    try {
-      const res = await fetch("/api/username", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: username }),
-      });
-      
-      if (!res.ok) throw new Error("Failed to save username");
-      toast({
-        title: "Success",
-        description: "Username saved successfully!",
-        className: "bg-green-500 text-white border-none",
-      });
-      fetchData();
-    } catch (err: any) {
-      toast({
-        title: "Error",
-        description: err.message || "Something went wrong!",
-        className: "bg-red-500 text-white border-none",
-      });
-    }
-  };
+const saveUsername = async () => {
+  try {
+    const res = await fetch("/api/username", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ 
+        name: {
+          fr: username.fr.trim(),
+          en: username.en.trim(),
+          ar: username.ar.trim()
+        }
+      }),
+    });
+    
+    if (!res.ok) throw new Error("Failed to save username");
+    toast({
+      title: "Success",
+      description: "Username saved successfully!",
+      className: "bg-green-500 text-white border-none",
+    });
+    fetchData();
+  } catch (err: any) {
+    toast({
+      title: "Error",
+      description: err.message || "Something went wrong!",
+      className: "bg-red-500 text-white border-none",
+    });
+  }
+};
+
+
 
   useEffect(() => {
     fetchData();
@@ -183,46 +213,69 @@ export default function HeroAdminPage() {
   return (
     <div className="p-4 md:p-6 max-w-5xl mx-auto bg-white dark:bg-gray-900 rounded-lg shadow-md">
       {/* Username Management Accordion */}
-      <div className="mb-4 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-        <button
-          onClick={() => toggleSection("username")}
-          className="w-full flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
-        >
-          <div className="flex items-center gap-2">
-            <LucideIcons.User size={20} className="text-gray-600 dark:text-gray-300" />
-            <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Username</h2>
-          </div>
-          <LucideIcons.ChevronDown 
-            size={20} 
-            className={`text-gray-500 dark:text-gray-400 transition-transform ${expandedSections.username ? 'rotate-180' : ''}`}
+ <div className="mb-4 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+  <button
+    onClick={() => toggleSection("username")}
+    className="w-full flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+  >
+    <div className="flex items-center gap-2">
+      <LucideIcons.User size={20} className="text-gray-600 dark:text-gray-300" />
+      <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Username</h2>
+    </div>
+    <LucideIcons.ChevronDown 
+      size={20} 
+      className={`text-gray-500 dark:text-gray-400 transition-transform ${expandedSections.username ? 'rotate-180' : ''}`}
+    />
+  </button>
+  
+  {expandedSections.username && (
+    <div className="p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+      <div className="grid md:grid-cols-3 gap-4 mb-4">
+        <div className="relative">
+          <input
+            type="text"
+            value={username.fr}
+            placeholder="Username (French)"
+            onChange={(e) => setUsername({...username, fr: e.target.value})}
+            className="border border-gray-300 dark:border-gray-600 p-2 pl-9 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
           />
-        </button>
+          <span className="absolute left-2.5 top-3 text-gray-400 text-sm">FR</span>
+        </div>
         
-        {expandedSections.username && (
-          <div className="p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
-            <div className="flex flex-col md:flex-row gap-3 items-center">
-              <div className="relative flex-1 w-full">
-                <input
-                  type="text"
-                  value={username}
-                  placeholder="Enter your username"
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="border border-gray-300 dark:border-gray-600 p-2 pl-9 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-                />
-                <LucideIcons.User className="absolute left-2.5 top-3 text-gray-400" size={16} />
-              </div>
-              <button
-                onClick={saveUsername}
-                disabled={!username.trim()}
-                className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition disabled:bg-gray-400 disabled:cursor-not-allowed w-full md:w-auto justify-center"
-              >
-                <LucideIcons.Save size={16} />
-                Save
-              </button>
-            </div>
-          </div>
-        )}
+        <div className="relative">
+          <input
+            type="text"
+            value={username.en}
+            placeholder="Username (English)"
+            onChange={(e) => setUsername({...username, en: e.target.value})}
+            className="border border-gray-300 dark:border-gray-600 p-2 pl-9 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+          />
+          <span className="absolute left-2.5 top-3 text-gray-400 text-sm">EN</span>
+        </div>
+        
+        <div className="relative">
+          <input
+            type="text"
+            value={username.ar}
+            placeholder="Username (Arabic)"
+            onChange={(e) => setUsername({...username, ar: e.target.value})}
+            className="border border-gray-300 dark:border-gray-600 p-2 pl-9 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+          />
+          <span className="absolute left-2.5 top-3 text-gray-400 text-sm">AR</span>
+        </div>
       </div>
+      
+      <button
+        onClick={saveUsername}
+        disabled={!username.fr.trim() && !username.en.trim() && !username.ar.trim()}
+        className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition disabled:bg-gray-400 disabled:cursor-not-allowed w-full md:w-auto justify-center"
+      >
+        <LucideIcons.Save size={16} />
+        Save All
+      </button>
+    </div>
+  )}
+</div>
 
       {/* Hero Content Accordions */}
       <div className="space-y-4">

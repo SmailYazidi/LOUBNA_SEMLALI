@@ -7,9 +7,8 @@ export async function GET() {
     const db = await connectDB();
     const username = await db.collection("username").findOne({});
     
-    return NextResponse.json({
-      name: username?.name || null,
-    });
+    // Return the multilingual username object
+    return NextResponse.json(username?.name || { fr: "", en: "", ar: "" });
     
   } catch (error) {
     console.error("Username GET error:", error);
@@ -24,19 +23,27 @@ export async function POST(req: Request) {
   try {
     const { name } = await req.json();
     
-    if (!name || typeof name !== 'string') {
+    if (!name || typeof name !== 'object') {
       return NextResponse.json(
-        { error: "Valid name is required" },
+        { error: "Valid name object is required" },
         { status: 400 }
       );
     }
 
     const db = await connectDB();
     
-    // Store or update the single username document
+    // Store or update the single username document with multilingual support
     await db.collection("username").updateOne(
       {}, // Empty filter matches the first document (or creates if none exists)
-      { $set: { name } },
+      { 
+        $set: { 
+          name: {
+            fr: name.fr || "",
+            en: name.en || "",
+            ar: name.ar || ""
+          }
+        } 
+      },
       { upsert: true }
     );
 
