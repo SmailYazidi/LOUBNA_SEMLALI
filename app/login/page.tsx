@@ -3,7 +3,7 @@
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Loading from "@/components/Loading";
+
 import * as LucideIcons from "lucide-react";
 import Link from "next/link"; // ✅ Import Link for navigation
 
@@ -39,18 +39,14 @@ export default function LoginPage() {
     }
   };
 
-  if (loading) return <Loading />;
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
         {/* Header Section */}
         <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-6 text-center">
-          <div className="flex justify-center mb-4">
-            <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
-              <LucideIcons.Shield size={32} className="text-white" />
-            </div>
-          </div>
+         
           <h1 className="text-2xl font-bold text-white mb-2">Admin Login</h1>
           <p className="text-blue-100 text-sm">Enter your password to access the admin panel</p>
         </div>

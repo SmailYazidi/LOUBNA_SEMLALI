@@ -26,7 +26,7 @@ export default function HeroAdminPage() {
   const [iconSearch, setIconSearch] = useState("");
   const [activeIconPickerIndex, setActiveIconPickerIndex] = useState<number | null>(null);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    username: true,
+    username: false,
     specialist: false,
     title: false,
     description: false,
@@ -359,11 +359,14 @@ export default function HeroAdminPage() {
             <div className="flex items-center gap-2">
               <LucideIcons.MousePointerClick size={20} className="text-gray-600 dark:text-gray-300" />
               <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Buttons</h2>
+               <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded-full">
+      {hero?.heroButtons.length} Buttons
+    </span>
             </div>
             <LucideIcons.ChevronDown 
               size={20} 
               className={`text-gray-500 dark:text-gray-400 transition-transform ${expandedSections.buttons ? 'rotate-180' : ''}`}
-            />
+            />  
           </button>
           
           {expandedSections.buttons && (

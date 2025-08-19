@@ -314,10 +314,12 @@ export default function ContactAdminPage() {
 
       {/* Contact Information Accordion */}
 <Accordion
-  title={
+    title={
     <div className="flex items-center gap-2">
-      <LucideIcons.Phone size={20} className="text-gray-600 dark:text-gray-300" />
       <span>Contact Methods</span>
+      <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded-full">
+        {contact.contactInfo.length }  Methods
+      </span>
     </div>
   }
   isOpen={expandedSections.methods}

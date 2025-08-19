@@ -334,10 +334,23 @@ export default function AboutAdminPage() {
       </Accordion>
 
       {/* Language List Management Accordion */}
-      <Accordion 
-        title="Languages" 
-        icon={<LucideIcons.Languages size={20} className="text-gray-600 dark:text-gray-300" />}
-      >
+<Accordion
+  title={
+    <div className="flex items-center gap-2">
+      <span>Languages</span>
+      <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded-full">
+        {about.languages.list.length} Languages
+      </span>
+    </div>
+  }
+  icon={
+    <LucideIcons.Languages
+      size={20}
+      className="text-gray-600 dark:text-gray-300"
+    />
+  }
+>
+
         <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto mb-4">
           <input
             type="text"
@@ -435,7 +448,15 @@ export default function AboutAdminPage() {
 
       {/* Personal Info Accordion */}
       <Accordion 
-        title="Personal Info" 
+        title={
+    <div className="flex items-center gap-2">
+      <span>Personal Info</span>
+      <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded-full">
+        {about.personalInfo.length} Personal Info
+      </span>
+    </div>
+  }
+       
         icon={<LucideIcons.Info size={20} className="text-gray-600 dark:text-gray-300" />}
       >
         <div className="flex justify-end mb-4">
@@ -566,7 +587,15 @@ export default function AboutAdminPage() {
 
       {/* Interests Accordion */}
       <Accordion 
-        title="Interests" 
+            title={
+    <div className="flex items-center gap-2">
+      <span>Interests </span>
+      <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded-full">
+        {about.interests.length} Interests
+      </span>
+    </div>
+  }
+    
         icon={<LucideIcons.Heart size={20} className="text-gray-600 dark:text-gray-300" />}
       >
         <div className="flex justify-end mb-4">
