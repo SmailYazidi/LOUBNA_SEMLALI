@@ -878,7 +878,7 @@ const getIcon = (iconName?: string) => {
                     className={`absolute ${currentLang === 'ar' ? '-right-2' : '-left-2'} top-0 w-4 h-4 rounded-full bg-[rgb(var(--portfolio-gold))]`}
                   ></div>
                   <p className={`${themeClasses.textSecondary} font-medium text-sm mb-1`}>
-                    {event.year}
+                    {event.year?.[currentLang]}
                   </p>
                   <h4 className="text-base sm:text-lg font-medium mb-1">
                     {event.title?.[currentLang]}
@@ -917,7 +917,7 @@ const getIcon = (iconName?: string) => {
                   ></div>
                   <div className="flex items-center gap-2 mb-1">
                     <p className={`${themeClasses.textSecondary} font-medium text-sm`}>
-                      {event.year}
+                      {event.year?.[currentLang]}
                     </p>
                     {event.duration && (
                       <Badge className="bg-[rgb(var(--portfolio-gold))] text-[rgb(var(--portfolio-gold-foreground))] text-xs">

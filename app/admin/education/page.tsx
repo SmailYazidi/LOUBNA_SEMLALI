@@ -8,14 +8,14 @@ import { useToast } from "@/hooks/use-toast"
 type LocalizedText = { fr: string; en: string; ar: string };
 
 type EducationItem = {
-  year: string;
+  year: LocalizedText;
   title: LocalizedText;
   institution: LocalizedText;
   description: LocalizedText;
 };
 
 type ExperienceItem = {
-  year: string;
+  year: LocalizedText;
   title: LocalizedText;
   institution: LocalizedText;
   description: LocalizedText;
@@ -34,6 +34,63 @@ const defaultData: EducationData = {
   experience: []
 };
 
+// Helper function to ensure proper data structure
+const normalizeEducationData = (data: any): EducationData => {
+  if (!data) return defaultData;
+  
+  return {
+    journeyTitle: {
+      fr: data.journeyTitle?.fr || data.journeyTitle || "",
+      en: data.journeyTitle?.en || "",
+      ar: data.journeyTitle?.ar || ""
+    },
+    education: Array.isArray(data.education) ? data.education.map((item: any) => ({
+      year: {
+        fr: item.year?.fr || item.year || "",
+        en: item.year?.en || "",
+        ar: item.year?.ar || ""
+      },
+      title: {
+        fr: item.title?.fr || item.title || "",
+        en: item.title?.en || "",
+        ar: item.title?.ar || ""
+      },
+      institution: {
+        fr: item.institution?.fr || item.institution || "",
+        en: item.institution?.en || "",
+        ar: item.institution?.ar || ""
+      },
+      description: {
+        fr: item.description?.fr || item.description || "",
+        en: item.description?.en || "",
+        ar: item.description?.ar || ""
+      }
+    })) : [],
+    experience: Array.isArray(data.experience) ? data.experience.map((item: any) => ({
+      year: {
+        fr: item.year?.fr || item.year || "",
+        en: item.year?.en || "",
+        ar: item.year?.ar || ""
+      },
+      title: {
+        fr: item.title?.fr || item.title || "",
+        en: item.title?.en || "",
+        ar: item.title?.ar || ""
+      },
+      institution: {
+        fr: item.institution?.fr || item.institution || "",
+        en: item.institution?.en || "",
+        ar: item.institution?.ar || ""
+      },
+      description: {
+        fr: item.description?.fr || item.description || "",
+        en: item.description?.en || "",
+        ar: item.description?.ar || ""
+      }
+    })) : []
+  };
+};
+
 export default function EducationAdminPage() {
   const [data, setData] = useState<EducationData>(defaultData);
   const [loading, setLoading] = useState(true);
@@ -48,7 +105,7 @@ export default function EducationAdminPage() {
       const res = await fetch("/api/education");
       if (!res.ok) throw new Error("Failed to fetch education data");
       const json = await res.json();
-      setData(json);
+      setData(normalizeEducationData(json));
     } catch (err: any) {
       setError(err.message);
       // Fallback to default structure
@@ -89,26 +146,29 @@ export default function EducationAdminPage() {
   ) => {
     setData(prev => {
       const newData = { ...prev };
+      
       if (section === "journeyTitle") {
+        // Ensure journeyTitle is an object
+        newData.journeyTitle = { ...newData.journeyTitle };
         newData.journeyTitle[lang] = value;
       } else if (index !== null) {
+        // Ensure the section array exists
+        newData[section] = [...newData[section]];
+        // Ensure the item exists and is an object
+        newData[section][index] = { ...newData[section][index] };
+        // Ensure the field exists and is an object
+        newData[section][index][field] = { ...newData[section][index][field] };
+        // Update the value
         newData[section][index][field][lang] = value;
       }
-      return newData;
-    });
-  };
-
-  const handleYearChange = (section: "education" | "experience", index: number, value: string) => {
-    setData(prev => {
-      const newData = { ...prev };
-      newData[section][index].year = value;
+      
       return newData;
     });
   };
 
   const addItem = (section: "education" | "experience") => {
     const newItem = { 
-      year: "", 
+      year: { fr: "", en: "", ar: "" }, 
       title: { fr: "", en: "", ar: "" }, 
       institution: { fr: "", en: "", ar: "" }, 
       description: { fr: "", en: "", ar: "" } 
@@ -195,7 +255,7 @@ export default function EducationAdminPage() {
   const getItemDisplayTitle = (item: EducationItem | ExperienceItem, index: number, section: string) => {
     const title = item.title.en || item.title.fr || item.title.ar;
     const institution = item.institution.en || item.institution.fr || item.institution.ar;
-    const year = item.year;
+    const year = item.year.en || item.year.fr || item.year.ar;
     
     if (title && institution && year) {
       return `${title} - ${institution} (${year})`;
@@ -211,7 +271,7 @@ export default function EducationAdminPage() {
   };
 
   const hasContent = (item: EducationItem | ExperienceItem) => {
-    return item.year || item.title.fr || item.title.en || item.title.ar || 
+    return  item.year.fr || item.year.en || item.year.ar  || item.title.fr || item.title.en || item.title.ar || 
            item.institution.fr || item.institution.en || item.institution.ar || 
            item.description.fr || item.description.en || item.description.ar;
   };
@@ -228,8 +288,8 @@ export default function EducationAdminPage() {
         </h1>
       </div>
 
-    {/*    Journey Title 
-      <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
+      {/* Journey Title */}
+    {/*   <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
         <div className="flex items-center gap-2 mb-4">
           <LucideIcons.Type size={20} className="text-gray-600 dark:text-gray-300" />
           <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Journey Title</h2>
@@ -266,9 +326,10 @@ export default function EducationAdminPage() {
             />
           </div>
         </div>
-      </div> */}
-
- 
+      </div>
+ */}
+      {/* Rest of your component remains the same... */}
+      {/* Education Section */}
       <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
@@ -349,26 +410,11 @@ export default function EducationAdminPage() {
                     isExpanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
                   } overflow-hidden`}>
                     <div className="p-4 pt-0 border-t border-gray-200 dark:border-gray-600">
-                      <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-3">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                            <LucideIcons.Calendar size={14} className="inline mr-1" />
-                            Year
-                          </label>
-                          <input
-                            type="text"
-                            value={edu.year}
-                            placeholder="e.g. 2015-2019"
-                            onChange={(e) => handleYearChange("education", index, e.target.value)}
-                            className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                          />
-                        </div>
-                      </div>
-
-                      {["title", "institution", "description"].map((field) => (
+                      {["year","title", "institution", "description"].map((field) => (
                         <div key={field} className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
                           <div>
                             <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                  {field === "year" && <LucideIcons.Calendar size={14} className="inline mr-1" />}
                               {field === "title" && <LucideIcons.Award size={14} className="inline mr-1" />}
                               {field === "institution" && <LucideIcons.Building size={14} className="inline mr-1" />}
                               {field === "description" && <LucideIcons.FileText size={14} className="inline mr-1" />}
@@ -393,6 +439,7 @@ export default function EducationAdminPage() {
                           </div>
                           <div>
                             <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                  {field === "year" && <LucideIcons.Calendar size={14} className="inline mr-1" />}
                               {field === "title" && <LucideIcons.Award size={14} className="inline mr-1" />}
                               {field === "institution" && <LucideIcons.Building size={14} className="inline mr-1" />}
                               {field === "description" && <LucideIcons.FileText size={14} className="inline mr-1" />}
@@ -417,6 +464,7 @@ export default function EducationAdminPage() {
                           </div>
                           <div>
                             <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                  {field === "year" && <LucideIcons.Calendar size={14} className="inline mr-1" />}
                               {field === "title" && <LucideIcons.Award size={14} className="inline mr-1" />}
                               {field === "institution" && <LucideIcons.Building size={14} className="inline mr-1" />}
                               {field === "description" && <LucideIcons.FileText size={14} className="inline mr-1" />}
@@ -531,26 +579,11 @@ export default function EducationAdminPage() {
                     isExpanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
                   } overflow-hidden`}>
                     <div className="p-4 pt-0 border-t border-gray-200 dark:border-gray-600">
-                      <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-3">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                            <LucideIcons.Calendar size={14} className="inline mr-1" />
-                            Year
-                          </label>
-                          <input
-                            type="text"
-                            value={exp.year}
-                            placeholder="e.g. 2019-2022"
-                            onChange={(e) => handleYearChange("experience", index, e.target.value)}
-                            className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                          />
-                        </div>
-                      </div>
-
-                      {["title", "institution", "description"].map((field) => (
+                      {["year","title", "institution", "description"].map((field) => (
                         <div key={field} className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
                           <div>
                             <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                     {field === "year" && <LucideIcons.Calendar size={14} className="inline mr-1" />}
                               {field === "title" && <LucideIcons.Award size={14} className="inline mr-1" />}
                               {field === "institution" && <LucideIcons.Building size={14} className="inline mr-1" />}
                               {field === "description" && <LucideIcons.FileText size={14} className="inline mr-1" />}
@@ -575,6 +608,7 @@ export default function EducationAdminPage() {
                           </div>
                           <div>
                             <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                  {field === "year" && <LucideIcons.Calendar size={14} className="inline mr-1" />}
                               {field === "title" && <LucideIcons.Award size={14} className="inline mr-1" />}
                               {field === "institution" && <LucideIcons.Building size={14} className="inline mr-1" />}
                               {field === "description" && <LucideIcons.FileText size={14} className="inline mr-1" />}
@@ -599,6 +633,7 @@ export default function EducationAdminPage() {
                           </div>
                           <div>
                             <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                  {field === "year" && <LucideIcons.Calendar size={14} className="inline mr-1" />}
                               {field === "title" && <LucideIcons.Award size={14} className="inline mr-1" />}
                               {field === "institution" && <LucideIcons.Building size={14} className="inline mr-1" />}
                               {field === "description" && <LucideIcons.FileText size={14} className="inline mr-1" />}
