@@ -1320,11 +1320,7 @@ const getIcon = (iconName?: string) => {
         <div className="container mx-auto max-w-7xl">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center space-x-3 mb-4 md:mb-0">
-              <div
-                className={`w-8 h-8 ${isDarkMode ? "bg-white" : "bg-gray-900"} rounded-full flex items-center justify-center`}
-              >
-            
-              </div>
+          
               <span className={themeClasses.textSecondary}>© 2025 {usernameData.name}</span>
             </div>
             <p className={`${themeClasses.textMuted} text-xs sm:text-sm`}>{t.rightsReserved}</p>
