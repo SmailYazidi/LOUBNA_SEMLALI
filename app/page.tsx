@@ -888,7 +888,7 @@ const getIcon = (iconName?: string) => {
               {currentLang === "fr" ? "Formation" : "Education"}
             </h3>
             <div className="space-y-8 relative">
-              {educationData?.education?.map((event, index) => (
+           {educationData?.education && [...educationData.education].reverse().map((event, index) => (
                 <div key={index} className="relative pl-6">
                   <div
                     className={`absolute left-0 top-0 bottom-0 w-0.5 ${
@@ -926,7 +926,7 @@ const getIcon = (iconName?: string) => {
               {currentLang === "fr" ? "Expérience" : "Experience"}
             </h3>
             <div className="space-y-8 relative">
-              {educationData?.experience?.map((event, index) => (
+             {educationData?.experience && [...educationData.experience].reverse().map((event, index) =>(
                 <div key={index} className="relative pl-6">
                   <div
                     className={`absolute left-0 top-0 bottom-0 w-0.5 ${
@@ -1330,3 +1330,6 @@ const getIcon = (iconName?: string) => {
     </div>
   )
 }
+
+
+
