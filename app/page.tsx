@@ -1323,7 +1323,7 @@ const getIcon = (iconName?: string) => {
               <div
                 className={`w-8 h-8 ${isDarkMode ? "bg-white" : "bg-gray-900"} rounded-full flex items-center justify-center`}
               >
-                <span className={`${isDarkMode ? "text-black" : "text-white"} font-bold text-sm`}>L</span>
+            
               </div>
               <span className={themeClasses.textSecondary}>© 2025 {usernameData.name}</span>
             </div>
