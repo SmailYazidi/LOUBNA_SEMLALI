@@ -23,7 +23,7 @@ import {
 } from "lucide-react"
 import * as LucideIcons from "lucide-react";
 
-// Translation data for Smail Yazidi
+// Translation data with Arabic support
 const translations = {
   fr: {
     // Header
@@ -35,30 +35,24 @@ const translations = {
     about: "À Propos",
     contact: "Contact",
     hireMe: "Me Contacter",
-     
-   viewJourney: "Voir Mon CV",
+    viewJourney: "Voir Mon CV",
 
     // Services
     servicesTitle: "Services",
- 
 
     // Experience & Education Timeline
     journeyTitle: "Parcours Professionnel & Éducatif",
 
-
     // Skills
     skillsTitle: "Mes Compétences",
-  
 
     // Projects
     myProjects: "Mes Projets",
 
-
- // (You fill in the details)
     // About
     aboutTitle: "À Propos de Moi",
-   
-interests:"Centres d'Intérêt",
+    interests:"Centres d'Intérêt",
+    
     // Footer
     rightsReserved: "Tous droits réservés",
   },
@@ -72,8 +66,8 @@ interests:"Centres d'Intérêt",
     about: "About",
     contact: "Contact",
     hireMe: "Hire Me",
-interests:"Interests",
- viewJourney: "View My CV",
+    interests:"Interests",
+    viewJourney: "View My CV",
 
     // Services
     servicesTitle: "Services",
@@ -83,7 +77,6 @@ interests:"Interests",
  
     // Skills
     skillsTitle: "My Skills",
-   
 
     // Projects
     myProjects: "My Projects",
@@ -92,6 +85,35 @@ interests:"Interests",
     // Footer
     rightsReserved: "All rights reserved",
   },
+  ar: {
+    // Header
+    home: "الرئيسية",
+    services: "الخدمات",
+    experience: "المسيرة المهنية",
+    skills: "المهارات",
+    projects: "المشاريع",
+    about: "عنّي",
+    contact: "التواصل",
+    hireMe: "وظفني",
+    interests: "الاهتمامات",
+    viewJourney: "عرض سيرتي الذاتية",
+
+    // Services
+    servicesTitle: "الخدمات",
+
+    // Experience & Education Timeline
+    journeyTitle: "المسيرة المهنية والتعليمية",
+
+    // Skills
+    skillsTitle: "مهاراتي",
+
+    // Projects
+    myProjects: "مشاريعي",
+
+    aboutTitle: "نبذة عني",
+    // Footer
+    rightsReserved: "جميع الحقوق محفوظة",
+  }
 }
 
 export default function Portfolio() {
@@ -113,8 +135,6 @@ export default function Portfolio() {
  const [usernameLoading, setUsernameLoading] = useState(true);
    const [usernameData, setUsernameData] = useState<any>(null);
 
-
-
   const [educationLoading, setEducationLoading] = useState(true);
   const [skillsLoading, setSkillsLoading] = useState(true);
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
@@ -125,7 +145,6 @@ export default function Portfolio() {
   const [searchTerm, setSearchTerm] = useState("")
   const [isSearchOpen, setIsSearchOpen] = useState(false)
 
-
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = sessionStorage.getItem('darkMode');
@@ -134,14 +153,13 @@ export default function Portfolio() {
     return true;
   });
 
-  const [currentLang, setCurrentLang] = useState<"fr" | "en">(() => {
+  const [currentLang, setCurrentLang] = useState<"fr" | "en" | "ar">(() => {
     if (typeof window !== 'undefined') {
       const saved = sessionStorage.getItem('language');
-      return saved !== null ? saved as "fr" | "en" : "fr";
+      return saved !== null ? saved as "fr" | "en" | "ar" : "fr";
     }
     return "fr";
   });
-
 
   const t = translations[currentLang]
 
@@ -152,6 +170,7 @@ export default function Portfolio() {
     }
     setIsMenuOpen(false)
   }
+  
   useEffect(() => {
     sessionStorage.setItem('darkMode', JSON.stringify(isDarkMode));
   }, [isDarkMode]);
@@ -159,8 +178,9 @@ export default function Portfolio() {
   useEffect(() => {
     sessionStorage.setItem('language', currentLang);
     document.documentElement.lang = currentLang;
+    // Set RTL direction for Arabic
+    document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
   }, [currentLang]);
-
 
   // Modify your theme toggle function to persist the setting
   const toggleTheme = () => {
@@ -170,12 +190,11 @@ export default function Portfolio() {
   };
 
   // Modify your language change function to persist the setting
-  const changeLanguage = (lang: "fr" | "en") => {
+  const changeLanguage = (lang: "fr" | "en" | "ar") => {
     setCurrentLang(lang);
     setIsLangMenuOpen(false);
     sessionStorage.setItem('language', lang);
   };
-
 
   useEffect(() => {
     const fetchPhoto = async () => {
@@ -218,11 +237,6 @@ export default function Portfolio() {
         setUsernameLoading(false);
       });
   }, []);
-
-
-
-  
-
 
  useEffect(() => {
     fetch("/api/about_me")
@@ -275,7 +289,6 @@ export default function Portfolio() {
       });
   }, []);
 
-
     // Fetch education data
   useEffect(() => {
     fetch("/api/skills")
@@ -290,7 +303,6 @@ export default function Portfolio() {
       });
   }, []);
 
-
     // Fetch Projets data
   useEffect(() => {
     fetch("/api/projets")
@@ -304,10 +316,6 @@ export default function Portfolio() {
         setProjetsLoading(false);
       });
   }, []);
-
-
-
-
 
   useEffect(() => {
     const handleScroll = () => {
@@ -345,13 +353,12 @@ export default function Portfolio() {
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
-
   const languageOptions = [
     { code: "fr", label: "Français", flag: "🇫🇷" },
     { code: "en", label: "English", flag: "🇺🇸" },
+    { code: "ar", label: "العربية", flag: "🇸🇦" },
   ]
 
- 
   const themeClasses = {
     bg: isDarkMode ? "bg-[#0a0a0a]" : "bg-white",
     text: isDarkMode ? "text-white" : "text-gray-900",
@@ -370,6 +377,7 @@ export default function Portfolio() {
     accentRed: "var(--portfolio-red)",
     accentRedForeground: "var(--portfolio-red-foreground)",
   }
+
 const isProjectsEmpty = !projetsData || !projetsData.projects?.length;
 
 const isServicesEmpty = !servicesData || !servicesData.servicesList?.length;
@@ -377,10 +385,10 @@ const isServicesEmpty = !servicesData || !servicesData.servicesList?.length;
 const isJourneyDataEmpty =
   !educationData ||
   (!educationData.education?.length && !educationData.experience?.length);
-  const isContactDataEmpty =
+
+const isContactDataEmpty =
   !contactData ||
   !(
-  
     (contactData.contactDescription?.[currentLang]?.trim() !== "") ||
     (contactData.contactInfo && contactData.contactInfo.length > 0 &&
       contactData.contactInfo.some(info =>
@@ -390,10 +398,10 @@ const isJourneyDataEmpty =
     ) ||
     (contactData.contactButton?.startProject?.[currentLang]?.trim() !== "")
   );
+
 const isAboutDataEmpty =
   !aboutData ||
   !(
- 
     (aboutData.aboutDescription?.[currentLang]?.trim() !== "") ||
     (aboutData.personalInfo && aboutData.personalInfo.length > 0 &&
       aboutData.personalInfo.some(info =>
@@ -413,10 +421,10 @@ const isAboutDataEmpty =
       )
     )
   );
+
 const isSkillsDataEmpty =
   !skillsData ||
   !(
-  /*   (skillsData.skillsTitle?.[currentLang]?.trim() !== "") || */
     (skillsData.skills && skillsData.skills.length > 0 &&
       skillsData.skills.some(skill =>
         (skill.title?.[currentLang]?.trim() !== "") ||
@@ -429,6 +437,7 @@ const isSkillsDataEmpty =
       )
     )
   );
+
 const isHeroDataEmpty =
   !heroData ||
   !(
@@ -437,8 +446,6 @@ const isHeroDataEmpty =
     (heroData.heroDescription?.[currentLang] && heroData.heroDescription[currentLang].trim() !== "") ||
     (heroData.heroButtons && heroData.heroButtons.length > 0)
   );
-
-
 
 const navItems = [
   !isServicesEmpty && { id: "services", label: t.services },
@@ -449,7 +456,6 @@ const navItems = [
   !isContactDataEmpty && { id: "contact", label: t.contact },
 ].filter(Boolean); // remove false values
 
-
 const getIcon = (iconName?: string) => {
   if (!iconName) return null; 
   const pascalCase = iconName.charAt(0).toUpperCase() + iconName.slice(1);
@@ -457,10 +463,11 @@ const getIcon = (iconName?: string) => {
 };
 
   if (heroLoading || servicesLoading || photoLoading || educationLoading || aboutLoading || contactLoading || projetsLoading || skillsLoading || usernameLoading) return <Loading/>;
+  
   return (
-
     <div
       className={`min-h-screen transition-colors duration-300 ${isDarkMode ? "dark" : ""} ${themeClasses.bg} ${themeClasses.text}`}
+      dir={currentLang === 'ar' ? 'rtl' : 'ltr'}
     >
       {/* Header */}
       <header
@@ -473,19 +480,8 @@ const getIcon = (iconName?: string) => {
   className="flex items-center space-x-3 cursor-pointer"
   onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
 >
-{/* <div
-  className={`hidden sm:flex w-8 h-8 ${isDarkMode ? "bg-white" : "bg-gray-900"} rounded-full items-center justify-center`}
->
-  <span
-    className={`${isDarkMode ? "text-black" : "text-white"} font-bold text-lg`}
-  >
-    L
-  </span>
-</div> */}
-
 <span className="text-base sm:text-xl font-medium">{usernameData.name}</span>
 </div>
-
 
             <>
               <style jsx>{`
@@ -515,18 +511,12 @@ const getIcon = (iconName?: string) => {
       {item.label}
     </button>
   ))}
-
-
-
-
 </nav>
-
             </>
-
 
             {/* Desktop Controls */}
             <div className="hidden lg:flex items-center space-x-3">
-              {/* Language ser */}
+              {/* Language selector */}
            <div className="relative language-menu">
   <Button
     variant="ghost"
@@ -547,7 +537,7 @@ const getIcon = (iconName?: string) => {
       {languageOptions.map((option) => (
         <button
           key={option.code}
-          onClick={() => changeLanguage(option.code as "fr" | "en")}
+          onClick={() => changeLanguage(option.code as "fr" | "en" | "ar")}
           className={`w-full px-4 py-2 text-left text-sm flex items-center gap-3 
            hover:bg-[#d6a904] transition-colors
             ${currentLang === option.code
@@ -556,16 +546,14 @@ const getIcon = (iconName?: string) => {
             }`}
         >
           <span>{option.flag}</span>
-          <span>{option.label}</span>
+          <span className={option.code === 'ar' ? 'text-right' : ''}>{option.label}</span>
         </button>
       ))}
     </div>
   )}
 </div>
 
-
               {/* Theme Toggle */}
-            {/* Theme Toggle */}
 <Button
   variant="ghost"
   size="sm"
@@ -585,8 +573,6 @@ const getIcon = (iconName?: string) => {
   {isSearchOpen ? <X className="w-5 h-5" /> : <Search className="w-5 h-5" />}
 </Button>
 
-
-
               {/* Hire Me */}
               <Button
                 className={`${isDarkMode
@@ -600,7 +586,8 @@ const getIcon = (iconName?: string) => {
             </div>
 
             {/* Mobile Controls */}
-            <div className="flex lg:hidden items-center space-x-2"><Button
+            <div className="flex lg:hidden items-center space-x-2">
+<Button
   variant="ghost"
   size="sm"
   onClick={toggleTheme}
@@ -608,6 +595,7 @@ const getIcon = (iconName?: string) => {
 >
   {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
 </Button>
+
         <div className="relative language-menu">
  <Button
   variant="ghost"
@@ -620,7 +608,6 @@ const getIcon = (iconName?: string) => {
   />
 </Button>
 
-
   {isLangMenuOpen && (
     <div
       className={`absolute top-full right-0 mt-2 ${themeClasses.dropdownBg} ${themeClasses.dropdownBorder} border rounded-lg shadow-lg py-2 min-w-[120px] z-50`}
@@ -628,7 +615,7 @@ const getIcon = (iconName?: string) => {
       {languageOptions.map((option) => (
         <button
           key={option.code}
-          onClick={() => changeLanguage(option.code as "fr" | "en")}
+          onClick={() => changeLanguage(option.code as "fr" | "en" | "ar")}
           className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 
             hover:bg-[#d6a904] transition-colors
             ${currentLang === option.code
@@ -637,15 +624,12 @@ const getIcon = (iconName?: string) => {
             }`}
         >
           <span className="text-xs">{option.flag}</span>
-          <span className="text-xs">{option.code.toUpperCase()}</span>
+          <span className={`text-xs ${option.code === 'ar' ? 'text-right' : ''}`}>{option.code.toUpperCase()}</span>
         </button>
       ))}
     </div>
   )}
 </div>
-
-
-
 
 {/* Search Toggle for Mobile */}
 <Button
@@ -656,7 +640,6 @@ const getIcon = (iconName?: string) => {
 >
   {isSearchOpen ? <X className="w-6 h-6" /> : <Search className="w-6 h-6" />}
 </Button>
-
 
               <button className="p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
                 {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -682,7 +665,6 @@ const getIcon = (iconName?: string) => {
                   </button>
                 ))}
                 <div className="px-4 pt-4">
-
                   <Button
                     className={`w-full ${isDarkMode
                       ? "bg-[#EFBF04] hover:bg-[#d6a904]text-black"
@@ -705,18 +687,19 @@ const getIcon = (iconName?: string) => {
               <div className="relative">
                 <input
                   type="text"
-                  placeholder={currentLang === "fr" ? "Rechercher..." : "Search..."}
+                  placeholder={currentLang === "fr" ? "Rechercher..." : currentLang === "en" ? "Search..." : "البحث..."}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className={`w-full p-3 pr-10 rounded-md ${isDarkMode
                     ? "bg-gray-800 text-white border border-gray-700"
                     : "bg-gray-100 text-gray-900 border border-gray-300"
-                    } focus:outline-none focus:ring-2 focus:ring-[rgb(var(--portfolio-gold))]`}
+                    } focus:outline-none focus:ring-2 focus:ring-[rgb(var(--portfolio-gold))] ${currentLang === 'ar' ? 'text-right' : ''}`}
+                  dir={currentLang === 'ar' ? 'rtl' : 'ltr'}
                 />
                 {searchTerm && (
                   <button
                     onClick={() => setSearchTerm("")}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:hover:text-white"
+                    className={`absolute ${currentLang === 'ar' ? 'left-3' : 'right-3'} top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:hover:text-white`}
                     aria-label="Clear search"
                   >
                     <X size={18} />
@@ -728,16 +711,15 @@ const getIcon = (iconName?: string) => {
         </div>
       </header>
 
-
       {/* Hero Section */}
 {!isHeroDataEmpty && (
   <section id="home" className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
     <div className="container mx-auto max-w-7xl">
-      <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      <div className={`grid lg:grid-cols-2 gap-12 lg:gap-16 items-center ${currentLang === 'ar' ? 'lg:grid-cols-2' : ''}`}>
         {/* Left Content */}
-        <div className="space-y-6 sm:space-y-8 text-center lg:text-left">
+        <div className={`space-y-6 sm:space-y-8 text-center lg:text-left ${currentLang === 'ar' ? 'lg:text-right' : ''}`}>
           {heroData.specialist?.[currentLang] && (
-            <div className="flex items-center justify-center lg:justify-start gap-3">
+            <div className={`flex items-center justify-center gap-3 ${currentLang === 'ar' ? 'lg:justify-end' : 'lg:justify-start'}`}>
               <Star className="w-5 h-5 text-[rgb(var(--portfolio-gold))] fill-current" />
               <span className={`${themeClasses.textSecondary} text-sm font-medium`}>
                 {heroData.specialist[currentLang]}
@@ -752,12 +734,12 @@ const getIcon = (iconName?: string) => {
           )}
 
           {heroData.heroDescription?.[currentLang] && (
-            <p className={`${themeClasses.textSecondary} text-base sm:text-lg leading-relaxed max-w-lg mx-auto lg:mx-0`}>
+            <p className={`${themeClasses.textSecondary} text-base sm:text-lg leading-relaxed max-w-lg mx-auto ${currentLang === 'ar' ? 'lg:mr-0' : 'lg:mx-0'}`}>
               {heroData.heroDescription[currentLang]}
             </p>
           )}
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+          <div className={`flex flex-col sm:flex-row gap-4 justify-center ${currentLang === 'ar' ? 'lg:justify-end' : 'lg:justify-start'}`}>
             <Button
               className="bg-[#EFBF04] hover:bg-[#d6a904] text-gray-900 font-medium px-8 py-3 rounded-full"
               onClick={() => (window.location.href = '/cv')}
@@ -790,7 +772,7 @@ const getIcon = (iconName?: string) => {
 
         {/* Right Content - Profile Image */}
              {photoUrl ? (
-        <div className="relative flex justify-center lg:justify-end mt-8 lg:mt-0">
+        <div className={`relative flex justify-center mt-8 lg:mt-0 ${currentLang === 'ar' ? 'lg:justify-start' : 'lg:justify-end'}`}>
           <div className={`w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 rounded-full ${
             isDarkMode 
               ? "bg-gradient-to-br from-gray-800 to-gray-900" 
@@ -822,17 +804,21 @@ const getIcon = (iconName?: string) => {
     <div className="container mx-auto max-w-7xl">
       <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4">
         {t.servicesTitle}
-        <span className="absolute bottom-0 left-0 w-20 h-1 bg-[rgb(var(--portfolio-gold))]"></span>
+        <span className={`absolute bottom-0 w-20 h-1 bg-[rgb(var(--portfolio-gold))] ${currentLang === 'ar' ? 'right-0' : 'left-0'}`}></span>
       </h2>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
         {Array.isArray(servicesData?.servicesList) && servicesData.servicesList.length > 0 ? (
           servicesData.servicesList.map((service, index) => {
-            // Fallback: try currentLang, else fallback to the other language
-            const title = service.title?.[currentLang] || service.title?.[currentLang === 'fr' ? 'en' : 'fr'];
-            const description = service.description?.[currentLang] || service.description?.[currentLang === 'fr' ? 'en' : 'fr'];
+            // Get text for current language with fallbacks
+            const title = service.title?.[currentLang] || 
+                         service.title?.[currentLang === 'fr' ? 'en' : currentLang === 'en' ? 'ar' : 'fr'] ||
+                         service.title?.[currentLang === 'ar' ? 'fr' : 'en'];
+            const description = service.description?.[currentLang] || 
+                               service.description?.[currentLang === 'fr' ? 'en' : currentLang === 'en' ? 'ar' : 'fr'] ||
+                               service.description?.[currentLang === 'ar' ? 'fr' : 'en'];
 
-            // Skip card if both titles are missing
+            // Skip card if no title available
             if (!title) return null;
 
             return (
@@ -861,13 +847,7 @@ const getIcon = (iconName?: string) => {
   </section>
 )}
 
-
-
-
-
 {/* Experience & Education Timeline Section */}
-
-
 {!isJourneyDataEmpty && (
   <section
     id="experience"
@@ -876,7 +856,7 @@ const getIcon = (iconName?: string) => {
     <div className="container mx-auto max-w-7xl">
       <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4">
         {t.journeyTitle}
-        <span className="absolute bottom-0 left-0 w-20 h-1 bg-[rgb(var(--portfolio-gold))]"></span>
+        <span className={`absolute bottom-0 w-20 h-1 bg-[rgb(var(--portfolio-gold))] ${currentLang === 'ar' ? 'right-0' : 'left-0'}`}></span>
       </h2>
 
       <div className="grid md:grid-cols-2 gap-12 md:gap-8">
@@ -885,18 +865,18 @@ const getIcon = (iconName?: string) => {
           <div>
             <h3 className="text-xl sm:text-2xl font-medium mb-6 sm:mb-8 flex items-center gap-3">
               <GraduationCap className="w-5 h-5 sm:w-6 sm:h-6 text-[rgb(var(--portfolio-gold))]" />
-              {currentLang === "fr" ? "Formation" : "Education"}
+              {currentLang === "fr" ? "Formation" : currentLang === "en" ? "Education" : "التعليم"}
             </h3>
             <div className="space-y-8 relative">
            {educationData?.education && [...educationData.education].reverse().map((event, index) => (
-                <div key={index} className="relative pl-6">
+                <div key={index} className={`relative ${currentLang === 'ar' ? 'pr-6' : 'pl-6'}`}>
                   <div
-                    className={`absolute left-0 top-0 bottom-0 w-0.5 ${
+                    className={`absolute ${currentLang === 'ar' ? 'right-0' : 'left-0'} top-0 bottom-0 w-0.5 ${
                       isDarkMode ? "bg-gray-700" : "bg-gray-300"
                     }`}
                   ></div>
                   <div
-                    className={`absolute -left-2 top-0 w-4 h-4 rounded-full bg-[rgb(var(--portfolio-gold))]`}
+                    className={`absolute ${currentLang === 'ar' ? '-right-2' : '-left-2'} top-0 w-4 h-4 rounded-full bg-[rgb(var(--portfolio-gold))]`}
                   ></div>
                   <p className={`${themeClasses.textSecondary} font-medium text-sm mb-1`}>
                     {event.year}
@@ -923,18 +903,18 @@ const getIcon = (iconName?: string) => {
           <div>
             <h3 className="text-xl sm:text-2xl font-medium mb-6 sm:mb-8 flex items-center gap-3">
               <Briefcase className="w-5 h-5 sm:w-6 sm:h-6 text-[rgb(var(--portfolio-gold))]" />
-              {currentLang === "fr" ? "Expérience" : "Experience"}
+              {currentLang === "fr" ? "Expérience" : currentLang === "en" ? "Experience" : "الخبرة"}
             </h3>
             <div className="space-y-8 relative">
              {educationData?.experience && [...educationData.experience].reverse().map((event, index) =>(
-                <div key={index} className="relative pl-6">
+                <div key={index} className={`relative ${currentLang === 'ar' ? 'pr-6' : 'pl-6'}`}>
                   <div
-                    className={`absolute left-0 top-0 bottom-0 w-0.5 ${
+                    className={`absolute ${currentLang === 'ar' ? 'right-0' : 'left-0'} top-0 bottom-0 w-0.5 ${
                       isDarkMode ? "bg-gray-700" : "bg-gray-300"
                     }`}
                   ></div>
                   <div
-                    className={`absolute -left-2 top-0 w-4 h-4 rounded-full bg-[rgb(var(--portfolio-gold))]`}
+                    className={`absolute ${currentLang === 'ar' ? '-right-2' : '-left-2'} top-0 w-4 h-4 rounded-full bg-[rgb(var(--portfolio-gold))]`}
                   ></div>
                   <div className="flex items-center gap-2 mb-1">
                     <p className={`${themeClasses.textSecondary} font-medium text-sm`}>
@@ -967,14 +947,13 @@ const getIcon = (iconName?: string) => {
   </section>
 )}
 
-
 {/* Skills Section */}
 {!isSkillsDataEmpty && (
 <section id="skills" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
   <div className="container mx-auto max-w-7xl">
     <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4">
       {t.skillsTitle}
-      <span className="absolute bottom-0 left-0 w-20 h-1 bg-[rgb(var(--portfolio-gold))]"></span>
+      <span className={`absolute bottom-0 w-20 h-1 bg-[rgb(var(--portfolio-gold))] ${currentLang === 'ar' ? 'right-0' : 'left-0'}`}></span>
     </h2>
 
     <div className="space-y-10 sm:space-y-12">
@@ -1008,7 +987,7 @@ const getIcon = (iconName?: string) => {
                           {skill.name?.[currentLang]}
                         </h4>
                         {skill.examples?.length > 0 && (
-                          <ul className={`${themeClasses.textMuted} text-xs sm:text-sm list-disc pl-4`}>
+                          <ul className={`${themeClasses.textMuted} text-xs sm:text-sm list-disc ${currentLang === 'ar' ? 'pr-4' : 'pl-4'}`}>
                             {skill.examples.map((ex, exIndex) => (
                               <li key={exIndex}>{ex?.[currentLang]}</li>
                             ))}
@@ -1029,7 +1008,6 @@ const getIcon = (iconName?: string) => {
   </div>
 </section>)}
 
-
 {/* Projects Section */}
 {!isProjectsEmpty && (
 <section
@@ -1039,7 +1017,7 @@ const getIcon = (iconName?: string) => {
   <div className="container mx-auto max-w-7xl">
     <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4">
       {t.myProjects}
-      <span className="absolute bottom-0 left-0 w-20 h-1 bg-[rgb(var(--portfolio-gold))]"></span>
+      <span className={`absolute bottom-0 w-20 h-1 bg-[rgb(var(--portfolio-gold))] ${currentLang === 'ar' ? 'right-0' : 'left-0'}`}></span>
     </h2>
 
     {projetsLoading ? (
@@ -1058,7 +1036,7 @@ const getIcon = (iconName?: string) => {
               {project.image ? (
                 <Image
                   src={project.image}
-                  alt={`${project.title?.fr || project.title?.en || 'Project'}`}
+                  alt={`${project.title?.[currentLang] || project.title?.fr || project.title?.en || 'Project'}`}
                   width={800}
                   height={450}
                   className="absolute inset-0 w-full h-full object-cover"
@@ -1066,7 +1044,9 @@ const getIcon = (iconName?: string) => {
               ) : (
                 <div className="absolute inset-0 bg-gray-200 dark:bg-gray-800 flex items-center justify-center">
                   <span className="text-gray-500 dark:text-gray-400">
-                    No image available
+                    {currentLang === 'fr' ? 'Pas d\'image disponible' : 
+                     currentLang === 'en' ? 'No image available' : 
+                     'لا توجد صورة متاحة'}
                   </span>
                 </div>
               )}
@@ -1074,12 +1054,12 @@ const getIcon = (iconName?: string) => {
 
             <CardContent className="p-6">
               <h3 className="text-xl sm:text-2xl font-medium mb-2 sm:mb-3">
-                {project.title?.[currentLang] || project.title?.fr || project.title?.en}
+                {project.title?.[currentLang] || project.title?.fr || project.title?.en || project.title?.ar}
               </h3>
               <p
                 className={`${themeClasses.textSecondary} text-sm sm:text-base leading-relaxed mb-4 sm:mb-6`}
               >
-                {project.description?.[currentLang] || project.description?.fr || project.description?.en}
+                {project.description?.[currentLang] || project.description?.fr || project.description?.en || project.description?.ar}
               </p>
               
               {/* Tech Stack */}
@@ -1116,7 +1096,10 @@ const getIcon = (iconName?: string) => {
                     {project.button.label?.[currentLang] || 
                      project.button.label?.fr || 
                      project.button.label?.en || 
-                     'View Project'}
+                     project.button.label?.ar ||
+                     (currentLang === 'fr' ? 'Voir le projet' : 
+                      currentLang === 'en' ? 'View Project' : 
+                      'عرض المشروع')}
                   </Button>
                 </div>
               )}
@@ -1127,14 +1110,14 @@ const getIcon = (iconName?: string) => {
     ) : (
       <div className="text-center py-12">
         <p className={`${themeClasses.textSecondary} text-lg`}>
-          No projects found
+          {currentLang === 'fr' ? 'Aucun projet trouvé' : 
+           currentLang === 'en' ? 'No projects found' : 
+           'لم يتم العثور على مشاريع'}
         </p>
       </div>
     )}
   </div>
 </section>)}
-
-
 
 {/* About Section */}
 {!isAboutDataEmpty && (
@@ -1144,7 +1127,7 @@ const getIcon = (iconName?: string) => {
         <div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4">
             {t.aboutTitle}
-            <span className="absolute bottom-0 left-0 w-20 h-1 bg-[rgb(var(--portfolio-gold))]"></span>
+            <span className={`absolute bottom-0 w-20 h-1 bg-[rgb(var(--portfolio-gold))] ${currentLang === 'ar' ? 'right-0' : 'left-0'}`}></span>
           </h2>
 
           <p className={`${themeClasses.textSecondary} text-base sm:text-lg leading-relaxed mb-6 sm:mb-8`}>
@@ -1214,8 +1197,11 @@ const getIcon = (iconName?: string) => {
                       </div>
                       <div className={`w-full ${isDarkMode ? "bg-gray-800" : "bg-gray-200"} rounded-full h-1`}>
                         <div
-                          className="bg-[rgb(var(--portfolio-gold))] h-1 rounded-full transition-all duration-1000"
-                          style={{ width }}
+                          className={`bg-[rgb(var(--portfolio-gold))] h-1 rounded-full transition-all duration-1000 ${currentLang === 'ar' ? 'float-right' : ''}`}
+                          style={{ 
+                            width,
+                            ...(currentLang === 'ar' && { marginLeft: 'auto', float: 'none' })
+                          }}
                         ></div>
                       </div>
                     </div>
@@ -1257,8 +1243,6 @@ const getIcon = (iconName?: string) => {
 )}
 
 {/* Contact Section */}
-
-
 {!isContactDataEmpty && (
 <section id="contact" className={`py-16 sm:py-20 px-4 sm:px-6 lg:px-8 ${themeClasses.sectionBg}`}>
   <div className="container mx-auto max-w-4xl text-center">
@@ -1304,12 +1288,11 @@ const getIcon = (iconName?: string) => {
   })}
 </div>
 
-
     <a 
       href={contactData.contactButton?.link || "#contact-form"}
       className="inline-flex items-center bg-[#EFBF04] hover:bg-[#d6a904] text-black font-medium px-8 py-3 rounded-full text-base sm:text-lg transition-colors"
     >
-      <Send className={ `w-5 h-5 mr-2`} />
+      <Send className={`w-5 h-5 ${currentLang === 'ar' ? 'ml-2' : 'mr-2'}`} />
       {contactData.contactButton?.startProject?.[currentLang]}
     </a>
   </div>
@@ -1320,7 +1303,6 @@ const getIcon = (iconName?: string) => {
         <div className="container mx-auto max-w-7xl">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center space-x-3 mb-4 md:mb-0">
-          
               <span className={themeClasses.textSecondary}>© 2025 {usernameData.name}</span>
             </div>
             <p className={`${themeClasses.textMuted} text-xs sm:text-sm`}>{t.rightsReserved}</p>
@@ -1330,6 +1312,3 @@ const getIcon = (iconName?: string) => {
     </div>
   )
 }
-
-
-

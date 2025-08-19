@@ -41,12 +41,15 @@ export async function PUT(
 
     const titleFr = formData.get("titleFr") as string;
     const titleEn = formData.get("titleEn") as string;
+    const titleAr = formData.get("titleAr") as string;
     const descFr = formData.get("descFr") as string;
     const descEn = formData.get("descEn") as string;
+    const descAr = formData.get("descAr") as string;
     const techStack = JSON.parse(formData.get("techStack") as string || "[]");
     const buttonIcon = formData.get("buttonIcon") as string;
     const buttonLabelFr = formData.get("buttonLabelFr") as string;
     const buttonLabelEn = formData.get("buttonLabelEn") as string;
+    const buttonLabelAr = formData.get("buttonLabelAr") as string;
     const buttonLink = formData.get("buttonLink") as string;
     const file = formData.get("image") as File | null;
 
@@ -93,12 +96,12 @@ export async function PUT(
 
     const updatedProject = {
       _id: params.id,
-      title: { fr: titleFr, en: titleEn },
-      description: { fr: descFr, en: descEn },
+      title: { fr: titleFr, en: titleEn, ar: titleAr },
+      description: { fr: descFr, en: descEn, ar: descAr },
       techStack,
       button: {
         icon: buttonIcon,
-        label: { fr: buttonLabelFr, en: buttonLabelEn },
+        label: { fr: buttonLabelFr, en: buttonLabelEn, ar: buttonLabelAr },
         link: buttonLink,
       },
       image: imageUrl, // always preserves old image if no new one
@@ -158,6 +161,3 @@ export async function DELETE(
     return NextResponse.json({ error: "Failed to delete project" }, { status: 500 });
   }
 }
-
-
-

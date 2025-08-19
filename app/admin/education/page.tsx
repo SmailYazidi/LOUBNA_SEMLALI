@@ -5,7 +5,7 @@ import Loading from '@/components/LoadingAdmin';
 import * as LucideIcons from "lucide-react";
 import { useToast } from "@/hooks/use-toast"
 
-type LocalizedText = { fr: string; en: string };
+type LocalizedText = { fr: string; en: string; ar: string };
 
 type EducationItem = {
   year: string;
@@ -27,8 +27,15 @@ type EducationData = {
   experience: ExperienceItem[];
 };
 
+// Create a default data structure
+const defaultData: EducationData = {
+  journeyTitle: { fr: "", en: "", ar: "" },
+  education: [],
+  experience: []
+};
+
 export default function EducationAdminPage() {
-  const [data, setData] = useState<EducationData | null>(null);
+  const [data, setData] = useState<EducationData>(defaultData);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [expandedEducation, setExpandedEducation] = useState<Set<number>>(new Set());
@@ -44,12 +51,8 @@ export default function EducationAdminPage() {
       setData(json);
     } catch (err: any) {
       setError(err.message);
-      // Fallback to empty structure
-      setData({
-        journeyTitle: { fr: "", en: "" },
-        education: [],
-        experience: []
-      });
+      // Fallback to default structure
+      setData(defaultData);
     } finally {
       setLoading(false);
     }
@@ -81,36 +84,37 @@ export default function EducationAdminPage() {
     section: "journeyTitle" | "education" | "experience",
     index: number | null,
     field: keyof LocalizedText,
-    lang: "fr" | "en",
+    lang: "fr" | "en" | "ar",
     value: string
   ) => {
-    if (!data) return;
-    const newData = { ...data };
-    if (section === "journeyTitle") {
-      newData.journeyTitle[lang] = value;
-    } else if (index !== null) {
-      newData[section][index][field][lang] = value;
-    }
-    setData(newData);
+    setData(prev => {
+      const newData = { ...prev };
+      if (section === "journeyTitle") {
+        newData.journeyTitle[lang] = value;
+      } else if (index !== null) {
+        newData[section][index][field][lang] = value;
+      }
+      return newData;
+    });
   };
 
   const handleYearChange = (section: "education" | "experience", index: number, value: string) => {
-    if (!data) return;
-    const newData = { ...data };
-    newData[section][index].year = value;
-    setData(newData);
+    setData(prev => {
+      const newData = { ...prev };
+      newData[section][index].year = value;
+      return newData;
+    });
   };
 
   const addItem = (section: "education" | "experience") => {
-    if (!data) return;
     const newItem = { 
       year: "", 
-      title: { fr: "", en: "" }, 
-      institution: { fr: "", en: "" }, 
-      description: { fr: "", en: "" } 
+      title: { fr: "", en: "", ar: "" }, 
+      institution: { fr: "", en: "", ar: "" }, 
+      description: { fr: "", en: "", ar: "" } 
     };
     const newIndex = data[section].length;
-    setData({ ...data, [section]: [...data[section], newItem] });
+    setData(prev => ({ ...prev, [section]: [...prev[section], newItem] }));
     
     // Automatically expand the new item
     if (section === "education") {
@@ -121,9 +125,10 @@ export default function EducationAdminPage() {
   };
 
   const removeItem = (section: "education" | "experience", index: number) => {
-    if (!data) return;
-    const updatedList = data[section].filter((_, i) => i !== index);
-    setData({ ...data, [section]: updatedList });
+    setData(prev => {
+      const updatedList = prev[section].filter((_, i) => i !== index);
+      return { ...prev, [section]: updatedList };
+    });
     
     // Update expanded indices
     if (section === "education") {
@@ -150,8 +155,6 @@ export default function EducationAdminPage() {
   };
 
   const saveData = async () => {
-    if (!data) return;
-    
     try {
       const res = await fetch("/api/education", {
         method: "PUT",
@@ -190,8 +193,8 @@ export default function EducationAdminPage() {
   };
 
   const getItemDisplayTitle = (item: EducationItem | ExperienceItem, index: number, section: string) => {
-    const title = item.title.en || item.title.fr;
-    const institution = item.institution.en || item.institution.fr;
+    const title = item.title.en || item.title.fr || item.title.ar;
+    const institution = item.institution.en || item.institution.fr || item.institution.ar;
     const year = item.year;
     
     if (title && institution && year) {
@@ -208,14 +211,13 @@ export default function EducationAdminPage() {
   };
 
   const hasContent = (item: EducationItem | ExperienceItem) => {
-    return item.year || item.title.fr || item.title.en || 
-           item.institution.fr || item.institution.en || 
-           item.description.fr || item.description.en;
+    return item.year || item.title.fr || item.title.en || item.title.ar || 
+           item.institution.fr || item.institution.en || item.institution.ar || 
+           item.description.fr || item.description.en || item.description.ar;
   };
 
   if (loading) return <Loading />;
   if (error) return <p className="text-red-500 p-4">Error: {error}</p>;
-  if (!data) return null;
 
   return (
     <div className="p-4 md:p-6 max-w-5xl mx-auto bg-white dark:bg-gray-900 rounded-lg shadow-md">
@@ -226,7 +228,47 @@ export default function EducationAdminPage() {
         </h1>
       </div>
 
-      {/* Education Section */}
+    {/*    Journey Title 
+      <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
+        <div className="flex items-center gap-2 mb-4">
+          <LucideIcons.Type size={20} className="text-gray-600 dark:text-gray-300" />
+          <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Journey Title</h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">French title</label>
+            <input
+              type="text"
+              value={data.journeyTitle.fr}
+              placeholder="French journey title"
+              onChange={(e) => handleChange("journeyTitle", null, "fr", "fr", e.target.value)}
+              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">English title</label>
+            <input
+              type="text"
+              value={data.journeyTitle.en}
+              placeholder="English journey title"
+              onChange={(e) => handleChange("journeyTitle", null, "en", "en", e.target.value)}
+              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Arabic title</label>
+            <input
+              type="text"
+              value={data.journeyTitle.ar}
+              placeholder="Arabic journey title"
+              onChange={(e) => handleChange("journeyTitle", null, "ar", "ar", e.target.value)}
+              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+            />
+          </div>
+        </div>
+      </div> */}
+
+ 
       <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
@@ -263,28 +305,22 @@ export default function EducationAdminPage() {
                   >
                     <div className="flex items-center gap-3 flex-1">
                       <LucideIcons.GraduationCap size={16} className="text-blue-500 flex-shrink-0" />
-                   <h3 className="font-medium text-lg text-gray-700 dark:text-white">
-                          {/* Phone (default: <640px) */}
-                          <span className="block sm:hidden">
-                            {displayTitle.length > 8 ? displayTitle.slice(0, 8) + "..." : displayTitle}
-                          </span>
-
-                          {/* Tablet (≥640px and <1024px) */}
-                          <span className="hidden sm:block lg:hidden">
-                            {displayTitle.length > 40 ? displayTitle.slice(0, 40) + "..." : displayTitle}
-                          </span>
-
-                          {/* PC (≥1024px) */}
-                          <span className="hidden lg:block">
-                            {displayTitle.length > 60 ? displayTitle.slice(0, 60) + "..." : displayTitle}
-                          </span>
-                        </h3>
-
-                    {/*   {!itemHasContent && (
-                        <span className="text-xs bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 px-2 py-1 rounded">
-                          Empty
+                      <h3 className="font-medium text-lg text-gray-700 dark:text-white">
+                        {/* Phone (default: <640px) */}
+                        <span className="block sm:hidden">
+                          {displayTitle.length > 8 ? displayTitle.slice(0, 8) + "..." : displayTitle}
                         </span>
-                      )} */}
+
+                        {/* Tablet (≥640px and <1024px) */}
+                        <span className="hidden sm:block lg:hidden">
+                          {displayTitle.length > 40 ? displayTitle.slice(0, 40) + "..." : displayTitle}
+                        </span>
+
+                        {/* PC (≥1024px) */}
+                        <span className="hidden lg:block">
+                          {displayTitle.length > 60 ? displayTitle.slice(0, 60) + "..." : displayTitle}
+                        </span>
+                      </h3>
                     </div>
                     
                     <div className="flex items-center gap-2">
@@ -330,7 +366,7 @@ export default function EducationAdminPage() {
                       </div>
 
                       {["title", "institution", "description"].map((field) => (
-                        <div key={field} className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                        <div key={field} className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
                           <div>
                             <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
                               {field === "title" && <LucideIcons.Award size={14} className="inline mr-1" />}
@@ -375,6 +411,30 @@ export default function EducationAdminPage() {
                                 value={edu[field as keyof EducationItem].en}
                                 placeholder={`English ${field}`}
                                 onChange={(e) => handleChange("education", index, field as keyof LocalizedText, "en", e.target.value)}
+                                className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                              />
+                            )}
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                              {field === "title" && <LucideIcons.Award size={14} className="inline mr-1" />}
+                              {field === "institution" && <LucideIcons.Building size={14} className="inline mr-1" />}
+                              {field === "description" && <LucideIcons.FileText size={14} className="inline mr-1" />}
+                              {`${field.charAt(0).toUpperCase() + field.slice(1)} (AR)`}
+                            </label>
+                            {field === "description" ? (
+                              <textarea
+                                value={edu[field as keyof EducationItem].ar}
+                                placeholder={`Arabic ${field}`}
+                                onChange={(e) => handleChange("education", index, field as keyof LocalizedText, "ar", e.target.value)}
+                                className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white min-h-[100px] focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                              />
+                            ) : (
+                              <input
+                                type="text"
+                                value={edu[field as keyof EducationItem].ar}
+                                placeholder={`Arabic ${field}`}
+                                onChange={(e) => handleChange("education", index, field as keyof LocalizedText, "ar", e.target.value)}
                                 className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                               />
                             )}
@@ -427,27 +487,22 @@ export default function EducationAdminPage() {
                   >
                     <div className="flex items-center gap-3 flex-1">
                       <LucideIcons.Briefcase size={16} className="text-blue-500 flex-shrink-0" />
-                    <h3 className="font-medium text-lg text-gray-700 dark:text-white">
-                          {/* Phone (default: <640px) */}
-                          <span className="block sm:hidden">
-                            {displayTitle.length > 8 ? displayTitle.slice(0, 8) + "..." : displayTitle}
-                          </span>
-
-                          {/* Tablet (≥640px and <1024px) */}
-                          <span className="hidden sm:block lg:hidden">
-                            {displayTitle.length > 40 ? displayTitle.slice(0, 40) + "..." : displayTitle}
-                          </span>
-
-                          {/* PC (≥1024px) */}
-                          <span className="hidden lg:block">
-                            {displayTitle.length > 60 ? displayTitle.slice(0, 60) + "..." : displayTitle}
-                          </span>
-                        </h3>
-                  {/*     {!itemHasContent && (
-                        <span className="text-xs bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 px-2 py-1 rounded">
-                          Empty
+                      <h3 className="font-medium text-lg text-gray-700 dark:text-white">
+                        {/* Phone (default: <640px) */}
+                        <span className="block sm:hidden">
+                          {displayTitle.length > 8 ? displayTitle.slice(0, 8) + "..." : displayTitle}
                         </span>
-                      )} */}
+
+                        {/* Tablet (≥640px and <1024px) */}
+                        <span className="hidden sm:block lg:hidden">
+                          {displayTitle.length > 40 ? displayTitle.slice(0, 40) + "..." : displayTitle}
+                        </span>
+
+                        {/* PC (≥1024px) */}
+                        <span className="hidden lg:block">
+                          {displayTitle.length > 60 ? displayTitle.slice(0, 60) + "..." : displayTitle}
+                        </span>
+                      </h3>
                     </div>
                     
                     <div className="flex items-center gap-2">
@@ -493,7 +548,7 @@ export default function EducationAdminPage() {
                       </div>
 
                       {["title", "institution", "description"].map((field) => (
-                        <div key={field} className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                        <div key={field} className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
                           <div>
                             <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
                               {field === "title" && <LucideIcons.Award size={14} className="inline mr-1" />}
@@ -538,6 +593,30 @@ export default function EducationAdminPage() {
                                 value={exp[field as keyof ExperienceItem].en}
                                 placeholder={`English ${field}`}
                                 onChange={(e) => handleChange("experience", index, field as keyof LocalizedText, "en", e.target.value)}
+                                className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                              />
+                            )}
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                              {field === "title" && <LucideIcons.Award size={14} className="inline mr-1" />}
+                              {field === "institution" && <LucideIcons.Building size={14} className="inline mr-1" />}
+                              {field === "description" && <LucideIcons.FileText size={14} className="inline mr-1" />}
+                              {`${field.charAt(0).toUpperCase() + field.slice(1)} (AR)`}
+                            </label>
+                            {field === "description" ? (
+                              <textarea
+                                value={exp[field as keyof ExperienceItem].ar}
+                                placeholder={`Arabic ${field}`}
+                                onChange={(e) => handleChange("experience", index, field as keyof LocalizedText, "ar", e.target.value)}
+                                className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white min-h-[100px] focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                              />
+                            ) : (
+                              <input
+                                type="text"
+                                value={exp[field as keyof ExperienceItem].ar}
+                                placeholder={`Arabic ${field}`}
+                                onChange={(e) => handleChange("experience", index, field as keyof LocalizedText, "ar", e.target.value)}
                                 className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                               />
                             )}

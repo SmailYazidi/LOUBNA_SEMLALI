@@ -7,27 +7,27 @@ import { useToast } from "@/hooks/use-toast"
 
 interface ContactInfoItem {
   icon: string;
-  label: { fr: string; en: string };
-  value: string | { fr: string; en: string };
+  label: { fr: string; en: string; ar: string };
+  value: string | { fr: string; en: string; ar: string };
   link: string;
 }
 
 interface ContactData {
-  contactTitle: { fr: string; en: string };
-  contactDescription: { fr: string; en: string };
+  contactTitle: { fr: string; en: string; ar: string };
+  contactDescription: { fr: string; en: string; ar: string };
   contactInfo: ContactInfoItem[];
   contactButton: {
-    startProject: { fr: string; en: string };
+    startProject: { fr: string; en: string; ar: string };
     link: string;
   };
 }
 
 const defaultContactData: ContactData = {
-  contactTitle: { fr: "", en: "" },
-  contactDescription: { fr: "", en: "" },
+  contactTitle: { fr: "", en: "", ar: "" },
+  contactDescription: { fr: "", en: "", ar: "" },
   contactInfo: [],
   contactButton: {
-    startProject: { fr: "", en: "" },
+    startProject: { fr: "", en: "", ar: "" },
     link: ""
   }
 };
@@ -161,7 +161,7 @@ export default function ContactAdminPage() {
         ...prev.contactInfo,
         {
           icon: "mail",
-          label: { fr: "", en: "" },
+          label: { fr: "", en: "", ar: "" },
           value: "",
           link: ""
         }
@@ -243,18 +243,17 @@ export default function ContactAdminPage() {
       </div>
 
       {/* Contact Title Accordion */}
-  <Accordion
-  title={
-    <div className="flex items-center gap-2">
-      <LucideIcons.Type size={20} className="text-gray-600 dark:text-gray-300" />
-      <span>Contact Title</span>
-    </div>
-  }
-  isOpen={expandedSections.title}
-  onToggle={() => toggleSection("title")}
->
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <Accordion
+        title={
+          <div className="flex items-center gap-2">
+            <LucideIcons.Type size={20} className="text-gray-600 dark:text-gray-300" />
+            <span>Contact Title</span>
+          </div>
+        }
+        isOpen={expandedSections.title}
+        onToggle={() => toggleSection("title")}
+      >
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">French Title</label>
             <input
@@ -275,22 +274,32 @@ export default function ContactAdminPage() {
               placeholder="Title in English"
             />
           </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Arabic Title</label>
+            <input
+              type="text"
+              value={contact.contactTitle.ar}
+              onChange={(e) => handleInputChange("contactTitle", "ar", "", e.target.value)}
+              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+              placeholder="العنوان بالعربية"
+              dir="rtl"
+            />
+          </div>
         </div>
       </Accordion>
 
       {/* Contact Description Accordion */}
-     <Accordion
-  title={
-    <div className="flex items-center gap-2">
-      <LucideIcons.FileText size={20} className="text-gray-600 dark:text-gray-300" />
-      <span>Contact Description</span>
-    </div>
-  }
-  isOpen={expandedSections.description}
-  onToggle={() => toggleSection("description")}
->
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <Accordion
+        title={
+          <div className="flex items-center gap-2">
+            <LucideIcons.FileText size={20} className="text-gray-600 dark:text-gray-300" />
+            <span>Contact Description</span>
+          </div>
+        }
+        isOpen={expandedSections.description}
+        onToggle={() => toggleSection("description")}
+      >
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">French Description</label>
             <textarea
@@ -309,23 +318,32 @@ export default function ContactAdminPage() {
               placeholder="Description in English"
             />
           </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Arabic Description</label>
+            <textarea
+              value={contact.contactDescription.ar}
+              onChange={(e) => handleInputChange("contactDescription", "ar", "", e.target.value)}
+              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white min-h-[120px]"
+              placeholder="الوصف بالعربية"
+              dir="rtl"
+            />
+          </div>
         </div>
       </Accordion>
 
       {/* Contact Information Accordion */}
-<Accordion
-    title={
-    <div className="flex items-center gap-2">
-      <span>Contact Methods</span>
-      <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded-full">
-        {contact.contactInfo.length }  Methods
-      </span>
-    </div>
-  }
-  isOpen={expandedSections.methods}
-  onToggle={() => toggleSection("methods")}
->
-
+      <Accordion
+        title={
+          <div className="flex items-center gap-2">
+            <span>Contact Methods</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded-full">
+              {contact.contactInfo.length} Methods
+            </span>
+          </div>
+        }
+        isOpen={expandedSections.methods}
+        onToggle={() => toggleSection("methods")}
+      >
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <LucideIcons.Contact size={20} className="text-gray-600 dark:text-gray-300" />
@@ -350,7 +368,7 @@ export default function ContactAdminPage() {
             {contact.contactInfo.map((info, idx) => (
               <Accordion
                 key={idx}
-                title={`Contact Method #${idx + 1} - ${info.label.en || info.label.fr || "No label"}`}
+                title={`Contact Method #${idx + 1} - ${info.label.en || info.label.fr || info.label.ar || "No label"}`}
                 isOpen={expandedItems.includes(idx)}
                 onToggle={() => toggleAccordion(idx)}
               >
@@ -415,7 +433,7 @@ export default function ContactAdminPage() {
                   </div>
                   
                   {/* Labels */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
                     <div>
                       <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Label (FR)</label>
                       <input
@@ -434,6 +452,17 @@ export default function ContactAdminPage() {
                         onChange={(e) => handleInputChange("contactInfo", idx, "label.en", e.target.value)}
                         className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
                         placeholder="Label in English"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Label (AR)</label>
+                      <input
+                        type="text"
+                        value={info.label.ar}
+                        onChange={(e) => handleInputChange("contactInfo", idx, "label.ar", e.target.value)}
+                        className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                        placeholder="التسمية بالعربية"
+                        dir="rtl"
                       />
                     </div>
                   </div>
@@ -469,18 +498,17 @@ export default function ContactAdminPage() {
       </Accordion>
 
       {/* Contact Button Accordion */}
- <Accordion
-  title={
-    <div className="flex items-center gap-2">
-      <LucideIcons.MousePointerClick size={20} className="text-gray-600 dark:text-gray-300" />
-      <span>Contact Button</span>
-    </div>
-  }
-  isOpen={expandedSections.button}
-  onToggle={() => toggleSection("button")}
->
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <Accordion
+        title={
+          <div className="flex items-center gap-2">
+            <LucideIcons.MousePointerClick size={20} className="text-gray-600 dark:text-gray-300" />
+            <span>Contact Button</span>
+          </div>
+        }
+        isOpen={expandedSections.button}
+        onToggle={() => toggleSection("button")}
+      >
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <div>
             <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Button Text (FR)</label>
             <input
@@ -501,6 +529,17 @@ export default function ContactAdminPage() {
               placeholder="Button text in English"
             />
           </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Button Text (AR)</label>
+            <input
+              type="text"
+              value={contact.contactButton.startProject.ar}
+              onChange={(e) => handleInputChange("contactButton", "ar", "startProject", e.target.value)}
+              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+              placeholder="نص الزر بالعربية"
+              dir="rtl"
+            />
+          </div>
         </div>
         
         <div>
@@ -515,12 +554,28 @@ export default function ContactAdminPage() {
         </div>
 
         {/* Button Preview */}
-        {(contact.contactButton.startProject.fr || contact.contactButton.startProject.en) && (
+        {(contact.contactButton.startProject.fr || contact.contactButton.startProject.en || contact.contactButton.startProject.ar) && (
           <div className="mt-4 p-3 bg-gray-100 dark:bg-gray-600 rounded-lg">
             <span className="text-sm text-gray-600 dark:text-gray-400 block mb-2">Button Preview:</span>
-            <div className="inline-flex items-center gap-2 bg-[rgb(var(--portfolio-gold))] hover:bg-[rgb(var(--portfolio-gold-hover))] text-white px-4 py-2 rounded-lg">
-              <LucideIcons.Send size={16} />
-              {contact.contactButton.startProject.en || contact.contactButton.startProject.fr}
+            <div className="flex flex-wrap gap-2">
+              {contact.contactButton.startProject.en && (
+                <div className="inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
+                  <LucideIcons.Send size={16} />
+                  <span>EN: {contact.contactButton.startProject.en}</span>
+                </div>
+              )}
+              {contact.contactButton.startProject.fr && (
+                <div className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">
+                  <LucideIcons.Send size={16} />
+                  <span>FR: {contact.contactButton.startProject.fr}</span>
+                </div>
+              )}
+              {contact.contactButton.startProject.ar && (
+                <div className="inline-flex items-center gap-2 bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg" dir="rtl">
+                  <span>AR: {contact.contactButton.startProject.ar}</span>
+                  <LucideIcons.Send size={16} />
+                </div>
+              )}
             </div>
           </div>
         )}

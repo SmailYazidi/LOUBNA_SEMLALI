@@ -2,7 +2,6 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 
-
 export async function POST(request: Request) {
   try {
     const db = await connectDB();
@@ -31,9 +30,9 @@ export async function GET() {
     // Return empty structure if no data exists
     if (!heroData) {
       return NextResponse.json({
-        specialist: { fr: "", en: "" },
-        heroTitle: { fr: "", en: "" },
-        heroDescription: { fr: "", en: "" },
+        specialist: { fr: "", en: "", ar: "" },
+        heroTitle: { fr: "", en: "", ar: "" },
+        heroDescription: { fr: "", en: "", ar: "" },
         heroButtons: []
       }, { status: 200 });
     }
@@ -66,6 +65,7 @@ export async function PUT(request: Request) {
     return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }
 }
+
 export async function DELETE() {
   try {
     const db = await connectDB();

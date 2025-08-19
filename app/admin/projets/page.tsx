@@ -10,12 +10,15 @@ export default function ProjetsPage() {
   const { toast } = useToast()
   const [expandedProject, setExpandedProject] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
-const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  
   // Form states
   const [titleFr, setTitleFr] = useState("");
   const [titleEn, setTitleEn] = useState("");
+  const [titleAr, setTitleAr] = useState("");
   const [descFr, setDescFr] = useState("");
   const [descEn, setDescEn] = useState("");
+  const [descAr, setDescAr] = useState("");
   const [techStack, setTechStack] = useState<string[]>([]);
   const [techInput, setTechInput] = useState("");
   const [file, setFile] = useState<File | null>(null);
@@ -25,11 +28,13 @@ const [isLoading, setIsLoading] = useState(false);
   const [button, setButton] = useState<{
     labelFr: string;
     labelEn: string;
+    labelAr: string;
     link: string;
     icon?: string;
   } | null>(null);
   const [btnLabelFr, setBtnLabelFr] = useState("");
   const [btnLabelEn, setBtnLabelEn] = useState("");
+  const [btnLabelAr, setBtnLabelAr] = useState("");
   const [btnLink, setBtnLink] = useState("");
   const [iconSearch, setIconSearch] = useState("");
   const [showIconPicker, setShowIconPicker] = useState(false);
@@ -87,15 +92,17 @@ const [isLoading, setIsLoading] = useState(false);
   };
 
   const addButton = () => {
-    if (btnLabelFr.trim() && btnLabelEn.trim() && btnLink.trim()) {
+    if (btnLabelFr.trim() && btnLabelEn.trim() && btnLabelAr.trim() && btnLink.trim()) {
       setButton({
         labelFr: btnLabelFr,
         labelEn: btnLabelEn,
+        labelAr: btnLabelAr,
         link: btnLink,
         icon: button?.icon || "external-link"
       });
       setBtnLabelFr("");
       setBtnLabelEn("");
+      setBtnLabelAr("");
       setBtnLink("");
     }
   };
@@ -107,115 +114,124 @@ const [isLoading, setIsLoading] = useState(false);
   const resetForm = () => {
     setTitleFr("");
     setTitleEn("");
+    setTitleAr("");
     setDescFr("");
     setDescEn("");
+    setDescAr("");
     setTechStack([]);
     setFile(null);
     setEditingId(null);
     setButton(null);
     setBtnLabelFr("");
     setBtnLabelEn("");
+    setBtnLabelAr("");
     setBtnLink("");
     setShowAddForm(false);
   };
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setIsLoading(true); // ✅ start loading
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
 
-  if (!titleFr || !titleEn) {
-    toast({
-      title: "Error",
-      description: "Please provide titles in both languages",
-      className: "bg-red-500 text-white border-none",
-    });
-    setIsLoading(false); // ✅ stop loading on error
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append("titleFr", titleFr);
-  formData.append("titleEn", titleEn);
-  formData.append("descFr", descFr);
-  formData.append("descEn", descEn);
-  formData.append("techStack", JSON.stringify(techStack));
-  
-  if (button) {
-    formData.append("buttonIcon", button.icon || "external-link");
-    formData.append("buttonLabelFr", button.labelFr);
-    formData.append("buttonLabelEn", button.labelEn);
-    formData.append("buttonLink", button.link);
-  } else {
-    formData.append("buttonIcon", "external-link");
-    formData.append("buttonLabelFr", "");
-    formData.append("buttonLabelEn", "");
-    formData.append("buttonLink", "");
-  }
-
-  if (file) formData.append("image", file);
-  if (editingId) formData.append("projectId", editingId);
-
-  try {
-    const url = editingId ? `/api/projets/${editingId}` : "/api/projets";
-    const method = "PUT";
-
-    const res = await fetch(url, {
-      method,
-      body: formData,
-    });
-
-    if (!res.ok) {
-      const errorData = await res.json();
-      console.error("Save failed:", errorData);
+    if (!titleFr || !titleEn || !titleAr) {
       toast({
         title: "Error",
-        description: errorData?.error || "Something went wrong!",
+        description: "Please provide titles in all languages",
         className: "bg-red-500 text-white border-none",
       });
-      setIsLoading(false); // ✅ stop loading if save fails
+      setIsLoading(false);
       return;
     }
 
-    await fetchProjects();
-    resetForm();
-  } catch (error) {
-    console.error("Network error:", error);
-    toast({
-      title: "Error",
-      description: "Network error - check console!",
-      className: "bg-red-500 text-white border-none",
-    });
-  } finally {
-    setIsLoading(false); // ✅ always stop loading
-  }
-};
+    const formData = new FormData();
+    formData.append("titleFr", titleFr);
+    formData.append("titleEn", titleEn);
+    formData.append("titleAr", titleAr);
+    formData.append("descFr", descFr);
+    formData.append("descEn", descEn);
+    formData.append("descAr", descAr);
+    formData.append("techStack", JSON.stringify(techStack));
+    
+    if (button) {
+      formData.append("buttonIcon", button.icon || "external-link");
+      formData.append("buttonLabelFr", button.labelFr);
+      formData.append("buttonLabelEn", button.labelEn);
+      formData.append("buttonLabelAr", button.labelAr);
+      formData.append("buttonLink", button.link);
+    } else {
+      formData.append("buttonIcon", "external-link");
+      formData.append("buttonLabelFr", "");
+      formData.append("buttonLabelEn", "");
+      formData.append("buttonLabelAr", "");
+      formData.append("buttonLink", "");
+    }
 
-const handleEdit = (p: any) => {
-  setIsLoading(false); // ✅ keep this line as in your version
-  setEditingId(p._id);
-  setTitleFr(p.title.fr);
-  setTitleEn(p.title.en);
-  setDescFr(p.description.fr);
-  setDescEn(p.description.en);
-  setTechStack(p.techStack || []);
-  
-  if (p.button) {
-    setButton({
-      labelFr: p.button.label.fr,
-      labelEn: p.button.label.en,
-      link: p.button.link,
-      icon: p.button.icon
-    });
-  } else {
-    setButton(null);
-  }
-  
-  setFile(null);
-  setShowAddForm(true);
-};
+    if (file) formData.append("image", file);
+    if (editingId) formData.append("projectId", editingId);
+
+    try {
+      const url = editingId ? `/api/projets/${editingId}` : "/api/projets";
+      const method = "PUT";
+
+      const res = await fetch(url, {
+        method,
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.error("Save failed:", errorData);
+        toast({
+          title: "Error",
+          description: errorData?.error || "Something went wrong!",
+          className: "bg-red-500 text-white border-none",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      await fetchProjects();
+      resetForm();
+    } catch (error) {
+      console.error("Network error:", error);
+      toast({
+        title: "Error",
+        description: "Network error - check console!",
+        className: "bg-red-500 text-white border-none",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleEdit = (p: any) => {
+    setIsLoading(false);
+    setEditingId(p._id);
+    setTitleFr(p.title.fr);
+    setTitleEn(p.title.en);
+    setTitleAr(p.title.ar);
+    setDescFr(p.description.fr);
+    setDescEn(p.description.en);
+    setDescAr(p.description.ar);
+    setTechStack(p.techStack || []);
+    
+    if (p.button) {
+      setButton({
+        labelFr: p.button.label.fr,
+        labelEn: p.button.label.en,
+        labelAr: p.button.label.ar,
+        link: p.button.link,
+        icon: p.button.icon
+      });
+    } else {
+      setButton(null);
+    }
+    
+    setFile(null);
+    setShowAddForm(true);
+  };
 
   const handleDelete = async (id: string) => {
-
     if (!confirm("Delete this project?")) return;
     try {
       const res = await fetch(`/api/projets/${id}`, { method: "DELETE" });
@@ -271,7 +287,7 @@ const handleEdit = (p: any) => {
             {editingId ? "Edit Project" : "Add New Project"}
           </h2>
 
-          <div className="grid md:grid-cols-2 gap-4 mb-4">
+          <div className="grid md:grid-cols-3 gap-4 mb-4">
             <div>
               <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Title (FR)</label>
               <input
@@ -292,9 +308,19 @@ const handleEdit = (p: any) => {
                 required
               />
             </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Title (AR)</label>
+              <input
+                value={titleAr}
+                onChange={(e) => setTitleAr(e.target.value)}
+                placeholder="عنوان AR"
+                className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                required
+              />
+            </div>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-4 mb-4">
+          <div className="grid md:grid-cols-3 gap-4 mb-4">
             <div>
               <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Description (FR)</label>
               <textarea
@@ -310,6 +336,15 @@ const handleEdit = (p: any) => {
                 value={descEn}
                 onChange={(e) => setDescEn(e.target.value)}
                 placeholder="Description EN"
+                className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white min-h-[100px]"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Description (AR)</label>
+              <textarea
+                value={descAr}
+                onChange={(e) => setDescAr(e.target.value)}
+                placeholder="وصف AR"
                 className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white min-h-[100px]"
               />
             </div>
@@ -359,7 +394,7 @@ const handleEdit = (p: any) => {
               Project Button
             </h3>
             
-            <div className="grid md:grid-cols-2 gap-4 mb-3">
+            <div className="grid md:grid-cols-3 gap-4 mb-3">
               <div>
                 <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Label (FR)</label>
                 <input
@@ -375,6 +410,15 @@ const handleEdit = (p: any) => {
                   value={btnLabelEn}
                   onChange={(e) => setBtnLabelEn(e.target.value)}
                   placeholder="Button Label EN"
+                  className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Label (AR)</label>
+                <input
+                  value={btnLabelAr}
+                  onChange={(e) => setBtnLabelAr(e.target.value)}
+                  placeholder="تسمية الزر AR"
                   className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
                 />
               </div>
@@ -428,6 +472,7 @@ const handleEdit = (p: any) => {
                             setButton({
                               labelFr: btnLabelFr || "Voir",
                               labelEn: btnLabelEn || "View",
+                              labelAr: btnLabelAr || "عرض",
                               link: btnLink || "#",
                               icon: iconName
                             });
@@ -472,7 +517,7 @@ const handleEdit = (p: any) => {
               {button ? (
                 <div className="inline-flex items-center gap-2 bg-gray-200 dark:bg-gray-700 px-3 py-1 rounded-full text-sm">
                   {renderIcon(button.icon || "external-link", 16)}
-                  <span>{button.labelFr} / {button.labelEn}</span>
+                  <span>{button.labelFr} / {button.labelEn} / {button.labelAr}</span>
                 </div>
               ) : (
                 <span className="text-gray-500 dark:text-gray-400">No button added</span>
@@ -506,20 +551,20 @@ const handleEdit = (p: any) => {
           </div>
 
           <div className="flex gap-2">
-<button
-  type="submit"
-  className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
-  disabled={isLoading}
->
-  {isLoading ? (
-    <LucideIcons.Loader2 size={18} className="animate-spin" />
-  ) : editingId ? (
-    <LucideIcons.Save size={18} />
-  ) : (
-    <LucideIcons.Plus size={18} />
-  )}
-  {isLoading ? "Processing..." : editingId ? "Update Project" : "Add Project"}
-</button>
+            <button
+              type="submit"
+              className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <LucideIcons.Loader2 size={18} className="animate-spin" />
+              ) : editingId ? (
+                <LucideIcons.Save size={18} />
+              ) : (
+                <LucideIcons.Plus size={18} />
+              )}
+              {isLoading ? "Processing..." : editingId ? "Update Project" : "Add Project"}
+            </button>
             <button
               type="button"
               onClick={resetForm}
@@ -558,26 +603,17 @@ const handleEdit = (p: any) => {
                 >
                   <div className="flex items-center gap-3">
                     <LucideIcons.FolderGit2 size={20} className="text-blue-500" />
-                   <h3 className="font-semibold text-lg text-gray-800 dark:text-white text-left">
-  {/* Phone (<640px) */}
-  <span className="block sm:hidden">
-
-    {(p.title.en?.length > 20 ? p.title.en.slice(0, 20) + "..." : p.title.en) || ""}
-  </span>
-
-  {/* Tablet (≥640px and <1024px) */}
-  <span className="hidden sm:block lg:hidden">
-  
-    {(p.title.en?.length > 40 ? p.title.en.slice(0, 40) + "..." : p.title.en) || ""}
-  </span>
-
-  {/* PC (≥1024px) */}
-  <span className="hidden lg:block">
- 
-    {(p.title.en?.length > 60 ? p.title.en.slice(0, 60) + "..." : p.title.en) || ""}
-  </span>
-</h3>
-
+                    <h3 className="font-semibold text-lg text-gray-800 dark:text-white text-left">
+                      <span className="block sm:hidden">
+                        {(p.title.en?.length > 20 ? p.title.en.slice(0, 20) + "..." : p.title.en) || ""}
+                      </span>
+                      <span className="hidden sm:block lg:hidden">
+                        {(p.title.en?.length > 40 ? p.title.en.slice(0, 40) + "..." : p.title.en) || ""}
+                      </span>
+                      <span className="hidden lg:block">
+                        {(p.title.en?.length > 60 ? p.title.en.slice(0, 60) + "..." : p.title.en) || ""}
+                      </span>
+                    </h3>
                   </div>
                   <LucideIcons.ChevronDown 
                     size={20} 
@@ -606,6 +642,9 @@ const handleEdit = (p: any) => {
                       <p className="text-gray-600 dark:text-gray-300 text-sm mb-3">
                         <strong>EN:</strong> {p.description.en}
                       </p>
+                      <p className="text-gray-600 dark:text-gray-300 text-sm mb-3">
+                        <strong>AR:</strong> {p.description.ar}
+                      </p>
                       
                       {p.techStack?.length > 0 && (
                         <div className="mb-3">
@@ -631,7 +670,7 @@ const handleEdit = (p: any) => {
                               className="inline-flex items-center gap-1 bg-blue-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-blue-600 transition"
                             >
                               {renderIcon(p.button.icon || "external-link", 14)}
-                              {p.button.label.fr} / {p.button.label.en}
+                              {p.button.label.fr} / {p.button.label.en} / {p.button.label.ar}
                             </a>
                           </div>
                         </div>

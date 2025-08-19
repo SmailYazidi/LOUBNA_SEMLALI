@@ -5,7 +5,7 @@ import Loading from "@/components/LoadingAdmin";
 import * as LucideIcons from "lucide-react";
 import { useToast } from "@/hooks/use-toast"
 
-type LocalizedText = { fr: string; en: string };
+type LocalizedText = { fr: string; en: string; ar: string };
 
 type SkillItem = {
   name: LocalizedText;
@@ -74,7 +74,7 @@ export default function SkillsAdminPage() {
       setError(err.message);
       // Fallback to empty structure
       setData({
-        skillsTitle: { fr: "", en: "" },
+        skillsTitle: { fr: "", en: "", ar: "" },
         skills: []
       });
     } finally {
@@ -90,7 +90,7 @@ export default function SkillsAdminPage() {
     categoryIndex: number | null,
     itemIndex: number | null,
     field: keyof LocalizedText | "examples" | "skillicon" | "skillsTitle" | "icon",
-    langOrExampleIndex: "fr" | "en" | number | { exampleIndex: number; lang: "fr" | "en" },
+    langOrExampleIndex: "fr" | "en" | "ar" | number | { exampleIndex: number; lang: "fr" | "en" | "ar" },
     value: string
   ) => {
     if (!data) return;
@@ -119,7 +119,16 @@ export default function SkillsAdminPage() {
       else if (field === "examples") {
         // langOrExampleIndex can be a number (index) or object { exampleIndex, lang }
         if (typeof langOrExampleIndex === "number") {
-          item.examples[langOrExampleIndex] = value;
+          // Handle single string examples (legacy format)
+          if (typeof item.examples[langOrExampleIndex] === "string") {
+            // Convert to object format
+            const oldValue = item.examples[langOrExampleIndex] as unknown as string;
+            item.examples[langOrExampleIndex] = { fr: oldValue, en: oldValue, ar: "" };
+          } else {
+            // Handle object format
+            const example = item.examples[langOrExampleIndex] as LocalizedText;
+            // This case shouldn't happen with the new format
+          }
         } 
         else if (
           typeof langOrExampleIndex === "object" &&
@@ -127,7 +136,11 @@ export default function SkillsAdminPage() {
           "lang" in langOrExampleIndex
         ) {
           const { exampleIndex, lang } = langOrExampleIndex;
-          item.examples[exampleIndex][lang] = value;
+          // Ensure the example exists and is in the correct format
+          if (!item.examples[exampleIndex] || typeof item.examples[exampleIndex] === "string") {
+            item.examples[exampleIndex] = { fr: "", en: "", ar: "" };
+          }
+          (item.examples[exampleIndex] as LocalizedText)[lang] = value;
         }
       } 
       else if (field === "icon") {
@@ -142,7 +155,7 @@ export default function SkillsAdminPage() {
     if (!data) return;
     const newCategory: SkillCategory = { 
       skillicon: "folder", 
-      title: { fr: "", en: "" }, 
+      title: { fr: "", en: "", ar: "" }, 
       items: [] 
     };
     const newCategoryIndex = data.skills.length;
@@ -173,7 +186,7 @@ export default function SkillsAdminPage() {
   const addItem = (categoryIndex: number) => {
     if (!data) return;
     const newItem: SkillItem = { 
-      name: { fr: "", en: "" }, 
+      name: { fr: "", en: "", ar: "" }, 
       examples: [], 
       icon: "code" 
     };
@@ -192,7 +205,7 @@ export default function SkillsAdminPage() {
   const addExample = (categoryIndex: number, itemIndex: number) => {
     if (!data) return;
     const updated = [...data.skills];
-    updated[categoryIndex].items[itemIndex].examples.push({ fr: "", en: "" });
+    updated[categoryIndex].items[itemIndex].examples.push({ fr: "", en: "", ar: "" });
     setData({ ...data, skills: updated });
   };
 
@@ -259,8 +272,48 @@ export default function SkillsAdminPage() {
           Skills 
         </h1>
       </div>
+{/* 
+   
+      <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
+        <div className="flex items-center gap-2 mb-3">
+          <LucideIcons.Type size={20} className="text-gray-600 dark:text-gray-300" />
+          <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Skills Section Title</h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Title (FR)</label>
+            <input
+              type="text"
+              value={data.skillsTitle.fr}
+              onChange={(e) => handleChange(null, null, "skillsTitle", "fr", e.target.value)}
+              placeholder="Titre des compétences"
+              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Title (EN)</label>
+            <input
+              type="text"
+              value={data.skillsTitle.en}
+              onChange={(e) => handleChange(null, null, "skillsTitle", "en", e.target.value)}
+              placeholder="Skills title"
+              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Title (AR)</label>
+            <input
+              type="text"
+              value={data.skillsTitle.ar}
+              onChange={(e) => handleChange(null, null, "skillsTitle", "ar", e.target.value)}
+              placeholder="عنوان المهارات"
+              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+            />
+          </div>
+        </div>
+      </div> */}
  
-      {/* Skill Categories with Accordion */}
+
       <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
@@ -409,7 +462,7 @@ export default function SkillsAdminPage() {
                       </div>
 
                       {/* Category Title */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <div>
                           <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Category Title (FR)</label>
                           <input
@@ -427,6 +480,16 @@ export default function SkillsAdminPage() {
                             value={category.title.en}
                             onChange={(e) => handleChange(catIdx, null, "title", "en", e.target.value)}
                             placeholder="Category title"
+                            className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Category Title (AR)</label>
+                          <input
+                            type="text"
+                            value={category.title.ar}
+                            onChange={(e) => handleChange(catIdx, null, "title", "ar", e.target.value)}
+                            placeholder="عنوان الفئة"
                             className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
                           />
                         </div>
@@ -530,7 +593,7 @@ export default function SkillsAdminPage() {
                               </div>
 
                               {/* Item Name */}
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
                                 <div>
                                   <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Skill Name (FR)</label>
                                   <input
@@ -551,6 +614,16 @@ export default function SkillsAdminPage() {
                                     className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
                                   />
                                 </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Skill Name (AR)</label>
+                                  <input
+                                    type="text"
+                                    value={item.name.ar}
+                                    onChange={(e) => handleChange(catIdx, itemIdx, "name", "ar", e.target.value)}
+                                    placeholder="اسم المهارة"
+                                    className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                                  />
+                                </div>
                               </div>
 
                               {/* Description */}
@@ -568,31 +641,42 @@ export default function SkillsAdminPage() {
                                 <div className="space-y-2">
                                   {item.examples.map((example, exIdx) => (
                                     <div key={exIdx} className="flex flex-col gap-2 w-full">
-                                      <div className="flex items-center gap-2 w-full">
+                                      <div className="grid grid-cols-1 md:grid-cols-3 gap-2 w-full">
                                         <input
                                           type="text"
-                                          value={example.fr}
+                                          value={typeof example === "string" ? example : example.fr}
                                           onChange={(e) =>
                                             handleChange(catIdx, itemIdx, "examples", { exampleIndex: exIdx, lang: "fr" }, e.target.value)
                                           }
                                           placeholder={`Description ${exIdx + 1} (FR)`}
-                                          className="border p-2 rounded-lg flex-1 min-w-0 bg-white text-gray-800"
+                                          className="border p-2 rounded-lg bg-white text-gray-800"
                                         />
                                         <input
                                           type="text"
-                                          value={example.en}
+                                          value={typeof example === "string" ? example : example.en}
                                           onChange={(e) =>
                                             handleChange(catIdx, itemIdx, "examples", { exampleIndex: exIdx, lang: "en" }, e.target.value)
                                           }
                                           placeholder={`Description ${exIdx + 1} (EN)`}
-                                          className="border p-2 rounded-lg flex-1 min-w-0 bg-white text-gray-800"
+                                          className="border p-2 rounded-lg bg-white text-gray-800"
                                         />
-                                        <button
-                                          onClick={() => removeExample(catIdx, itemIdx, exIdx)}
-                                          className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition flex-shrink-0"
-                                        >
-                                          <LucideIcons.X size={14} />
-                                        </button>
+                                        <div className="flex gap-2">
+                                          <input
+                                            type="text"
+                                            value={typeof example === "string" ? "" : example.ar}
+                                            onChange={(e) =>
+                                              handleChange(catIdx, itemIdx, "examples", { exampleIndex: exIdx, lang: "ar" }, e.target.value)
+                                            }
+                                            placeholder={`Description ${exIdx + 1} (AR)`}
+                                            className="border p-2 rounded-lg flex-1 bg-white text-gray-800"
+                                          />
+                                          <button
+                                            onClick={() => removeExample(catIdx, itemIdx, exIdx)}
+                                            className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition flex-shrink-0"
+                                          >
+                                            <LucideIcons.X size={14} />
+                                          </button>
+                                        </div>
                                       </div>
                                     </div>
                                   ))}

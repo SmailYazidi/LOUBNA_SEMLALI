@@ -6,9 +6,9 @@ export async function GET() {
     const db = await connectDB();
     const educationData = await db.collection("education").findOne({});
     
-    // Ensure we always return a proper structure
+    // Ensure we always return a proper structure with Arabic support
     const defaultData = { 
-      journeyTitle: { fr: "", en: "" }, 
+      journeyTitle: { fr: "", en: "", ar: "" }, 
       education: [], 
       experience: [] 
     };

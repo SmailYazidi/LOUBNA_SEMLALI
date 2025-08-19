@@ -6,20 +6,28 @@ import * as LucideIcons from "lucide-react";
 import { useToast } from "@/hooks/use-toast"
 
 type HeroButton = {
-  text: { fr: string; en: string };
+  text: { fr: string; en: string; ar: string };
   link: string;
   icon: string;
 };
 
 type HeroData = {
-  specialist: { fr: string; en: string };
-  heroTitle: { fr: string; en: string };
-  heroDescription: { fr: string; en: string };
+  specialist: { fr: string; en: string; ar: string };
+  heroTitle: { fr: string; en: string; ar: string };
+  heroDescription: { fr: string; en: string; ar: string };
   heroButtons: HeroButton[];
 };
 
+// Create a default hero data structure
+const defaultHero: HeroData = {
+  specialist: { fr: "", en: "", ar: "" },
+  heroTitle: { fr: "", en: "", ar: "" },
+  heroDescription: { fr: "", en: "", ar: "" },
+  heroButtons: [],
+};
+
 export default function HeroAdminPage() {
-  const [hero, setHero] = useState<HeroData | null>(null);
+  const [hero, setHero] = useState<HeroData>(defaultHero);
   const [username, setUsername] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -58,20 +66,14 @@ export default function HeroAdminPage() {
 
     } catch (err: any) {
       setError(err.message);
-      // Fallback to empty structures
-      setHero({
-        specialist: { fr: "", en: "" },
-        heroTitle: { fr: "", en: "" },
-        heroDescription: { fr: "", en: "" },
-        heroButtons: [],
-      });
+      // Fallback to default structure
+      setHero(defaultHero);
     } finally {
       setLoading(false);
     }
   };
 
   const saveHero = async () => {
-    if (!hero) return;
     try {
       const res = await fetch("/api/hero", {
         method: "PUT",
@@ -123,34 +125,40 @@ export default function HeroAdminPage() {
     fetchData();
   }, []);
 
-  const handleInputChange = (field: string, lang: "fr" | "en", value: string) => {
-    if (!hero) return;
-    setHero({ ...hero, [field]: { ...hero[field as keyof HeroData], [lang]: value } });
+  const handleInputChange = (field: string, lang: "fr" | "en" | "ar", value: string) => {
+    setHero(prev => ({ 
+      ...prev, 
+      [field]: { 
+        ...prev[field as keyof HeroData], 
+        [lang]: value 
+      } 
+    }));
   };
 
-  const handleButtonChange = (index: number, field: "text" | "link" | "icon", value: any, lang?: "fr" | "en") => {
-    if (!hero) return;
-    const updatedButtons = [...hero.heroButtons];
-    if (field === "text" && lang) {
-      updatedButtons[index].text[lang] = value;
-    } else {
-      updatedButtons[index][field] = value;
-    }
-    setHero({ ...hero, heroButtons: updatedButtons });
-  };
-
-  const addButton = () => {
-    if (!hero) return;
-    setHero({
-      ...hero,
-      heroButtons: [...hero.heroButtons, { text: { fr: "", en: "" }, link: "", icon: "ArrowRight" }],
+  const handleButtonChange = (index: number, field: "text" | "link" | "icon", value: any, lang?: "fr" | "en" | "ar") => {
+    setHero(prev => {
+      const updatedButtons = [...prev.heroButtons];
+      if (field === "text" && lang) {
+        updatedButtons[index].text[lang] = value;
+      } else {
+        updatedButtons[index][field] = value;
+      }
+      return { ...prev, heroButtons: updatedButtons };
     });
   };
 
+  const addButton = () => {
+    setHero(prev => ({
+      ...prev,
+      heroButtons: [...prev.heroButtons, { text: { fr: "", en: "", ar: "" }, link: "", icon: "ArrowRight" }],
+    }));
+  };
+
   const removeButton = (index: number) => {
-    if (!hero) return;
-    const updatedButtons = hero.heroButtons.filter((_, i) => i !== index);
-    setHero({ ...hero, heroButtons: updatedButtons });
+    setHero(prev => ({
+      ...prev,
+      heroButtons: prev.heroButtons.filter((_, i) => i !== index),
+    }));
   };
 
   const filteredIcons = Object.keys(LucideIcons)
@@ -236,12 +244,12 @@ export default function HeroAdminPage() {
           
           {expandedSections.specialist && (
             <div className="p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">French version</label>
                   <input
                     type="text"
-                    value={hero?.specialist.fr || ""}
+                    value={hero.specialist.fr}
                     placeholder="French version"
                     onChange={(e) => handleInputChange("specialist", "fr", e.target.value)}
                     className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
@@ -251,9 +259,19 @@ export default function HeroAdminPage() {
                   <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">English version</label>
                   <input
                     type="text"
-                    value={hero?.specialist.en || ""}
+                    value={hero.specialist.en}
                     placeholder="English version"
                     onChange={(e) => handleInputChange("specialist", "en", e.target.value)}
+                    className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Arabic version</label>
+                  <input
+                    type="text"
+                    value={hero.specialist.ar}
+                    placeholder="Arabic version"
+                    onChange={(e) => handleInputChange("specialist", "ar", e.target.value)}
                     className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
                   />
                 </div>
@@ -280,12 +298,12 @@ export default function HeroAdminPage() {
           
           {expandedSections.title && (
             <div className="p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">French title</label>
                   <input
                     type="text"
-                    value={hero?.heroTitle.fr || ""}
+                    value={hero.heroTitle.fr}
                     placeholder="French title"
                     onChange={(e) => handleInputChange("heroTitle", "fr", e.target.value)}
                     className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
@@ -295,9 +313,19 @@ export default function HeroAdminPage() {
                   <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">English title</label>
                   <input
                     type="text"
-                    value={hero?.heroTitle.en || ""}
+                    value={hero.heroTitle.en}
                     placeholder="English title"
                     onChange={(e) => handleInputChange("heroTitle", "en", e.target.value)}
+                    className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Arabic title</label>
+                  <input
+                    type="text"
+                    value={hero.heroTitle.ar}
+                    placeholder="Arabic title"
+                    onChange={(e) => handleInputChange("heroTitle", "ar", e.target.value)}
                     className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
                   />
                 </div>
@@ -328,7 +356,7 @@ export default function HeroAdminPage() {
                 <div>
                   <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">French description</label>
                   <textarea
-                    value={hero?.heroDescription.fr || ""}
+                    value={hero.heroDescription.fr}
                     placeholder="French description"
                     onChange={(e) => handleInputChange("heroDescription", "fr", e.target.value)}
                     className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
@@ -338,9 +366,19 @@ export default function HeroAdminPage() {
                 <div>
                   <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">English description</label>
                   <textarea
-                    value={hero?.heroDescription.en || ""}
+                    value={hero.heroDescription.en}
                     placeholder="English description"
                     onChange={(e) => handleInputChange("heroDescription", "en", e.target.value)}
+                    className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                    rows={3}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Arabic description</label>
+                  <textarea
+                    value={hero.heroDescription.ar}
+                    placeholder="Arabic description"
+                    onChange={(e) => handleInputChange("heroDescription", "ar", e.target.value)}
                     className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
                     rows={3}
                   />
@@ -360,7 +398,7 @@ export default function HeroAdminPage() {
               <LucideIcons.MousePointerClick size={20} className="text-gray-600 dark:text-gray-300" />
               <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Buttons</h2>
                <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded-full">
-      {hero?.heroButtons.length} Buttons
+      {hero.heroButtons.length} Buttons
     </span>
             </div>
             <LucideIcons.ChevronDown 
@@ -372,9 +410,9 @@ export default function HeroAdminPage() {
           {expandedSections.buttons && (
             <div className="p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
               <div className="space-y-4 mb-4">
-                {hero?.heroButtons.map((btn, index) => (
+                {hero.heroButtons.map((btn, index) => (
                   <div key={index} className="border border-gray-200 dark:border-gray-700 p-4 rounded-lg bg-white dark:bg-gray-700">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
                       <div>
                         <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">French text</label>
                         <input
@@ -392,6 +430,16 @@ export default function HeroAdminPage() {
                           value={btn.text.en}
                           placeholder="English text"
                           onChange={(e) => handleButtonChange(index, "text", e.target.value, "en")}
+                          className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Arabic text</label>
+                        <input
+                          type="text"
+                          value={btn.text.ar}
+                          placeholder="Arabic text"
+                          onChange={(e) => handleButtonChange(index, "text", e.target.value, "ar")}
                           className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
                         />
                       </div>

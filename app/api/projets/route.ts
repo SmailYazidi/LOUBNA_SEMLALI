@@ -26,12 +26,15 @@ export async function PUT(req: Request) {
     const projectId = formData.get("projectId") as string | null;
     const titleFr = formData.get("titleFr") as string;
     const titleEn = formData.get("titleEn") as string;
+    const titleAr = formData.get("titleAr") as string;
     const descFr = formData.get("descFr") as string;
     const descEn = formData.get("descEn") as string;
+    const descAr = formData.get("descAr") as string;
     const techStack = JSON.parse(formData.get("techStack") as string || "[]");
     const buttonIcon = formData.get("buttonIcon") as string;
     const buttonLabelFr = formData.get("buttonLabelFr") as string;
     const buttonLabelEn = formData.get("buttonLabelEn") as string;
+    const buttonLabelAr = formData.get("buttonLabelAr") as string;
     const buttonLink = formData.get("buttonLink") as string;
 
     const file = formData.get("image") as File | null;
@@ -71,12 +74,12 @@ export async function PUT(req: Request) {
 
     const newProject = {
       _id: projectId || crypto.randomUUID(),
-      title: { fr: titleFr, en: titleEn },
-      description: { fr: descFr, en: descEn },
+      title: { fr: titleFr, en: titleEn, ar: titleAr },
+      description: { fr: descFr, en: descEn, ar: descAr },
       techStack,
       button: {
         icon: buttonIcon,
-        label: { fr: buttonLabelFr, en: buttonLabelEn },
+        label: { fr: buttonLabelFr, en: buttonLabelEn, ar: buttonLabelAr },
         link: buttonLink,
       },
       ...(imageUrl ? { image: imageUrl } : {}),
