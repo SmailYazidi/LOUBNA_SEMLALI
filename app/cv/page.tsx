@@ -13,23 +13,24 @@ export default function CvPage() {
   const [loading, setLoading] = useState(true)
   const [mounted, setMounted] = useState(false)
 
-  // Initialize with safe defaults
+// Initialize with safe defaults
 const [isDarkMode, setIsDarkMode] = useState(true)
-const [language, setLanguage] = useState<"fr" | "en" | "ar">("fr") // include "ar"
+const [language, setLanguage] = useState<"fr" | "en">("fr") // only fr | en
 
 // Hydrate client-side state after mount
 useEffect(() => {
   setMounted(true)
-  
+
   const savedDarkMode = sessionStorage.getItem('darkMode')
   const savedLanguage = sessionStorage.getItem('language')
-  
+
   setIsDarkMode(savedDarkMode ? JSON.parse(savedDarkMode) : true)
 
-  if (savedLanguage === "ar" || savedLanguage === "fr" || savedLanguage === "en") {
-    setLanguage(savedLanguage)
+  // Replace "ar" with "fr"; allow only "fr" or "en"
+  if (savedLanguage === "en") {
+    setLanguage("en")
   } else {
-    setLanguage("fr") // fallback default
+    setLanguage("fr") // "ar" or anything else becomes "fr"
   }
 }, [])
 
