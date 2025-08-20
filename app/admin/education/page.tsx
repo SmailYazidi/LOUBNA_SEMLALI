@@ -217,6 +217,11 @@ export default function EducationAdminPage() {
 
   const saveData = async () => {
     try {
+
+
+      console.log(    data.journeyTitle,
+           data.education,
+         data.experience)
       const res = await fetch("/api/education", {
         method: "PUT",
         headers: { 
