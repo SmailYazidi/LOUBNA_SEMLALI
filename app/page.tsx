@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import Loading from '@/components/Loading';
 import Image from "next/image"
+import './styles.css';
 import {
   Send,
   Star,
@@ -13,20 +14,18 @@ import {
   ArrowUpRight,
   Briefcase,
   GraduationCap,
-  LanguagesIcon,
+  Languages,
   Heart,
   Sun,
   Moon,
   ChevronDown,
-  Link,
+  Link as LinkIcon,
   Search,
 } from "lucide-react"
 import * as LucideIcons from "lucide-react";
 
-// Translation data with Arabic support
 const translations = {
   fr: {
-    // Header
     home: "Accueil",
     services: "Services",
     experience: "Parcours",
@@ -36,28 +35,15 @@ const translations = {
     contact: "Contact",
     hireMe: "Me Contacter",
     viewJourney: "Voir Mon CV",
-
-    // Services
     servicesTitle: "Services",
-
-    // Experience & Education Timeline
     journeyTitle: "Parcours Professionnel & Éducatif",
-
-    // Skills
     skillsTitle: "Mes Compétences",
-
-    // Projects
     myProjects: "Mes Projets",
-
-    // About
     aboutTitle: "À Propos de Moi",
-    interests:"Centres d'Intérêt",
-    
-    // Footer
+    interests: "Centres d'Intérêt",
     rightsReserved: "Tous droits réservés",
   },
   en: {
-    // Header
     home: "Home",
     services: "Services",
     experience: "Journey",
@@ -66,27 +52,16 @@ const translations = {
     about: "About",
     contact: "Contact",
     hireMe: "Hire Me",
-    interests:"Interests",
+    interests: "Interests",
     viewJourney: "View My CV",
-
-    // Services
     servicesTitle: "Services",
-  
-    // Experience & Education Timeline
     journeyTitle: "Work Experience & Education Timeline",
- 
-    // Skills
     skillsTitle: "My Skills",
-
-    // Projects
     myProjects: "My Projects",
-   
     aboutTitle: "About Me",
-    // Footer
     rightsReserved: "All rights reserved",
   },
   ar: {
-    // Header
     home: "الرئيسية",
     services: "الخدمات",
     experience: "المسيرة المهنية",
@@ -97,29 +72,19 @@ const translations = {
     hireMe: "وظفني",
     interests: "الاهتمامات",
     viewJourney: "عرض سيرتي الذاتية",
-
-    // Services
     servicesTitle: "الخدمات",
-
-    // Experience & Education Timeline
     journeyTitle: "المسيرة المهنية والتعليمية",
-
-    // Skills
     skillsTitle: "مهاراتي",
-
-    // Projects
     myProjects: "مشاريعي",
-
     aboutTitle: "نبذة عني",
-    // Footer
     rightsReserved: "جميع الحقوق محفوظة",
   }
 }
 
 export default function Portfolio() {
-   const [heroData, setHeroData] = useState<any>(null);
-     const [educationData, setEducationData] = useState<any>(null);
-    const [skillsData, setSkillsData] = useState<any>(null);
+  const [heroData, setHeroData] = useState<any>(null);
+  const [educationData, setEducationData] = useState<any>(null);
+  const [skillsData, setSkillsData] = useState<any>(null);
   const [servicesData, setServicesData] = useState<any>(null);
   const [heroLoading, setHeroLoading] = useState(true);
   const [servicesLoading, setServicesLoading] = useState(true);
@@ -127,24 +92,19 @@ export default function Portfolio() {
   const [photoLoading, setPhotoLoading] = useState(true);
   const [aboutLoading, setAboutLoading] = useState(true);
   const [contactLoading, setContactLoading] = useState(true);
-   const [contactData, setContactData] = useState<any>(null);
-
- const [projetsLoading, setProjetsLoading] = useState(true);
-   const [projetsData, setProjetsData] = useState<any>(null);
-
- const [usernameLoading, setUsernameLoading] = useState(true);
-   const [usernameData, setUsernameData] = useState<any>(null);
-
+  const [contactData, setContactData] = useState<any>(null);
+  const [projetsLoading, setProjetsLoading] = useState(true);
+  const [projetsData, setProjetsData] = useState<any>(null);
+  const [usernameLoading, setUsernameLoading] = useState(true);
+  const [usernameData, setUsernameData] = useState<any>(null);
   const [educationLoading, setEducationLoading] = useState(true);
   const [skillsLoading, setSkillsLoading] = useState(true);
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [activeSection, setActiveSection] = useState("home")
-
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [isSearchOpen, setIsSearchOpen] = useState(false)
-
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = sessionStorage.getItem('darkMode');
@@ -178,18 +138,15 @@ export default function Portfolio() {
   useEffect(() => {
     sessionStorage.setItem('language', currentLang);
     document.documentElement.lang = currentLang;
-    // Set RTL direction for Arabic
     document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
   }, [currentLang]);
 
-  // Modify your theme toggle function to persist the setting
   const toggleTheme = () => {
     const newMode = !isDarkMode;
     setIsDarkMode(newMode);
     sessionStorage.setItem('darkMode', JSON.stringify(newMode));
   };
 
-  // Modify your language change function to persist the setting
   const changeLanguage = (lang: "fr" | "en" | "ar") => {
     setCurrentLang(lang);
     setIsLangMenuOpen(false);
@@ -211,7 +168,8 @@ export default function Portfolio() {
     };
     fetchPhoto();
   }, []);
- useEffect(() => {
+
+  useEffect(() => {
     fetch("/api/hero")
       .then((res) => res.json())
       .then((data) => {
@@ -224,20 +182,20 @@ export default function Portfolio() {
       });
   }, []);
 
-useEffect(() => {
-  fetch("/api/username")
-    .then((res) => res.json())
-    .then((data) => {
-   
-      setUsernameData(data || { fr: "", en: "", ar: "" });
-      setUsernameLoading(false);
-    })
-    .catch((err) => {
-      console.error("Error fetching username data:", err);
-      setUsernameLoading(false);
-    });
-}, []);
- useEffect(() => {
+  useEffect(() => {
+    fetch("/api/username")
+      .then((res) => res.json())
+      .then((data) => {
+        setUsernameData(data || { fr: "", en: "", ar: "" });
+        setUsernameLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching username data:", err);
+        setUsernameLoading(false);
+      });
+  }, []);
+
+  useEffect(() => {
     fetch("/api/about_me")
       .then((res) => res.json())
       .then((data) => {
@@ -249,7 +207,7 @@ useEffect(() => {
         setAboutLoading(false);
       });
   }, []);
-  // Fetch contact data
+
   useEffect(() => {
     fetch("/api/contact")
       .then((res) => res.json())
@@ -262,6 +220,7 @@ useEffect(() => {
         setContactLoading(false);
       });
   }, []);
+
   useEffect(() => {
     fetch("/api/services")
       .then((res) => res.json())
@@ -274,7 +233,7 @@ useEffect(() => {
         setServicesLoading(false);
       });
   }, []);
-    // Fetch education data
+
   useEffect(() => {
     fetch("/api/education")
       .then((res) => res.json())
@@ -288,7 +247,6 @@ useEffect(() => {
       });
   }, []);
 
-    // Fetch education data
   useEffect(() => {
     fetch("/api/skills")
       .then((res) => res.json())
@@ -297,12 +255,11 @@ useEffect(() => {
         setSkillsLoading(false);
       })
       .catch((err) => {
-        console.error("Error fetching education data:", err);
+        console.error("Error fetching skills data:", err);
         setSkillsLoading(false);
       });
   }, []);
 
-    // Fetch Projets data
   useEffect(() => {
     fetch("/api/projets")
       .then((res) => res.json())
@@ -311,7 +268,7 @@ useEffect(() => {
         setProjetsLoading(false);
       })
       .catch((err) => {
-        console.error("Error fetching Projets data:", err);
+        console.error("Error fetching projets data:", err);
         setProjetsLoading(false);
       });
   }, []);
@@ -339,7 +296,6 @@ useEffect(() => {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  // Close language menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement
@@ -358,956 +314,782 @@ useEffect(() => {
     { code: "ar", label: "العربية", flag: "🇸🇦" },
   ]
 
-  const themeClasses = {
-    bg: isDarkMode ? "bg-[#0a0a0a]" : "bg-white",
-    text: isDarkMode ? "text-white" : "text-gray-900",
-    textSecondary: isDarkMode ? "text-gray-400" : "text-gray-600",
-    textMuted: isDarkMode ? "text-gray-500" : "text-gray-500",
-    cardBg: isDarkMode ? "bg-[#111111]" : "bg-white",
-    cardBorder: isDarkMode ? "border-gray-800" : "border-gray-200",
-    headerBg: isDarkMode ? "bg-[#0a0a0a]/95" : "bg-white/95",
-    headerBorder: isDarkMode ? "border-gray-800" : "border-gray-200",
-    sectionBg: isDarkMode ? "bg-[#111111]" : "bg-gray-50",
-    dropdownBg: isDarkMode ? "bg-gray-800" : "bg-white",
-    dropdownBorder: isDarkMode ? "border-gray-700" : "border-gray-200",
-    accentGold: "rgb(var(--portfolio-gold))",
-    accentGoldHover: "rgb(var(--portfolio-gold-hover))",
-    accentGoldForeground: "rgb(var(--portfolio-gold-foreground))",
-    accentRed: "var(--portfolio-red)",
-    accentRedForeground: "var(--portfolio-red-foreground)",
-  }
+  const isProjectsEmpty = !projetsData || !projetsData.projects?.length;
+  const isServicesEmpty = !servicesData || !servicesData.servicesList?.length;
+  const isJourneyDataEmpty = !educationData || (!educationData.education?.length && !educationData.experience?.length);
+  const isContactDataEmpty = !contactData || !((contactData.contactDescription?.[currentLang]?.trim() !== "") || (contactData.contactInfo && contactData.contactInfo.length > 0 && contactData.contactInfo.some(info => (info.label?.[currentLang]?.trim() !== "") || (info.value?.trim() !== ""))) || (contactData.contactButton?.startProject?.[currentLang]?.trim() !== ""));
+  const isAboutDataEmpty = !aboutData || !((aboutData.aboutDescription?.[currentLang]?.trim() !== "") || (aboutData.personalInfo && aboutData.personalInfo.length > 0 && aboutData.personalInfo.some(info => (info.label?.[currentLang]?.trim() !== "") || (info.value?.[currentLang]?.trim() !== ""))) || (aboutData.languages?.list && aboutData.languages.list.length > 0 && aboutData.languages.list.some(language => (language.name?.[currentLang]?.trim() !== "") || (language.level?.trim() !== ""))) || (aboutData.interests && aboutData.interests.length > 0 && aboutData.interests.some(interest => (interest.name?.[currentLang]?.trim() !== ""))));
+  const isSkillsDataEmpty = !skillsData || !((skillsData.skills && skillsData.skills.length > 0 && skillsData.skills.some(skill => (skill.title?.[currentLang]?.trim() !== "") || (skill.items && skill.items.length > 0 && skill.items.some(item => (item.name?.[currentLang]?.trim() !== "") || (item.examples && item.examples.some(ex => ex[currentLang]?.trim() !== "")))))));
+  const isHeroDataEmpty = !heroData || !((heroData.specialist?.[currentLang] && heroData.specialist[currentLang].trim() !== "") || (heroData.heroTitle?.[currentLang] && heroData.heroTitle[currentLang].trim() !== "") || (heroData.heroDescription?.[currentLang] && heroData.heroDescription[currentLang].trim() !== "") || (heroData.heroButtons && heroData.heroButtons.length > 0));
 
-const isProjectsEmpty = !projetsData || !projetsData.projects?.length;
+  const navItems = [
+    !isServicesEmpty && { id: "services", label: t.services },
+    !isJourneyDataEmpty && { id: "experience", label: t.experience },
+    !isSkillsDataEmpty && { id: "skills", label: t.skills },
+    !isProjectsEmpty && { id: "projects", label: t.projects },
+    !isAboutDataEmpty && { id: "about", label: t.about },
+    !isContactDataEmpty && { id: "contact", label: t.contact },
+  ].filter(Boolean);
 
-const isServicesEmpty = !servicesData || !servicesData.servicesList?.length;
+  const getIcon = (iconName?: string) => {
+    if (!iconName) return null; 
+    const pascalCase = iconName.charAt(0).toUpperCase() + iconName.slice(1);
+    return LucideIcons[pascalCase] || null; 
+  };
 
-const isJourneyDataEmpty =
-  !educationData ||
-  (!educationData.education?.length && !educationData.experience?.length);
+ 
 
-const isContactDataEmpty =
-  !contactData ||
-  !(
-    (contactData.contactDescription?.[currentLang]?.trim() !== "") ||
-    (contactData.contactInfo && contactData.contactInfo.length > 0 &&
-      contactData.contactInfo.some(info =>
-        (info.label?.[currentLang]?.trim() !== "") ||
-        (info.value?.trim() !== "")
-      )
-    ) ||
-    (contactData.contactButton?.startProject?.[currentLang]?.trim() !== "")
-  );
-
-const isAboutDataEmpty =
-  !aboutData ||
-  !(
-    (aboutData.aboutDescription?.[currentLang]?.trim() !== "") ||
-    (aboutData.personalInfo && aboutData.personalInfo.length > 0 &&
-      aboutData.personalInfo.some(info =>
-        (info.label?.[currentLang]?.trim() !== "") ||
-        (info.value?.[currentLang]?.trim() !== "")
-      )
-    ) ||
-    (aboutData.languages?.list && aboutData.languages.list.length > 0 &&
-      aboutData.languages.list.some(language =>
-        (language.name?.[currentLang]?.trim() !== "") ||
-        (language.level?.trim() !== "")
-      )
-    ) ||
-    (aboutData.interests && aboutData.interests.length > 0 &&
-      aboutData.interests.some(interest =>
-        (interest.name?.[currentLang]?.trim() !== "")
-      )
-    )
-  );
-
-const isSkillsDataEmpty =
-  !skillsData ||
-  !(
-    (skillsData.skills && skillsData.skills.length > 0 &&
-      skillsData.skills.some(skill =>
-        (skill.title?.[currentLang]?.trim() !== "") ||
-        (skill.items && skill.items.length > 0 &&
-          skill.items.some(item =>
-            (item.name?.[currentLang]?.trim() !== "") ||
-            (item.examples && item.examples.some(ex => ex[currentLang]?.trim() !== ""))
-          )
-        )
-      )
-    )
-  );
-
-const isHeroDataEmpty =
-  !heroData ||
-  !(
-    (heroData.specialist?.[currentLang] && heroData.specialist[currentLang].trim() !== "") ||
-    (heroData.heroTitle?.[currentLang] && heroData.heroTitle[currentLang].trim() !== "") ||
-    (heroData.heroDescription?.[currentLang] && heroData.heroDescription[currentLang].trim() !== "") ||
-    (heroData.heroButtons && heroData.heroButtons.length > 0)
-  );
-
-const navItems = [
-  !isServicesEmpty && { id: "services", label: t.services },
-  !isJourneyDataEmpty && { id: "experience", label: t.experience },
-  !isSkillsDataEmpty && { id: "skills", label: t.skills },
-  !isProjectsEmpty && { id: "projects", label: t.projects },
-  !isAboutDataEmpty && { id: "about", label: t.about },
-  !isContactDataEmpty && { id: "contact", label: t.contact },
-].filter(Boolean); // remove false values
-
-const getIcon = (iconName?: string) => {
-  if (!iconName) return null; 
-  const pascalCase = iconName.charAt(0).toUpperCase() + iconName.slice(1);
-  return LucideIcons[pascalCase] || null; 
-};
+  const getThemeClass = (baseClass, darkVariant, lightVariant) => {
+    return `${baseClass} ${isDarkMode ? darkVariant : lightVariant}`;
+  };
 
   if (heroLoading || servicesLoading || photoLoading || educationLoading || aboutLoading || contactLoading || projetsLoading || skillsLoading || usernameLoading) return <Loading/>;
   
   return (
-    <div
-      className={`min-h-screen transition-colors duration-300 ${isDarkMode ? "dark" : ""} ${themeClasses.bg} ${themeClasses.text}`}
-      dir={currentLang === 'ar' ? 'rtl' : 'ltr'}
-    >
-      {/* Header */}
-      <header
-        className={`fixed top-0 left-0 right-0 z-50 ${themeClasses.headerBg} backdrop-blur-md border-b ${themeClasses.headerBorder} shadow-sm`}
-      >
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
-            {/* Logo */}
-           <div
-  className="flex items-center space-x-3 cursor-pointer"
-  onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
->
-<span className="text-base sm:text-xl font-medium">{usernameData?.[currentLang]}</span>
-</div>
-
-            <>
-              <style jsx>{`
-    .custom-nav-spacing > *:not(:last-child) {
-      margin-right: 20px;
-    }
-
-    @media (min-width: 1990px) {
-      .custom-nav-spacing > *:not(:last-child) {
-        margin-right: 48px;
-      }
-    }
-  `}</style>
-
-              {/* Desktop Navigation */}
-           <nav className="hidden lg:flex items-center custom-nav-spacing">
-  {navItems.map((item) => (
-    <button
-      key={item.id}
-      onClick={() => scrollToSection(item.id)}
-      className={`text-sm font-medium transition-colors hover:text-[rgb(var(--portfolio-gold))] ${
-        activeSection === item.id
-          ? "text-[rgb(var(--portfolio-gold))]"
-          : themeClasses.textSecondary
-      }`}
-    >
-      {item.label}
-    </button>
-  ))}
-</nav>
-            </>
-
-            {/* Desktop Controls */}
-            <div className="hidden lg:flex items-center space-x-3">
-              {/* Language selector */}
-           <div className="relative language-menu">
-  <Button
-    variant="ghost"
-    size="sm"
-    onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
-    className="p-2 hover:bg-[#d6a904] flex items-center gap-2"
-  >
-  <span className="text-xs font-medium">{currentLang.toUpperCase()}</span>
-<ChevronDown
-    className={`w-3 h-3 mb-1 transition-transform ${isLangMenuOpen ? "rotate-180" : ""}`}
-  />
-  </Button>
-
-  {isLangMenuOpen && (
-    <div
-      className={`absolute top-full right-0 mt-2 ${themeClasses.dropdownBg} ${themeClasses.dropdownBorder} border rounded-lg shadow-lg py-2 min-w-[140px] z-50`}
-    >
-      {languageOptions.map((option) => (
-        <button
-          key={option.code}
-          onClick={() => changeLanguage(option.code as "fr" | "en" | "ar")}
-          className={`w-full px-4 py-2 text-left text-sm flex items-center gap-3 
-           hover:bg-[#d6a904] transition-colors
-            ${currentLang === option.code
-              ? "text-[rgb(var(--portfolio-gold))]"
-              : themeClasses.text
-            }`}
-        >
-          <span>{option.flag}</span>
-          <span className={option.code === 'ar' ? 'text-right' : ''}>{option.label}</span>
-        </button>
-      ))}
-    </div>
-  )}
-</div>
-
-              {/* Theme Toggle */}
-<Button
-  variant="ghost"
-  size="sm"
-  onClick={toggleTheme}
-  className="p-2  hover:bg-[#d6a904]"
->
-  {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-</Button>
-
-{/* Search Toggle */}
-<Button
-  variant="ghost"
-  size="sm"
-  onClick={() => setIsSearchOpen(!isSearchOpen)}
-  className="p-2 hover:bg-[#d6a904]"
->
-  {isSearchOpen ? <X className="w-5 h-5" /> : <Search className="w-5 h-5" />}
-</Button>
-
-              {/* Hire Me */}
-              <Button
-                className={`${isDarkMode
-                  ? "bg-[#EFBF04] hover:bg-[#d6a904] text-black"
-                  : "bg-gray-900 hover:bg-gray-800 text-white"
-                  } font-medium px-6 py-2 rounded-full`}
-                onClick={() => scrollToSection("contact")}
-              >
-                {t.hireMe}
-              </Button>
-            </div>
-
-            {/* Mobile Controls */}
-            <div className="flex lg:hidden items-center space-x-2">
-<Button
-  variant="ghost"
-  size="sm"
-  onClick={toggleTheme}
-  className="p-2 hover:bg-[#d6a904]"
->
-  {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-</Button>
-
-        <div className="relative language-menu">
- <Button
-  variant="ghost"
-  size="sm"
-  onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
-  className="p-2 hover:bg-[#d6a904] transition-colors flex items-center gap-1"
->  <span className="text-xs font-medium">{currentLang.toUpperCase()}</span>
-<ChevronDown
-    className={`w-3 h-3 mb-1 transition-transform ${isLangMenuOpen ? "rotate-180" : ""}`}
-  />
-</Button>
-
-  {isLangMenuOpen && (
-    <div
-      className={`absolute top-full right-0 mt-2 ${themeClasses.dropdownBg} ${themeClasses.dropdownBorder} border rounded-lg shadow-lg py-2 min-w-[120px] z-50`}
-    >
-      {languageOptions.map((option) => (
-        <button
-          key={option.code}
-          onClick={() => changeLanguage(option.code as "fr" | "en" | "ar")}
-          className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 
-            hover:bg-[#d6a904] transition-colors
-            ${currentLang === option.code
-              ? "text-[rgb(var(--portfolio-gold))]"
-              : themeClasses.text
-            }`}
-        >
-          <span className="text-xs">{option.flag}</span>
-          <span className={`text-xs ${option.code === 'ar' ? 'text-right' : ''}`}>{option.code.toUpperCase()}</span>
-        </button>
-      ))}
-    </div>
-  )}
-</div>
-
-{/* Search Toggle for Mobile */}
-<Button
-  variant="ghost"
-  size="sm"
-  onClick={() => setIsSearchOpen(!isSearchOpen)}
-  className="p-2 hover:bg-[#d6a904]"
->
-  {isSearchOpen ? <X className="w-6 h-6" /> : <Search className="w-6 h-6" />}
-</Button>
-
-              <button className="p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-                {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-              </button>
-            </div>
-          </div>
-
-          {/* Mobile Navigation */}
-          {isMenuOpen && (
-            <div className={`lg:hidden py-6 border-t ${themeClasses.headerBorder}`}>
-              <nav className="flex flex-col space-y-2">
-                {navItems.map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => scrollToSection(item.id)}
-                    className={`text-left px-4 py-2 text-sm font-medium transition-colors hover:text-[rgb(var(--portfolio-gold))] ${activeSection === item.id
-                      ? `text-[rgb(var(--portfolio-gold))] ${isDarkMode ? "bg-gray-800" : "bg-gray-100"
-                      }`
-                      : themeClasses.textSecondary
-                      }`}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-                <div className="px-4 pt-4">
-                  <Button
-                    className={`w-full ${isDarkMode
-                      ? "bg-[#EFBF04] hover:bg-[#d6a904]text-black"
-                      : "bg-gray-900 hover:bg-gray-800 text-white"
-                      } font-medium py-2 rounded-full`}
-                    onClick={() => scrollToSection("contact")}
-                  >
-                    {t.hireMe}
-                  </Button>
-                </div>
-              </nav>
-            </div>
-          )}
-
-          {/* Search Input */}
-          {isSearchOpen && (
-            <div
-              className={`relative z-50 top-full left-0 right-0 py-4 px-4 sm:px-6 lg:px-8 ${themeClasses.headerBg} border-t ${themeClasses.headerBorder} shadow-md`}
-            >
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder={currentLang === "fr" ? "Rechercher..." : currentLang === "en" ? "Search..." : "البحث..."}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className={`w-full p-3 pr-10 rounded-md ${isDarkMode
-                    ? "bg-gray-800 text-white border border-gray-700"
-                    : "bg-gray-100 text-gray-900 border border-gray-300"
-                    } focus:outline-none focus:ring-2 focus:ring-[rgb(var(--portfolio-gold))] ${currentLang === 'ar' ? 'text-right' : ''}`}
-                  dir={currentLang === 'ar' ? 'rtl' : 'ltr'}
-                />
-                {searchTerm && (
-                  <button
-                    onClick={() => setSearchTerm("")}
-                    className={`absolute ${currentLang === 'ar' ? 'left-3' : 'right-3'} top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:hover:text-white`}
-                    aria-label="Clear search"
-                  >
-                    <X size={18} />
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-      </header>
-
-      {/* Hero Section */}
-{!isHeroDataEmpty && (
-  <section id="home" className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
-    <div className="container mx-auto max-w-7xl">
-      <div className={`grid lg:grid-cols-2 gap-12 lg:gap-16 items-center ${currentLang === 'ar' ? 'lg:grid-cols-2' : ''}`}>
-        {/* Left Content */}
-        <div className={`space-y-6 sm:space-y-8 text-center lg:text-left ${currentLang === 'ar' ? 'lg:text-right' : ''}`}>
-          {heroData.specialist?.[currentLang] && (
-            <div className={`flex items-center justify-center gap-3 ${currentLang === 'ar' ? 'lg:justify-end' : 'lg:justify-start'}`}>
-              <Star className="w-5 h-5 text-[rgb(var(--portfolio-gold))] fill-current" />
-              <span className={`${themeClasses.textSecondary} text-sm font-medium`}>
-                {heroData.specialist[currentLang]}
-              </span>
-            </div>
-          )}
-
-          {heroData.heroTitle?.[currentLang] && (
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-light leading-tight">
-              {heroData.heroTitle[currentLang]}
-            </h1>
-          )}
-
-          {heroData.heroDescription?.[currentLang] && (
-            <p className={`${themeClasses.textSecondary} text-base sm:text-lg leading-relaxed max-w-lg mx-auto ${currentLang === 'ar' ? 'lg:mr-0' : 'lg:mx-0'}`}>
-              {heroData.heroDescription[currentLang]}
-            </p>
-          )}
-
-          <div className={`flex flex-col sm:flex-row gap-4 justify-center ${currentLang === 'ar' ? 'lg:justify-end' : 'lg:justify-start'}`}>
-            <Button
-              className="bg-[#EFBF04] hover:bg-[#d6a904] text-gray-900 font-medium px-8 py-3 rounded-full"
-              onClick={() => (window.location.href = '/cv')}
-            >
-              {t.viewJourney}
-            </Button>
-
-            {heroData.heroButtons?.map((button, index) => {
-              const Icon = getIcon(button.icon);
-              const handleClick = () => {
-                if (button.link) window.location.href = button.link;
-              };
-              return (
-                <Button
-                  key={index}
-                  variant="ghost"
-                  onClick={handleClick}
-                  className={`${isDarkMode
-                    ? "text-white border-gray-700 hover:border-[rgb(184,148,31)] hover:text-[rgb(184,148,31)] hover:bg-transparent"
-                    : "text-gray-900 border-gray-300 hover:border-[rgb(184,148,31)] hover:text-[rgb(184,148,31)] hover:bg-transparent"
-                  } font-medium px-8 py-3 rounded-full border flex items-center cursor-pointer`}
-                >
-                  {Icon && <Icon className="w-4 h-4 mr-2" />}
-                  {button.text?.[currentLang]}
-                </Button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Right Content - Profile Image */}
-             {photoUrl ? (
-        <div className={`relative flex justify-center mt-8 lg:mt-0 ${currentLang === 'ar' ? 'lg:justify-start' : 'lg:justify-end'}`}>
-          <div className={`w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 rounded-full ${
-            isDarkMode 
-              ? "bg-gradient-to-br from-gray-800 to-gray-900" 
-              : "bg-gradient-to-br from-gray-100 to-gray-200"
-          } flex items-center justify-center overflow-hidden border-2 border-[rgb(var(--portfolio-gold))]`}>
-       
-              <Image
-                src={photoUrl}
-                alt="Profile photo"
-                width={400}
-                height={400}
-                className="w-full h-full object-cover"
-                priority
-              />
-        
-          </div>
-        </div>    ) : (
-             <></>
-            )}
-      </div>
-    </div>
-  </section>
-)}
-
-   {/*  services */}
-
-{!isServicesEmpty && (
-  <section id="services" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
-    <div className="container mx-auto max-w-7xl">
-      <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4">
-        {t.servicesTitle}
-        <span className={`absolute bottom-0 w-20 h-1 bg-[rgb(var(--portfolio-gold))] ${currentLang === 'ar' ? 'right-0' : 'left-0'}`}></span>
-      </h2>
-
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-        {Array.isArray(servicesData?.servicesList) && servicesData.servicesList.length > 0 ? (
-          servicesData.servicesList.map((service, index) => {
-            // Get text for current language with fallbacks
-            const title = service.title?.[currentLang] || 
-                         service.title?.[currentLang === 'fr' ? 'en' : currentLang === 'en' ? 'ar' : 'fr'] ||
-                         service.title?.[currentLang === 'ar' ? 'fr' : 'en'];
-            const description = service.description?.[currentLang] || 
-                               service.description?.[currentLang === 'fr' ? 'en' : currentLang === 'en' ? 'ar' : 'fr'] ||
-                               service.description?.[currentLang === 'ar' ? 'fr' : 'en'];
-
-            // Skip card if no title available
-            if (!title) return null;
-
-            return (
-              <Card
-                key={index}
-                className={`${themeClasses.cardBg} ${themeClasses.cardBorder} p-6 sm:p-8 hover:border-[rgb(var(--portfolio-gold))] transition-colors group shadow-lg`}
-              >
-                <CardContent className="p-0">
-                  <div className="flex items-start justify-between mb-4 sm:mb-6">
-                    <span className={`${themeClasses.textMuted} text-sm text-yellow-500`}>0{index + 1}</span>
-                    <ArrowUpRight
-                      className={`w-5 h-5 ${themeClasses.textMuted} group-hover:text-[rgb(var(--portfolio-gold))] transition-colors`}
-                    />
-                  </div>
-                  <h3 className="text-lg sm:text-xl font-medium mb-3 sm:mb-4">{title}</h3>
-                  {description && <p className={`${themeClasses.textSecondary} text-sm sm:text-base leading-relaxed`}>{description}</p>}
-                </CardContent>
-              </Card>
-            );
-          })
-        ) : (
-          <p>No services available</p>
-        )}
-      </div>
-    </div>
-  </section>
-)}
-
-{/* Experience & Education Timeline Section */}
-{!isJourneyDataEmpty && (
-  <section
-    id="experience"
-    className={`py-16 sm:py-20 px-4 sm:px-6 lg:px-8 ${themeClasses.sectionBg}`}
-  >
-    <div className="container mx-auto max-w-7xl">
-      <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4">
-        {t.journeyTitle}
-        <span className={`absolute bottom-0 w-20 h-1 bg-[rgb(var(--portfolio-gold))] ${currentLang === 'ar' ? 'right-0' : 'left-0'}`}></span>
-      </h2>
-
-      <div className="grid md:grid-cols-2 gap-12 md:gap-8">
-        {/* Education Column */}
-        { educationData?.education?.length >0  && (
-          <div>
-            <h3 className="text-xl sm:text-2xl font-medium mb-6 sm:mb-8 flex items-center gap-3">
-              <GraduationCap className="w-5 h-5 sm:w-6 sm:h-6 text-[rgb(var(--portfolio-gold))]" />
-              {currentLang === "fr" ? "Formation" : currentLang === "en" ? "Education" : "التعليم"}
-            </h3>
-            <div className="space-y-8 relative">
-           {educationData?.education && [...educationData.education].reverse().map((event, index) => (
-                <div key={index} className={`relative ${currentLang === 'ar' ? 'pr-6' : 'pl-6'}`}>
-                  <div
-                    className={`absolute ${currentLang === 'ar' ? 'right-0' : 'left-0'} top-0 bottom-0 w-0.5 ${
-                      isDarkMode ? "bg-gray-700" : "bg-gray-300"
-                    }`}
-                  ></div>
-                  <div
-                    className={`absolute ${currentLang === 'ar' ? '-right-2' : '-left-2'} top-0 w-4 h-4 rounded-full bg-[rgb(var(--portfolio-gold))]`}
-                  ></div>
-                  <p className={`${themeClasses.textSecondary} font-medium text-sm mb-1`}>
-                    {event.year?.[currentLang]}
-                  </p>
-                  <h4 className="text-base sm:text-lg font-medium mb-1">
-                    {event.title?.[currentLang]}
-                  </h4>
-                  <p className={`${themeClasses.textSecondary} text-sm mb-1`}>
-                    {event.institution?.[currentLang]}
-                  </p>
-                  {event.description && (
-                    <p className={`${themeClasses.textMuted} text-xs mt-2`}>
-                      {event.description?.[currentLang]}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Experience Column */}
-        { educationData.experience?.length >0 && (
-          <div>
-            <h3 className="text-xl sm:text-2xl font-medium mb-6 sm:mb-8 flex items-center gap-3">
-              <Briefcase className="w-5 h-5 sm:w-6 sm:h-6 text-[rgb(var(--portfolio-gold))]" />
-              {currentLang === "fr" ? "Expérience" : currentLang === "en" ? "Experience" : "الخبرة"}
-            </h3>
-            <div className="space-y-8 relative">
-             {educationData?.experience && [...educationData.experience].reverse().map((event, index) =>(
-                <div key={index} className={`relative ${currentLang === 'ar' ? 'pr-6' : 'pl-6'}`}>
-                  <div
-                    className={`absolute ${currentLang === 'ar' ? 'right-0' : 'left-0'} top-0 bottom-0 w-0.5 ${
-                      isDarkMode ? "bg-gray-700" : "bg-gray-300"
-                    }`}
-                  ></div>
-                  <div
-                    className={`absolute ${currentLang === 'ar' ? '-right-2' : '-left-2'} top-0 w-4 h-4 rounded-full bg-[rgb(var(--portfolio-gold))]`}
-                  ></div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <p className={`${themeClasses.textSecondary} font-medium text-sm`}>
-                      {event.year?.[currentLang]}
-                    </p>
-                    {event.duration && (
-                      <Badge className="bg-[rgb(var(--portfolio-gold))] text-[rgb(var(--portfolio-gold-foreground))] text-xs">
-                        {event.duration}
-                      </Badge>
-                    )}
-                  </div>
-                  <h4 className="text-base sm:text-lg font-medium mb-1">
-                    {event.title?.[currentLang]}
-                  </h4>
-                  <p className={`${themeClasses.textSecondary} text-sm mb-1`}>
-                    {event.institution?.[currentLang]}
-                  </p>
-                  {event.description && (
-                    <p className={`${themeClasses.textMuted} text-xs mt-2`}>
-                      {event.description?.[currentLang]}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  </section>
-)}
-
-{/* Skills Section */}
-{!isSkillsDataEmpty && (
-<section id="skills" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
-  <div className="container mx-auto max-w-7xl">
-    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4">
-      {t.skillsTitle}
-      <span className={`absolute bottom-0 w-20 h-1 bg-[rgb(var(--portfolio-gold))] ${currentLang === 'ar' ? 'right-0' : 'left-0'}`}></span>
-    </h2>
-
-    <div className="space-y-10 sm:space-y-12">
-      {skillsData?.skills?.map((category, catIndex) => {
-        const CategoryIcon = getIcon(category.skillicon);
-
-        return (
-          <div key={catIndex}>
-            <h3 className="text-xl sm:text-2xl font-medium mb-6 sm:mb-8 flex items-center gap-3">
-              {CategoryIcon && (
-                <CategoryIcon className="w-5 h-5 sm:w-6 sm:h-6 text-[rgb(var(--portfolio-gold))]" />
-              )}
-              {category.title?.[currentLang]}
-            </h3>
-
-            {category.items.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-                {category.items.map((skill, skillIndex) => {
-                  const SkillIcon = getIcon(skill.icon);
-
-                  return (
-                    <Card
-                      key={skillIndex}
-                      className={`${themeClasses.cardBg} ${themeClasses.cardBorder} p-5 sm:p-6 text-center transition-all duration-300 hover:border-[rgb(var(--portfolio-gold))] hover:shadow-lg`}
-                    >
-                      <CardContent className="p-0 flex flex-col items-center">
-                        {SkillIcon && (
-                          <SkillIcon className="w-7 h-7 sm:w-8 sm:h-8 text-[rgb(var(--portfolio-gold))] mb-2 sm:mb-3" />
-                        )}
-                        <h4 className="font-medium text-base sm:text-lg mb-1">
-                          {skill.name?.[currentLang]}
-                        </h4>
-                        {skill.examples?.length > 0 && (
-                          <ul className={`${themeClasses.textMuted} text-xs sm:text-sm list-disc ${currentLang === 'ar' ? 'pr-4' : 'pl-4'}`}>
-                            {skill.examples.map((ex, exIndex) => (
-                              <li key={exIndex}>{ex?.[currentLang]}</li>
-                            ))}
-                          </ul>
-                        )}
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
-            ) : (
-              <p className={`${themeClasses.textMuted} text-sm`}>No skills listed.</p>
-            )}
-          </div>
-        );
-      })}
-    </div>
-  </div>
-</section>)}
-
-{/* Projects Section */}
-{!isProjectsEmpty && (
-<section
-  id="projects"
-  className={`py-16 sm:py-20 px-4 sm:px-6 lg:px-8 ${themeClasses.sectionBg}`}
->
-  <div className="container mx-auto max-w-7xl">
-    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4">
-      {t.myProjects}
-      <span className={`absolute bottom-0 w-20 h-1 bg-[rgb(var(--portfolio-gold))] ${currentLang === 'ar' ? 'right-0' : 'left-0'}`}></span>
-    </h2>
-
-    {projetsLoading ? (
-      <div className="flex justify-center items-center h-64">
-        <Loading />
-      </div>
-    ) : projetsData?.projects?.length > 0 ? (
-      <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
-        {projetsData.projects.map((project: any) => (
-          <Card
-            key={project._id}
-            className={`${themeClasses.cardBg} ${themeClasses.cardBorder} overflow-hidden transition-all duration-300 hover:border-[rgb(var(--portfolio-gold))] hover:shadow-lg`}
-          >
-            {/* Project Image */}
-            <div className="relative h-48 sm:h-56 overflow-hidden">
-              {project.image ? (
-                <Image
-                  src={project.image}
-                  alt={`${project.title?.[currentLang] || project.title?.fr || project.title?.en || 'Project'}`}
-                  width={800}
-                  height={450}
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-              ) : (
-                <div className="absolute inset-0 bg-gray-200 dark:bg-gray-800 flex items-center justify-center">
-                  <span className="text-gray-500 dark:text-gray-400">
-                    {currentLang === 'fr' ? 'Pas d\'image disponible' : 
-                     currentLang === 'en' ? 'No image available' : 
-                     'لا توجد صورة متاحة'}
+    <>
+   
+      <div className={`portfolio-container ${isDarkMode ? 'dark-mode' : 'light-mode'}`}>
+        <header className={`header ${isDarkMode ? 'dark-header' : 'light-header'} py-4`}>
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <div className="text-xl font-bold">
+                  <span className={isDarkMode ? 'gradient-text' : 'light-gradient-text'}>
+                    {usernameData?.[currentLang]}
                   </span>
                 </div>
-              )}
+
+                {/* Desktop Navigation */}
+                <nav className="hidden md:flex ml-12 space-x-8">
+                  {navItems.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => scrollToSection(item.id)}
+                      className={`nav-link ${getThemeClass('', 'dark-nav-link', 'light-nav-link')} ${
+                        activeSection === item.id ? 'active-nav-link' : ''
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </nav>
+              </div>
+
+              <div className="flex items-center space-x-3">
+                {/* Language Selector */}
+                <div className="relative">
+                  <Button
+                    onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
+                    className={getThemeClass('secondary-btn', 'dark-secondary-btn', 'light-secondary-btn')}
+                  >
+                    <span>{currentLang.toUpperCase()}</span>
+                    <ChevronDown size={16} className="ml-1" />
+                  </Button>
+
+                  {isLangMenuOpen && (
+                    <div className={`language-menu ${isDarkMode ? 'dark-language-menu' : 'light-language-menu'}`}>
+                      {languageOptions.map((option) => (
+                        <button
+                          key={option.code}
+                          onClick={() => changeLanguage(option.code as "fr" | "en" | "ar")}
+                          className="w-full text-left px-4 py-2 hover:bg-opacity-10 hover:bg-purple-500 flex items-center"
+                        >
+                          <span className="mr-2">{option.flag}</span>
+                          <span>{option.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Theme Toggle */}
+                <Button
+                  onClick={toggleTheme}
+                  className={getThemeClass('secondary-btn', 'dark-secondary-btn', 'light-secondary-btn')}
+                >
+                  {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+                </Button>
+
+                {/* Search Button */}
+                <Button
+                  onClick={() => setIsSearchOpen(!isSearchOpen)}
+                  className={getThemeClass('secondary-btn', 'dark-secondary-btn', 'light-secondary-btn')}
+                >
+                  {isSearchOpen ? <X size={18} /> : <Search size={18} />}
+                </Button>
+
+                {/* Hire Me Button */}
+                <Button
+                  onClick={() => scrollToSection("contact")}
+                  className={isDarkMode ? 'gradient-btn' : 'light-gradient-btn'}
+                >
+                  {t.hireMe}
+                </Button>
+
+                {/* Mobile Menu Button */}
+                <Button
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  className={`md:hidden ${getThemeClass('secondary-btn', 'dark-secondary-btn', 'light-secondary-btn')}`}
+                >
+                  {isMenuOpen ? <X size={18} /> : <Menu size={18} />}
+                </Button>
+              </div>
             </div>
 
-            <CardContent className="p-6">
-              <h3 className="text-xl sm:text-2xl font-medium mb-2 sm:mb-3">
-                {project.title?.[currentLang] || project.title?.fr || project.title?.en || project.title?.ar}
-              </h3>
-              <p
-                className={`${themeClasses.textSecondary} text-sm sm:text-base leading-relaxed mb-4 sm:mb-6`}
-              >
-                {project.description?.[currentLang] || project.description?.fr || project.description?.en || project.description?.ar}
-              </p>
-              
-              {/* Tech Stack */}
-              {project.techStack?.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-4 sm:mb-6">
-                  {project.techStack.map((tech: string, techIndex: number) => (
-                    <Badge
-                      key={techIndex}
-                      className={`${
-                        isDarkMode
-                          ? "bg-gray-800 text-white border-gray-700"
-                          : "bg-gray-100 text-gray-900 border-gray-300"
-                      } border px-3 py-1 text-xs`}
+            {/* Mobile Menu */}
+            {isMenuOpen && (
+              <div className={`mobile-menu ${isDarkMode ? 'dark-mobile-menu' : 'light-mobile-menu'} md:hidden`}>
+                <nav className="flex flex-col items-center space-y-8">
+                  {navItems.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => scrollToSection(item.id)}
+                      className={`text-xl font-medium ${activeSection === item.id ? 'gradient-text' : ''}`}
                     >
-                      {tech}
-                    </Badge>
+                      {item.label}
+                    </button>
                   ))}
-                </div>
-              )}
+                  <div className="mt-6">
+                    <Button
+                      onClick={() => scrollToSection("contact")}
+                      className={isDarkMode ? 'gradient-btn' : 'light-gradient-btn'}
+                    >
+                      {t.hireMe}
+                    </Button>
+                  </div>
+                </nav>
+              </div>
+            )}
 
-              {/* Project Button */}
-              {project.button && (
-                <div className="flex gap-3 sm:gap-4">
-                  <Button
-                    variant="outline"
-                    className={`${
-                      isDarkMode
-                        ? "border-gray-700 text-white hover:bg-gray-800"
-                        : "border-gray-300 text-gray-900 hover:bg-gray-100"
-                    } flex items-center gap-2 text-sm sm:text-base`}
-                    onClick={() => window.open(project.button.link, "_blank")}
-                  >
-                    <Link className="w-4 h-4" />
-                    {project.button.label?.[currentLang] || 
-                     project.button.label?.fr || 
-                     project.button.label?.en || 
-                     project.button.label?.ar ||
-                     (currentLang === 'fr' ? 'Voir le projet' : 
-                      currentLang === 'en' ? 'View Project' : 
-                      'عرض المشروع')}
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    ) : (
-      <div className="text-center py-12">
-        <p className={`${themeClasses.textSecondary} text-lg`}>
-          {currentLang === 'fr' ? 'Aucun projet trouvé' : 
-           currentLang === 'en' ? 'No projects found' : 
-           'لم يتم العثور على مشاريع'}
-        </p>
-      </div>
-    )}
-  </div>
-</section>)}
-
-{/* About Section */}
-{!isAboutDataEmpty && (
-  <section id="about" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
-    <div className="container mx-auto max-w-7xl">
-      <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
-        <div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4">
-            {t.aboutTitle}
-            <span className={`absolute bottom-0 w-20 h-1 bg-[rgb(var(--portfolio-gold))] ${currentLang === 'ar' ? 'right-0' : 'left-0'}`}></span>
-          </h2>
-
-          <p className={`${themeClasses.textSecondary} text-base sm:text-lg leading-relaxed mb-6 sm:mb-8`}>
-            {aboutData.aboutDescription?.[currentLang]}
-          </p>
-
-          {/* Personal Info */}
-          {aboutData.personalInfo && (
-            <div className="grid grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
-              {aboutData.personalInfo?.map((info, index) => {
-                const IconComponent = getIcon(info.icon);
-                return (
-                  <div key={index} className="flex items-start gap-2">
-                    {IconComponent && (
-                      <IconComponent className={`w-4 h-4 mt-0.5 text-[rgb(var(--portfolio-gold))]`} />
+            {/* Search Overlay */}
+            {isSearchOpen && (
+              <div className={`search-overlay ${isDarkMode ? 'dark-search-overlay' : 'light-search-overlay'}`}>
+                <div className="w-full max-w-2xl px-4">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder={currentLang === "fr" ? "Rechercher..." : currentLang === "en" ? "Search..." : "البحث..."}
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full py-4 px-6 rounded-lg border-0 text-lg focus:ring-2 focus:outline-none"
+                      style={{
+                        background: isDarkMode ? 'rgba(26, 16, 61, 0.5)' : 'rgba(255, 253, 252, 0.7)',
+                        color: isDarkMode ? '#f9f9fb' : '#1a103d',
+                        boxShadow: isDarkMode 
+                          ? '0 4px 20px rgba(166, 124, 255, 0.15)' 
+                          : '0 4px 20px rgba(200, 162, 200, 0.1)'
+                      }}
+                    />
+                    {searchTerm && (
+                      <button
+                        onClick={() => setSearchTerm("")}
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2"
+                        aria-label="Clear search"
+                      >
+                        <X size={20} />
+                      </button>
                     )}
-                    <div>
-                      <p className={`${themeClasses.textMuted} text-xs sm:text-sm mb-1`}>
-                        {info.label?.[currentLang]}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </header>
+
+        <main className="pt-20">
+          {/* Hero Section */}
+          {!isHeroDataEmpty && (
+            <section id="home" className="min-h-screen flex items-center py-20">
+              <div className="container mx-auto px-4">
+                <div className="flex flex-col md:flex-row items-center justify-between">
+                  <div className="md:w-1/2 mb-12 md:mb-0 fade-in">
+                    {heroData.specialist?.[currentLang] && (
+                      <div className="flex items-center mb-6">
+                        <div className={`p-2 rounded-full mr-3 ${isDarkMode ? 'bg-purple-900' : 'bg-purple-100'}`}>
+                          <Star size={16} className={isDarkMode ? 'text-purple-300' : 'text-purple-600'} />
+                        </div>
+                        <span className={isDarkMode ? 'text-purple-300' : 'text-purple-600'}>
+                          {heroData.specialist[currentLang]}
+                        </span>
+                      </div>
+                    )}
+
+                    {heroData.heroTitle?.[currentLang] && (
+                      <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+                        {heroData.heroTitle[currentLang]}
+                      </h1>
+                    )}
+
+                    {heroData.heroDescription?.[currentLang] && (
+                      <p className="text-xl mb-8 opacity-80">
+                        {heroData.heroDescription[currentLang]}
                       </p>
-                      <p className="font-medium text-sm sm:text-base">
-                        {info.value?.[currentLang]}
-                      </p>
+                    )}
+
+                    <div className="flex flex-wrap gap-4">
+                      <Button
+                        onClick={() => (window.location.href = '/cv')}
+                        className={isDarkMode ? 'gradient-btn' : 'light-gradient-btn'}
+                      >
+                        {t.viewJourney}
+                      </Button>
+
+                      {heroData.heroButtons?.map((button, index) => {
+                        const Icon = getIcon(button.icon);
+                        const handleClick = () => {
+                          if (button.link) window.location.href = button.link;
+                        };
+                        return (
+                          <Button
+                            key={index}
+                            onClick={handleClick}
+                            className={getThemeClass('secondary-btn', 'dark-secondary-btn', 'light-secondary-btn')}
+                          >
+                            {Icon && <Icon size={18} className="mr-2" />}
+                            {button.text?.[currentLang]}
+                          </Button>
+                        );
+                      })}
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
 
-        <div className="space-y-8">
-          {/* Languages */}
-          {aboutData.languages && (
-            <div>
-              <h3 className="text-xl sm:text-2xl font-medium mb-4 sm:mb-6 flex items-center gap-3">
-                <LanguagesIcon className="w-5 h-5 sm:w-6 sm:h-6 text-[rgb(var(--portfolio-gold))]" />
-                {aboutData.languages?.title?.[currentLang]}
-              </h3>
-              <div className="space-y-3 sm:space-y-4">
-                {aboutData.languages?.list?.map((lang, index) => {
-                  const levelKey = lang.level.toLowerCase();
-                  const levelText = aboutData.languages?.levels?.[levelKey]?.[currentLang] || '';
-                  
-                  // Determine width based on language level
-                  const widthMap = {
-                    a1: "20%",
-                    a2: "30%",
-                    b1: "50%",
-                    b2: "70%",
-                    c1: "85%",
-                    c2: "95%",
-                    native: "100%"
-                  };
-                  
-                  const width = widthMap[levelKey] || "50%";
-
-                  return (
-                    <div key={index}>
-                      <div className="flex justify-between mb-1 sm:mb-2">
-                        <span className="font-medium text-sm sm:text-base capitalize">
-                          {lang.name?.[currentLang]}
-                        </span>
-                        <span className={`${themeClasses.textSecondary} text-xs sm:text-sm`}>
-                          {levelText}
-                        </span>
-                      </div>
-                      <div className={`w-full ${isDarkMode ? "bg-gray-800" : "bg-gray-200"} rounded-full h-1`}>
-                        <div
-                          className={`bg-[rgb(var(--portfolio-gold))] h-1 rounded-full transition-all duration-1000 ${currentLang === 'ar' ? 'float-right' : ''}`}
-                          style={{ 
-                            width,
-                            ...(currentLang === 'ar' && { marginLeft: 'auto', float: 'none' })
-                          }}
-                        ></div>
+                  {photoUrl ? (
+                    <div className="md:w-1/2 flex justify-center fade-in delay-200">
+                      <div className={`profile-image-container ${isDarkMode ? 'dark-profile-glow' : 'light-profile-glow'}`}>
+                        <div className="rounded-full overflow-hidden border-4" style={{ 
+                          borderColor: isDarkMode ? 'rgba(166, 124, 255, 0.2)' : 'rgba(200, 162, 200, 0.2)',
+                          width: '350px',
+                          height: '350px'
+                        }}>
+                          <Image
+                            src={photoUrl}
+                            alt="Profile photo"
+                            width={350}
+                            height={350}
+                            className="object-cover w-full h-full"
+                            priority
+                          />
+                        </div>
                       </div>
                     </div>
-                  );
-                })}
+                  ) : (
+                    <div className="md:w-1/2 flex justify-center fade-in delay-200">
+                      <div className={`profile-image-container ${isDarkMode ? 'dark-profile-glow' : 'light-profile-glow'}`}>
+                        <div className="rounded-full overflow-hidden border-4" style={{ 
+                          borderColor: isDarkMode ? 'rgba(166, 124, 255, 0.2)' : 'rgba(200, 162, 200, 0.2)',
+                          width: '350px',
+                          height: '350px'
+                        }}>
+                          <Image
+                            src={"https://woxgxzelncuqwury.public.blob.vercel-storage.com/profile_1755462555430_HanSooyoung.png"}
+                            alt="Profile photo"
+                            width={350}
+                            height={350}
+                            className="object-cover w-full h-full"
+                            priority
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* Services Section */}
+          {!isServicesEmpty && (
+            <section id="services" className="py-20">
+              <div className="container mx-auto px-4">
+                <h2 className={`section-title text-3xl font-bold text-center ${getThemeClass('', 'dark-title', 'light-title')}`}>
+                  {t.servicesTitle}
+                </h2>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
+                  {Array.isArray(servicesData?.servicesList) && servicesData.servicesList.length > 0 ? (
+                    servicesData.servicesList.map((service, index) => {
+                      const title = service.title?.[currentLang] || service.title?.en || service.title?.fr || service.title?.ar;
+                      const description = service.description?.[currentLang] || service.description?.en || service.description?.fr || service.description?.ar;
+
+                      if (!title) return null;
+
+                      return (
+                        <Card
+                          key={index}
+                          className={`portfolio-card fade-in delay-${(index % 3) * 100} ${getThemeClass('', 'dark-card', 'light-card')}`}
+                        >
+                          <CardContent className="p-6">
+                            <div className="flex justify-between items-start mb-4">
+                              <span className="text-2xl font-bold opacity-70">0{index + 1}</span>
+                              <ArrowUpRight size={20} className={isDarkMode ? 'text-purple-300' : 'text-purple-600'} />
+                            </div>
+                            <h3 className="text-xl font-semibold mb-3">{title}</h3>
+                            {description && <p className="opacity-80">{description}</p>}
+                          </CardContent>
+                        </Card>
+                      );
+                    })
+                  ) : (
+                    <p>No services available</p>
+                  )}
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* Experience & Education Section */}
+          {!isJourneyDataEmpty && (
+            <section id="experience" className="py-20">
+              <div className="container mx-auto px-4">
+                <h2 className={`section-title text-3xl font-bold text-center ${getThemeClass('', 'dark-title', 'light-title')}`}>
+                  {t.journeyTitle}
+                </h2>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-12">
+                  {educationData?.education?.length > 0 && (
+                    <div>
+                      <h3 className={`text-xl font-semibold mb-8 flex items-center ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                        <GraduationCap size={24} className="mr-3" />
+                        {currentLang === "fr" ? "Formation" : currentLang === "en" ? "Education" : "التعليم"}
+                      </h3>
+                      <div className="relative">
+                        <div className={`absolute left-6 top-0 bottom-0 w-0.5 ${isDarkMode ? 'bg-purple-800' : 'bg-purple-200'}`}></div>
+                        {educationData?.education && [...educationData.education].reverse().map((event, index) => (
+                          <div key={index} className="relative pl-20 pb-10">
+                            <div className={`absolute left-6 w-4 h-4 rounded-full -translate-x-1/2 ${isDarkMode 
+                              ? 'bg-gradient-to-r from-[#ff9acb] to-[#a67cff]' 
+                              : 'bg-gradient-to-r from-[#f6a5c0] to-[#b76e79]'}`}></div>
+                            <p className={`text-sm mb-1 ${isDarkMode ? 'text-purple-300' : 'text-purple-600'}`}>
+                              {event.year?.[currentLang]}
+                            </p>
+                            <h4 className={`text-lg font-semibold mb-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                              {event.title?.[currentLang]}
+                            </h4>
+                            <p className={`font-medium mb-2 ${isDarkMode ? 'text-purple-300' : 'text-purple-600'}`}>
+                              {event.institution?.[currentLang]}
+                            </p>
+                            {event.description && (
+                              <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
+                                {event.description?.[currentLang]}
+                              </p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {educationData.experience?.length > 0 && (
+                    <div>
+                      <h3 className={`text-xl font-semibold mb-8 flex items-center ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                        <Briefcase size={24} className="mr-3" />
+                        {currentLang === "fr" ? "Expérience" : currentLang === "en" ? "Experience" : "الخبرة"}
+                      </h3>
+                      <div className="relative">
+                        <div className={`absolute left-6 top-0 bottom-0 w-0.5 ${isDarkMode ? 'bg-purple-800' : 'bg-purple-200'}`}></div>
+                        {educationData?.experience && [...educationData.experience].reverse().map((event, index) => (
+                          <div key={index} className="relative pl-20 pb-10">
+                            <div className={`absolute left-6 w-4 h-4 rounded-full -translate-x-1/2 ${isDarkMode 
+                              ? 'bg-gradient-to-r from-[#ff9acb] to-[#a67cff]' 
+                              : 'bg-gradient-to-r from-[#f6a5c0] to-[#b76e79]'}`}></div>
+                            <div className="flex items-center mb-1">
+                              <p className={`text-sm mr-3 ${isDarkMode ? 'text-purple-300' : 'text-purple-600'}`}>
+                                {event.year?.[currentLang]}
+                              </p>
+                              {event.duration && (
+                                <Badge className={isDarkMode 
+                                  ? 'bg-purple-900/30 text-purple-300 border-purple-700' 
+                                  : 'bg-purple-100 text-purple-600 border-purple-200'}>
+                                  {event.duration}
+                                </Badge>
+                              )}
+                            </div>
+                            <h4 className={`text-lg font-semibold mb-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                              {event.title?.[currentLang]}
+                            </h4>
+                            <p className={`font-medium mb-2 ${isDarkMode ? 'text-purple-300' : 'text-purple-600'}`}>
+                              {event.institution?.[currentLang]}
+                            </p>
+                            {event.description && (
+                              <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
+                                {event.description?.[currentLang]}
+                              </p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* Skills Section */}
+          {!isSkillsDataEmpty && (
+            <section id="skills" className="py-20">
+              <div className="container mx-auto px-4">
+                <h2 className={`section-title text-3xl font-bold text-center ${getThemeClass('', 'dark-title', 'light-title')}`}>
+                  {t.skillsTitle}
+                </h2>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
+                  {skillsData?.skills?.map((category, catIndex) => {
+                    const CategoryIcon = getIcon(category.skillicon);
+
+                    return (
+                      <div key={catIndex} className={`p-6 rounded-xl ${isDarkMode 
+                        ? 'bg-[#1a103d] border border-purple-800/30' 
+                        : 'bg-white border border-gray-200'}`}>
+                        <h3 className={`text-xl font-semibold mb-6 flex items-center ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                          {CategoryIcon && (
+                            <CategoryIcon size={20} className="mr-3" />
+                          )}
+                          {category.title?.[currentLang]}
+                        </h3>
+
+                        {category.items.length > 0 ? (
+                          <div className="space-y-4">
+                            {category.items.map((skill, skillIndex) => {
+                              const SkillIcon = getIcon(skill.icon);
+
+                              return (
+                                <div key={skillIndex} className={`p-4 rounded-lg ${isDarkMode 
+                                  ? 'bg-[#0b0c1d] border border-purple-900/30' 
+                                  : 'bg-gray-50 border border-gray-200'}`}>
+                                  <div className="flex items-start">
+                                    {SkillIcon && (
+                                      <SkillIcon size={18} className={`mt-1 mr-3 ${isDarkMode ? 'text-purple-400' : 'text-purple-500'}`} />
+                                    )}
+                                    <div className="flex-1">
+                                      <h4 className={`font-medium mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                                        {skill.name?.[currentLang]}
+                                      </h4>
+                                      {skill.examples?.length > 0 && (
+                                        <ul className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                          {skill.examples.map((ex, exIndex) => (
+                                            <li key={exIndex} className="mb-1 last:mb-0">• {ex?.[currentLang]}</li>
+                                          ))}
+                                        </ul>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>No skills listed.</p>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* Projects Section */}
+          {!isProjectsEmpty && (
+            <section id="projects" className="py-20">
+              <div className="container mx-auto px-4">
+                <h2 className={`section-title text-3xl font-bold text-center ${getThemeClass('', 'dark-title', 'light-title')}`}>
+                  {t.myProjects}
+                </h2>
+
+                {projetsLoading ? (
+                  <div className="flex justify-center">
+                    <Loading />
+                  </div>
+                ) : projetsData?.projects?.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
+                    {projetsData.projects.map((project: any) => (
+                      <Card
+                        key={project._id}
+                        className={`portfolio-card ${getThemeClass('', 'dark-card', 'light-card')}`}
+                      >
+                        <div className="overflow-hidden">
+                          {project.image ? (
+                            <Image
+                              src={project.image}
+                              alt={`${project.title?.[currentLang] || project.title?.fr || project.title?.en || 'Project'}`}
+                              width={800}
+                              height={450}
+                              className="w-full h-48 object-cover transition-transform duration-500 hover:scale-110"
+                            />
+                          ) : (
+                            <div className={`w-full h-48 flex items-center justify-center ${isDarkMode 
+                              ? 'bg-purple-900/20' 
+                              : 'bg-purple-100'}`}>
+                              <span className={isDarkMode ? 'text-gray-400' : 'text-gray-500'}>
+                                {currentLang === 'fr' ? 'Pas d\'image disponible' :
+                                  currentLang === 'en' ? 'No image available' :
+                                    'لا توجد صورة متاحة'}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+
+                        <CardContent className="p-6">
+                          <h3 className={`text-xl font-semibold mb-3 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                            {project.title?.[currentLang] || project.title?.fr || project.title?.en || project.title?.ar}
+                          </h3>
+                          <p className={`mb-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                            {project.description?.[currentLang] || project.description?.fr || project.description?.en || project.description?.ar}
+                          </p>
+
+                          {project.techStack?.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mb-4">
+                              {project.techStack.map((tech: string, techIndex: number) => (
+                                <Badge
+                                  key={techIndex}
+                                  className={isDarkMode 
+                                    ? 'bg-purple-900/30 text-purple-300 border-purple-700' 
+                                    : 'bg-purple-100 text-purple-600 border-purple-200'}
+                                >
+                                  {tech}
+                                </Badge>
+                              ))}
+                            </div>
+                          )}
+
+                          {project.button && (
+                            <div className="mt-4">
+                              <Button
+                                onClick={() => window.open(project.button.link, "_blank")}
+                                className={`w-full font-medium ${isDarkMode 
+                                  ? 'bg-gradient-to-r from-[#ff9acb] to-[#a67cff] text-white hover:shadow-lg hover:shadow-purple-500/30' 
+                                  : 'bg-gradient-to-r from-[#f6a5c0] to-[#b76e79] text-white hover:shadow-lg hover:shadow-pink-300'}`}
+                              >
+                                <LinkIcon size={16} className="mr-2" />
+                                {project.button.label?.[currentLang] ||
+                                  project.button.label?.fr ||
+                                  project.button.label?.en ||
+                                  project.button.label?.ar ||
+                                  (currentLang === 'fr' ? 'Voir le projet' :
+                                    currentLang === 'en' ? 'View Project' :
+                                      'عرض المشروع')}
+                              </Button>
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
+                      {currentLang === 'fr' ? 'Aucun projet trouvé' :
+                        currentLang === 'en' ? 'No projects found' :
+                          'لم يتم العثور على مشاريع'}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
+
+           {/* About Section */}
+      {!isAboutDataEmpty && (
+        <section id="about" className="py-20">
+          <div className="container mx-auto px-4">
+            <div className={`rounded-2xl p-8 md:p-12 ${isDarkMode 
+              ? 'bg-[#1a103d] border border-purple-800/30' 
+              : 'bg-white border border-gray-200'}`}>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div>
+                  <h2 className={`text-3xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                    {t.aboutTitle}
+                    <span className={`block h-1 w-16 mt-4 rounded-full ${isDarkMode 
+                      ? 'bg-gradient-to-r from-[#ff9acb] to-[#a67cff]' 
+                      : 'bg-gradient-to-r from-[#f6a5c0] to-[#b76e79]'}`}></span>
+                  </h2>
+
+                  <p className={`text-lg mb-8 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    {aboutData.aboutDescription?.[currentLang]}
+                  </p>
+
+                  {aboutData.personalInfo && (
+                    <div className="space-y-4">
+                      {aboutData.personalInfo?.map((info, index) => {
+                        const IconComponent = getIcon(info.icon);
+                        return (
+                          <div key={index} className="flex items-start">
+                            {IconComponent && (
+                              <IconComponent size={20} className={`mt-1 mr-4 ${isDarkMode ? 'text-purple-400' : 'text-purple-500'}`} />
+                            )}
+                            <div>
+                              <p className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                                {info.label?.[currentLang]}
+                              </p>
+                              <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
+                                {info.value?.[currentLang]}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-8">
+                  {aboutData.languages && (
+                    <div>
+                      <h3 className={`text-xl font-semibold mb-6 flex items-center ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                        <Languages size={24} className="mr-3" />
+                        {aboutData.languages?.title?.[currentLang]}
+                      </h3>
+                      <div className="space-y-4">
+                        {aboutData.languages?.list?.map((lang, index) => {
+                          const levelKey = lang.level.toLowerCase();
+                          const levelText = aboutData.languages?.levels?.[levelKey]?.[currentLang] || '';
+
+                          return (
+                            <div key={index}>
+                              <div className="flex justify-between mb-2">
+                                <span className={isDarkMode ? 'text-gray-300' : 'text-gray-700'}>
+                                  {lang.name?.[currentLang]}
+                                </span>
+                                <span className={isDarkMode ? 'text-purple-300' : 'text-purple-600'}>
+                                  {levelText}
+                                </span>
+                              </div>
+                              <div className={`h-2 rounded-full overflow-hidden ${isDarkMode 
+                                ? 'bg-purple-900/30' 
+                                : 'bg-purple-100'}`}>
+                                <div 
+                                  className={`h-full rounded-full ${isDarkMode 
+                                    ? 'bg-gradient-to-r from-[#ff9acb] to-[#a67cff]' 
+                                    : 'bg-gradient-to-r from-[#f6a5c0] to-[#b76e79]'}`}
+                                  style={{ width: `${(lang.level === 'native' ? 100 : lang.level === 'fluent' ? 90 : lang.level === 'intermediate' ? 70 : 50)}%` }}
+                                ></div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {aboutData.interests && (
+                    <div>
+                      <h3 className={`text-xl font-semibold mb-6 flex items-center ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                        <Heart size={24} className="mr-3" />
+                        {t.interests}
+                      </h3>
+                      <div className="flex flex-wrap gap-3">
+                        {aboutData.interests?.map((interest, index) => {
+                          const IconComponent = getIcon(interest.icon);
+                          return (
+                            <Badge
+                              key={index}
+                              className={`py-2 px-4 ${isDarkMode 
+                                ? 'bg-purple-900/30 text-purple-300 border-purple-700' 
+                                : 'bg-purple-100 text-purple-600 border-purple-200'}`}
+                            >
+                              {IconComponent && (
+                                <IconComponent size={16} className="mr-2" />
+                              )}
+                              {interest.name?.[currentLang]}
+                            </Badge>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-          )}
-
-          {/* Interests */}
-          {aboutData.interests && (
-            <div>
-              <h3 className="text-xl sm:text-2xl font-medium mb-4 sm:mb-6 flex items-center gap-3">
-                <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-[rgb(var(--portfolio-gold))]" />
-                {t.interests}
-              </h3>
-              <div className="flex flex-wrap gap-3 sm:gap-4">
-                {aboutData.interests?.map((interest, index) => {
-                  const IconComponent = getIcon(interest.icon);
-                  return (
-                    <Badge
-                      key={index}
-                      className={`${isDarkMode ? "bg-gray-800 text-white border-gray-700" : "bg-gray-100 text-gray-900 border-gray-300"} border px-3 sm:px-4 py-1 sm:py-2 text-sm flex items-center gap-2`}
-                    >
-                      {IconComponent && (
-                        <IconComponent className="w-3 h-3" />
-                      )}
-                      {interest.name?.[currentLang]}
-                    </Badge>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  </section>
-)}
-
-{/* Contact Section */}
-{!isContactDataEmpty && (
-<section id="contact" className={`py-16 sm:py-20 px-4 sm:px-6 lg:px-8 ${themeClasses.sectionBg}`}>
-  <div className="container mx-auto max-w-4xl text-center">
-    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light mb-6 sm:mb-8">
-      {contactData.contactTitle?.[currentLang]}
-    </h2>
-    <p className={`${themeClasses.textSecondary} text-base sm:text-lg mb-10 sm:mb-12 max-w-2xl mx-auto`}>
-      {contactData.contactDescription?.[currentLang]}
-    </p>
-<div className="grid md:grid-cols-3 gap-6 sm:gap-8 mb-10 sm:mb-12">
-  {contactData.contactInfo?.map((info, index) => {
-    const IconComponent = getIcon(info.icon);
-    return (
-      <div key={index} className="text-center">
-        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#EFBF04] hover:bg-[#d6a904] rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
-          {IconComponent && (
-            <IconComponent className="w-5 h-5 sm:w-6 sm:h-6 text-black" />
-          )}
-        </div>
-        <h3 className="font-medium text-base sm:text-lg mb-1 sm:mb-2">
-          {info.label?.[currentLang]}
-        </h3>
-        <p className={`${themeClasses.textSecondary} text-sm sm:text-base`}>
-          {info.link ? (
-            <a
-              href={info.link}
-              target={info.link.startsWith("http") ? "_blank" : "_self"}
-              rel={info.link.startsWith("http") ? "noopener noreferrer" : ""}
-              className="hover:underline"
-            >
-              {typeof info.value === "object"
-                ? info.value[currentLang]
-                : info.value}
-            </a>
-          ) : (
-            typeof info.value === "object"
-              ? info.value[currentLang]
-              : info.value
-          )}
-        </p>
-      </div>
-    );
-  })}
-</div>
-
-    <a 
-      href={contactData.contactButton?.link || "#contact-form"}
-      className="inline-flex items-center bg-[#EFBF04] hover:bg-[#d6a904] text-black font-medium px-8 py-3 rounded-full text-base sm:text-lg transition-colors"
-    >
-      <Send className={`w-5 h-5 ${currentLang === 'ar' ? 'ml-2' : 'mr-2'}`} />
-      {contactData.contactButton?.startProject?.[currentLang]}
-    </a>
-  </div>
-</section>)}
-
-      {/* Footer */}
-      <footer className={`py-6 sm:py-8 px-4 sm:px-6 lg:px-8 border-t ${themeClasses.headerBorder}`}>
-        <div className="container mx-auto max-w-7xl">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center space-x-3 mb-4 md:mb-0">
-              <span className={themeClasses.textSecondary}>© 2025 {usernameData?.[currentLang]}</span>
-            </div>
-            <p className={`${themeClasses.textMuted} text-xs sm:text-sm`}>{t.rightsReserved}</p>
           </div>
-        </div>
-      </footer>
-    </div>
-  )
+        </section>
+      )}
+
+          {/* Contact Section */}
+          {!isContactDataEmpty && (
+            <section id="contact" className="py-20">
+              <div className="container mx-auto px-4">
+                <div className={`rounded-2xl p-8 md:p-12 text-center ${isDarkMode 
+                  ? 'bg-[#1a103d] border border-purple-800/30' 
+                  : 'bg-white border border-gray-200'}`}>
+                  <h2 className={`text-3xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                    {contactData.contactTitle?.[currentLang]}
+                  </h2>
+                  <p className={`text-xl mb-12 max-w-2xl mx-auto ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    {contactData.contactDescription?.[currentLang]}
+                  </p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                    {contactData.contactInfo?.map((info, index) => {
+                      const IconComponent = getIcon(info.icon);
+                      return (
+                        <div key={index} className={`p-6 rounded-xl ${isDarkMode 
+                          ? 'bg-[#0b0c1d] border border-purple-900/30' 
+                          : 'bg-gray-50 border border-gray-200'}`}>
+                          <div className={`inline-flex items-center justify-center w-12 h-12 rounded-full mb-4 ${isDarkMode 
+                            ? 'bg-purple-900/30 text-purple-300' 
+                            : 'bg-purple-100 text-purple-600'}`}>
+                            {IconComponent && (
+                              <IconComponent size={20} />
+                            )}
+                          </div>
+                          <h3 className={`font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                            {info.label?.[currentLang]}
+                          </h3>
+                          <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
+                            {info.link ? (
+                              <a
+                                href={info.link}
+                                target={info.link.startsWith("http") ? "_blank" : "_self"}
+                                rel={info.link.startsWith("http") ? "noopener noreferrer" : ""}
+                                className={`hover:underline ${isDarkMode ? 'text-purple-300' : 'text-purple-600'}`}
+                              >
+                                {typeof info.value === "object"
+                                  ? info.value[currentLang]
+                                  : info.value}
+                              </a>
+                            ) : (
+                              typeof info.value === "object"
+                                ? info.value[currentLang]
+                                : info.value
+                            )}
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <a
+                    href={contactData.contactButton?.link || "#contact-form"}
+                    className={`inline-flex items-center px-8 py-4 rounded-full font-medium ${isDarkMode 
+                      ? 'bg-gradient-to-r from-[#ff9acb] to-[#a67cff] text-white hover:shadow-lg hover:shadow-purple-500/30' 
+                      : 'bg-gradient-to-r from-[#f6a5c0] to-[#b76e79] text-white hover:shadow-lg hover:shadow-pink-300'}`}
+                  >
+                    <Send size={18} className="mr-2" />
+                    {contactData.contactButton?.startProject?.[currentLang]}
+                  </a>
+                </div>
+              </div>
+            </section>
+          )}
+        </main>
+
+        {/* Footer */}
+        <footer className={`py-8 ${isDarkMode 
+          ? 'bg-[#0b0c1d] border-t border-purple-900/30' 
+          : 'bg-gray-50 border-t border-gray-200'}`}>
+          <div className="container mx-auto px-4">
+            <div className="flex flex-col md:flex-row justify-between items-center">
+              <div className="mb-4 md:mb-0">
+                <span className={`font-medium ${isDarkMode ? 'text-purple-300' : 'text-purple-600'}`}>
+                  © 2025 {usernameData?.[currentLang]}
+                </span>
+              </div>
+              <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>{t.rightsReserved}</p>
+            </div>
+          </div>
+        </footer>
+      </div>  
+    </>
+  );
 }

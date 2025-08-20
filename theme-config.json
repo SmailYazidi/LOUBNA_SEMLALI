@@ -1,0 +1,616 @@
+{
+  "themes": {
+    "default": {
+      "name": "Default Portfolio Theme",
+      "default": true,
+      "darkMode": {
+        "enabled": true,
+        "colors": {
+          "background": "bg-gradient-to-br from-[#0f0f23] via-[#1a1a3a] to-[#2d1a4c]",
+          "text": "text-white",
+          "textSecondary": "text-purple-200",
+          "textMuted": "text-purple-300/70",
+          "cardBg": "bg-[#1a1a3a]/80 backdrop-blur-sm border border-purple-500/20",
+          "cardBorder": "border-purple-500/30",
+          "sectionBg": "bg-[#1a1a3a]/40",
+          "dropdownBg": "bg-[#1a1a3a] border border-purple-500/30",
+          "dropdownBorder": "border-purple-500/30",
+          "accentGold": "text-[#ff6ec7]",
+          "accentGoldBg": "bg-gradient-to-r from-[#ff6ec7] to-[#9b59b6]",
+          "accentGoldBorder": "border-[#ff6ec7]",
+          "accentGoldHover": "hover:bg-gradient-to-r hover:from-[#ff8cd9] hover:to-[#ab74c9]",
+          "timelineLine": "bg-gradient-to-b from-[#ff6ec7] to-[#9b59b6]",
+          "progressBarBg": "bg-purple-900/50",
+          "badgeDefault": "bg-purple-900/60 text-purple-100 border-purple-700/50",
+          "badgeAccent": "bg-gradient-to-r from-[#ff6ec7] to-[#9b59b6] text-white",
+          "inputBg": "bg-purple-900/40 text-white border border-purple-500/30 focus:ring-2 focus:ring-[#ff6ec7]",
+          "placeholderBg": "bg-purple-900/30",
+          "headerBorder": "border-purple-500/20",
+          "headerBg": "bg-[#0f0f23]/90 backdrop-blur-md"
+        },
+        "header": {
+          "position": "fixed top-0 left-0 right-0 z-50",
+          "background": "bg-[#0f0f23]/90 backdrop-blur-md",
+          "backdrop": "backdrop-blur-md",
+          "border": "border-b border-purple-500/20",
+          "shadow": "shadow-lg shadow-purple-500/10",
+          "container": "container mx-auto px-4 sm:px-6 lg:px-8",
+          "height": "h-20",
+          "flexContainer": "flex items-center justify-between h-20",
+          "logo": {
+            "container": "flex items-center space-x-3 cursor-pointer",
+            "text": "text-base sm:text-xl font-medium bg-gradient-to-r from-[#ff6ec7] to-[#9b59b6] bg-clip-text text-transparent"
+          },
+          "navigation": {
+            "desktop": "hidden lg:flex items-center custom-nav-spacing",
+            "mobile": "lg:hidden py-6 border-t border-purple-500/20",
+            "mobileNav": "flex flex-col space-y-2",
+            "textColor": "text-purple-200",
+            "hoverColor": "hover:text-[#ff6ec7]",
+            "activeColor": "text-[#ff6ec7]",
+            "buttonClass": "text-sm font-medium transition-colors",
+            "mobileButton": "text-left px-4 py-2 text-sm font-medium transition-colors",
+            "mobileActiveButton": "bg-purple-900/40"
+          },
+          "controls": {
+            "desktop": "hidden lg:flex items-center space-x-3",
+            "mobile": "flex lg:hidden items-center space-x-2",
+            "langMenu": "relative language-menu",
+            "langButton": "p-2 hover:bg-gradient-to-r hover:from-[#ff6ec7] hover:to-[#9b59b6] flex items-center gap-2 rounded-md",
+            "langDropdown": "absolute top-full right-0 mt-2 bg-[#1a1a3a] border-purple-500/30 border rounded-lg shadow-lg py-2 min-w-[140px] z-50",
+            "langOption": "w-full px-4 py-2 text-left text-sm flex items-center gap-3 hover:bg-gradient-to-r hover:from-[#ff6ec7] hover:to-[#9b59b6] transition-colors",
+            "themeButton": "p-2 hover:bg-gradient-to-r hover:from-[#ff6ec7] hover:to-[#9b59b6] rounded-md",
+            "searchButton": "p-2 hover:bg-gradient-to-r hover:from-[#ff6ec7] hover:to-[#9b59b6] rounded-md",
+            "menuButton": "p-2",
+            "hireMeButton": "bg-gradient-to-r from-[#ff6ec7] to-[#9b59b6] hover:from-[#ff8cd9] hover:to-[#ab74c9] text-white font-medium px-6 py-2 rounded-full",
+            "hireMeMobile": "w-full bg-gradient-to-r from-[#ff6ec7] to-[#9b59b6] hover:from-[#ff8cd9] hover:to-[#ab74c9] text-white font-medium py-2 rounded-full"
+          },
+          "search": {
+            "container": "relative z-50 top-full left-0 right-0 py-4 px-4 sm:px-6 lg:px-8 bg-[#0f0f23]/95 border-t border-purple-500/20 shadow-md",
+            "inputWrapper": "relative",
+            "input": "w-full p-3 pr-10 rounded-md bg-purple-900/40 text-white border border-purple-500/30 focus:outline-none focus:ring-2 focus:ring-[#ff6ec7]",
+            "clearButton": "absolute top-1/2 transform -translate-y-1/2 text-purple-300 hover:text-white"
+          }
+        },
+        "sections": {
+          "hero": {
+            "container": "pt-32 pb-20 px-4 sm:px-6 lg:px-8",
+            "innerContainer": "container mx-auto max-w-7xl",
+            "grid": "grid lg:grid-cols-2 gap-12 lg:gap-16 items-center",
+            "content": {
+              "wrapper": "space-y-6 sm:space-y-8 text-center lg:text-left",
+              "specialist": {
+                "container": "flex items-center justify-center gap-3 lg:justify-start",
+                "icon": "w-5 h-5 text-[#ff6ec7] fill-current",
+                "text": "text-purple-200 text-sm font-medium"
+              },
+              "title": "text-4xl sm:text-5xl lg:text-6xl font-light leading-tight",
+              "description": "text-purple-200 text-base sm:text-lg leading-relaxed max-w-lg mx-auto lg:mx-0",
+              "buttons": {
+                "container": "flex flex-col sm:flex-row gap-4 justify-center lg:justify-start",
+                "primary": "bg-gradient-to-r from-[#ff6ec7] to-[#9b59b6] hover:from-[#ff8cd9] hover:to-[#ab74c9] text-white font-medium px-8 py-3 rounded-full",
+                "secondary": "text-white border-purple-500/40 hover:border-[#ff6ec7] hover:text-[#ff6ec7] hover:bg-transparent font-medium px-8 py-3 rounded-full border flex items-center cursor-pointer"
+              }
+            },
+            "image": {
+              "container": "relative flex justify-center mt-8 lg:mt-0 lg:justify-end",
+              "wrapper": "w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 rounded-full bg-gradient-to-br from-[#1a1a3a] to-[#2d1a4c] flex items-center justify-center overflow-hidden border-2 border-[#ff6ec7] shadow-lg shadow-[#ff6ec7]/30",
+              "image": "w-full h-full object-cover"
+            }
+          },
+          "services": {
+            "container": "py-16 sm:py-20 px-4 sm:px-6 lg:px-8",
+            "innerContainer": "container mx-auto max-w-7xl",
+            "title": "text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4",
+            "titleUnderline": "absolute bottom-0 w-20 h-1 bg-gradient-to-r from-[#ff6ec7] to-[#9b59b6] left-0",
+            "grid": "grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8",
+            "card": {
+              "container": "bg-[#1a1a3a]/80 backdrop-blur-sm border border-purple-500/20 p-6 sm:p-8 hover:border-[#ff6ec7] transition-colors group shadow-lg hover:shadow-[#ff6ec7]/10",
+              "content": "p-0",
+              "header": "flex items-start justify-between mb-4 sm:mb-6",
+              "number": "text-purple-300/70 text-sm text-[#ff6ec7]",
+              "arrow": "w-5 h-5 text-purple-300/70 group-hover:text-[#ff6ec7] transition-colors",
+              "title": "text-lg sm:text-xl font-medium mb-3 sm:mb-4",
+              "description": "text-purple-200 text-sm sm:text-base leading-relaxed"
+            }
+          },
+          "experience": {
+            "container": "py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-[#1a1a3a]/40",
+            "innerContainer": "container mx-auto max-w-7xl",
+            "title": "text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4",
+            "titleUnderline": "absolute bottom-0 w-20 h-1 bg-gradient-to-r from-[#ff6ec7] to-[#9b59b6] left-0",
+            "grid": "grid md:grid-cols-2 gap-12 md:gap-8",
+            "column": {
+              "title": "text-xl sm:text-2xl font-medium mb-6 sm:mb-8 flex items-center gap-3",
+              "icon": "w-5 h-5 sm:w-6 sm:h-6 text-[#ff6ec7]",
+              "timeline": "space-y-8 relative",
+              "item": {
+                "container": "relative pl-6",
+                "line": "absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-[#ff6ec7] to-[#9b59b6]",
+                "dot": "absolute -left-2 top-0 w-4 h-4 rounded-full bg-[#ff6ec7] ring-2 ring-[#9b59b6]",
+                "year": "text-purple-200 font-medium text-sm mb-1",
+                "title": "text-base sm:text-lg font-medium mb-1",
+                "institution": "text-purple-200 text-sm mb-1",
+                "description": "text-purple-300/70 text-xs mt-2",
+                "badge": "bg-gradient-to-r from-[#ff6ec7] to-[#9b59b6] text-white text-xs"
+              }
+            }
+          },
+          "skills": {
+            "container": "py-16 sm:py-20 px-4 sm:px-6 lg:px-8",
+            "innerContainer": "container mx-auto max-w-7xl",
+            "title": "text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4",
+            "titleUnderline": "absolute bottom-0 w-20 h-1 bg-gradient-to-r from-[#ff6ec7] to-[#9b59b6] left-0",
+            "wrapper": "space-y-10 sm:space-y-12",
+            "category": {
+              "title": "text-xl sm:text-2xl font-medium mb-6 sm:mb-8 flex items-center gap-3",
+              "icon": "w-5 h-5 sm:w-6 sm:h-6 text-[#ff6ec7]",
+              "grid": "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6",
+              "card": {
+                "container": "bg-[#1a1a3a]/80 backdrop-blur-sm border border-purple-500/20 p-5 sm:p-6 text-center transition-all duration-300 hover:border-[#ff6ec7] hover:shadow-lg hover:shadow-[#ff6ec7]/10",
+                "content": "p-0 flex flex-col items-center",
+                "icon": "w-7 h-7 sm:w-8 sm:h-8 text-[#ff6ec7] mb-2 sm:mb-3",
+                "title": "font-medium text-base sm:text-lg mb-1",
+                "examples": "text-purple-300/70 text-xs sm:text-sm list-disc pl-4"
+              }
+            }
+          },
+          "projects": {
+            "container": "py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-[#1a1a3a]/40",
+            "innerContainer": "container mx-auto max-w-7xl",
+            "title": "text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4",
+            "titleUnderline": "absolute bottom-0 w-20 h-1 bg-gradient-to-r from-[#ff6ec7] to-[#9b59b6] left-0",
+            "grid": "grid md:grid-cols-2 gap-6 sm:gap-8",
+            "card": {
+              "container": "bg-[#1a1a3a]/80 backdrop-blur-sm border border-purple-500/20 overflow-hidden transition-all duration-300 hover:border-[#ff6ec7] hover:shadow-lg hover:shadow-[#ff6ec7]/10",
+              "image": {
+                "container": "relative h-48 sm:h-56 overflow-hidden",
+                "image": "absolute inset-0 w-full h-full object-cover",
+                "placeholder": "absolute inset-0 bg-purple-900/20 flex items-center justify-center",
+                "placeholderText": "text-purple-300/70"
+              },
+              "content": {
+                "container": "p-6",
+                "title": "text-xl sm:text-2xl font-medium mb-2 sm:mb-3",
+                "description": "text-purple-200 text-sm sm:text-base leading-relaxed mb-4 sm:mb-6",
+                "techStack": {
+                  "container": "flex flex-wrap gap-2 mb-4 sm:mb-6",
+                  "badge": "bg-purple-900/60 text-purple-100 border-purple-700/50 border px-3 py-1 text-xs"
+                },
+                "button": {
+                  "container": "flex gap-3 sm:gap-4",
+                  "button": "border-purple-500/40 text-white hover:bg-purple-900/40 flex items-center gap-2 text-sm sm:text-base",
+                  "icon": "w-4 h-4"
+                }
+              }
+            },
+            "emptyState": {
+              "container": "text-center py-12",
+              "text": "text-purple-200 text-lg"
+            }
+          },
+          "about": {
+            "container": "py-16 sm:py-20 px-4 sm:px-6 lg:px-8",
+            "innerContainer": "container mx-auto max-w-7xl",
+            "grid": "grid lg:grid-cols-2 gap-12 lg:gap-16",
+            "leftColumn": {
+              "title": "text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4",
+              "titleUnderline": "absolute bottom-0 w-20 h-1 bg-gradient-to-r from-[#ff6ec7] to-[#9b59b6] left-0",
+              "description": "text-purple-200 text-base sm:text-lg leading-relaxed mb-6 sm:mb-8",
+              "personalInfo": {
+                "container": "grid grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8",
+                "item": {
+                  "container": "flex items-start gap-2",
+                  "icon": "w-4 h-4 mt-0.5 text-[#ff6ec7]",
+                  "label": "text-purple-300/70 text-xs sm:text-sm mb-1",
+                  "value": "font-medium text-sm sm:text-base"
+                }
+              }
+            },
+            "rightColumn": {
+              "container": "space-y-8",
+              "languages": {
+                "title": "text-xl sm:text-2xl font-medium mb-4 sm:mb-6 flex items-center gap-3",
+                "icon": "w-5 h-5 sm:w-6 sm:h-6 text-[#ff6ec7]",
+                "list": "space-y-3 sm:space-y-4",
+                "item": {
+                  "header": "flex justify-between mb-1 sm:mb-2",
+                  "name": "font-medium text-sm sm:text-base capitalize",
+                  "level": "text-purple-200 text-xs sm:text-sm",
+                  "progressBg": "w-full bg-purple-900/50 rounded-full h-1",
+                  "progress": "bg-gradient-to-r from-[#ff6ec7] to-[#9b59b6] h-1 rounded-full transition-all duration-1000"
+                }
+              },
+              "interests": {
+                "title": "text-xl sm:text-2xl font-medium mb-4 sm:mb-6 flex items-center gap-3",
+                "icon": "w-5 h-5 sm:w-6 sm:h-6 text-[#ff6ec7]",
+                "container": "flex flex-wrap gap-3 sm:gap-4",
+                "badge": {
+                  "container": "bg-purple-900/60 text-purple-100 border-purple-700/50 border px-3 sm:px-4 py-1 sm:py-2 text-sm flex items-center gap-2",
+                  "icon": "w-3 h-3"
+                }
+              }
+            }
+          },
+          "contact": {
+            "container": "py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-[#1a1a3a]/40",
+            "innerContainer": "container mx-auto max-w-4xl text-center",
+            "title": "text-3xl sm:text-4xl lg:text-5xl font-light mb-6 sm:mb-8",
+            "description": "text-purple-200 text-base sm:text-lg mb-10 sm:mb-12 max-w-2xl mx-auto",
+            "grid": "grid md:grid-cols-3 gap-6 sm:gap-8 mb-10 sm:mb-12",
+            "contactItem": {
+              "container": "text-center",
+              "iconWrapper": "w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-[#ff6ec7] to-[#9b59b6] hover:from-[#ff8cd9] hover:to-[#ab74c9] rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4",
+              "icon": "w-5 h-5 sm:w-6 sm:h-6 text-white",
+              "title": "font-medium text-base sm:text-lg mb-1 sm:mb-2",
+              "value": "text-purple-200 text-sm sm:text-base",
+              "link": "hover:underline hover:text-[#ff6ec7]"
+            },
+            "button": {
+              "container": "inline-flex items-center bg-gradient-to-r from-[#ff6ec7] to-[#9b59b6] hover:from-[#ff8cd9] hover:to-[#ab74c9] text-white font-medium px-8 py-3 rounded-full text-base sm:text-lg transition-colors",
+              "icon": "w-5 h-5"
+            }
+          }
+        },
+        "footer": {
+          "container": "py-6 sm:py-8 px-4 sm:px-6 lg:px-8 border-t border-purple-500/20",
+          "innerContainer": "container mx-auto max-w-7xl",
+          "content": "flex flex-col md:flex-row justify-between items-center",
+          "left": "flex items-center space-x-3 mb-4 md:mb-0",
+          "copyright": "text-purple-200",
+          "rights": "text-purple-300/70 text-xs sm:text-sm"
+        },
+        "rtl": {
+          "textAlign": "lg:text-right",
+          "justify": "lg:justify-end",
+          "margin": "lg:mr-0",
+          "padding": "pr-6",
+          "position": "right-0",
+          "dot": "-right-2",
+          "examples": "pr-4",
+          "clearButton": "left-3",
+          "icon": "ml-2",
+          "titleUnderline": "right-0"
+        }
+      },
+      "whiteMode": {
+        "enabled": true,
+        "colors": {
+          "background": "bg-gradient-to-br from-[#faf7f5] via-[#fdf2f8] to-[#fef1f5]",
+          "text": "text-gray-800",
+          "textSecondary": "text-rose-700",
+          "textMuted": "text-rose-600/80",
+          "cardBg": "bg-white/80 backdrop-blur-sm border border-rose-200",
+          "cardBorder": "border-rose-200",
+          "sectionBg": "bg-white/50",
+          "dropdownBg": "bg-white border border-rose-200",
+          "dropdownBorder": "border-rose-200",
+          "accentGold": "text-rose-500",
+          "accentGoldBg": "bg-gradient-to-r from-rose-400 to-rose-300",
+          "accentGoldBorder": "border-rose-400",
+          "accentGoldHover": "hover:bg-gradient-to-r hover:from-rose-500 hover:to-rose-400",
+          "timelineLine": "bg-gradient-to-b from-rose-400 to-rose-300",
+          "progressBarBg": "bg-rose-100",
+          "badgeDefault": "bg-rose-100 text-rose-800 border-rose-200",
+          "badgeAccent": "bg-gradient-to-r from-rose-400 to-rose-300 text-white",
+          "inputBg": "bg-rose-50 text-gray-800 border border-rose-200 focus:ring-2 focus:ring-rose-400",
+          "placeholderBg": "bg-rose-100",
+          "headerBorder": "border-rose-200",
+          "headerBg": "bg-white/95 backdrop-blur-md"
+        },
+        "header": {
+          "position": "fixed top-0 left-0 right-0 z-50",
+          "background": "bg-white/95 backdrop-blur-md",
+          "backdrop": "backdrop-blur-md",
+          "border": "border-b border-rose-200",
+          "shadow": "shadow-sm shadow-rose-100",
+          "container": "container mx-auto px-4 sm:px-6 lg:px-8",
+          "height": "h-20",
+          "flexContainer": "flex items-center justify-between h-20",
+          "logo": {
+            "container": "flex items-center space-x-3 cursor-pointer",
+            "text": "text-base sm:text-xl font-medium bg-gradient-to-r from-rose-500 to-rose-400 bg-clip-text text-transparent"
+          },
+          "navigation": {
+            "desktop": "hidden lg:flex items-center custom-nav-spacing",
+            "mobile": "lg:hidden py-6 border-t border-rose-200",
+            "mobileNav": "flex flex-col space-y-2",
+            "textColor": "text-rose-700",
+            "hoverColor": "hover:text-rose-500",
+            "activeColor": "text-rose-500",
+            "buttonClass": "text-sm font-medium transition-colors",
+            "mobileButton": "text-left px-4 py-2 text-sm font-medium transition-colors",
+            "mobileActiveButton": "bg-rose-100"
+          },
+          "controls": {
+            "desktop": "hidden lg:flex items-center space-x-3",
+            "mobile": "flex lg:hidden items-center space-x-2",
+            "langMenu": "relative language-menu",
+            "langButton": "p-2 hover:bg-gradient-to-r hover:from-rose-400 hover:to-rose-300 flex items-center gap-2 rounded-md",
+            "langDropdown": "absolute top-full right-0 mt-2 bg-white border-rose-200 border rounded-lg shadow-lg py-2 min-w-[140px] z-50",
+            "langOption": "w-full px-4 py-2 text-left text-sm flex items-center gap-3 hover:bg-gradient-to-r hover:from-rose-400 hover:to-rose-300 transition-colors",
+            "themeButton": "p-2 hover:bg-gradient-to-r hover:from-rose-400 hover:to-rose-300 rounded-md",
+            "searchButton": "p-2 hover:bg-gradient-to-r hover:from-rose-400 hover:to-rose-300 rounded-md",
+            "menuButton": "p-2",
+            "hireMeButton": "bg-gradient-to-r from-rose-500 to-rose-400 hover:from-rose-600 hover:to-rose-500 text-white font-medium px-6 py-2 rounded-full",
+            "hireMeMobile": "w-full bg-gradient-to-r from-rose-500 to-rose-400 hover:from-rose-600 hover:to-rose-500 text-white font-medium py-2 rounded-full"
+          },
+          "search": {
+            "container": "relative z-50 top-full left-0 right-0 py-4 px-4 sm:px-6 lg:px-8 bg-white/95 border-t border-rose-200 shadow-md",
+            "inputWrapper": "relative",
+            "input": "w-full p-3 pr-10 rounded-md bg-rose-50 text-gray-800 border border-rose-200 focus:outline-none focus:ring-2 focus:ring-rose-400",
+            "clearButton": "absolute top-1/2 transform -translate-y-1/2 text-rose-500 hover:text-rose-700"
+          }
+        },
+        "sections": {
+          "hero": {
+            "container": "pt-32 pb-20 px-4 sm:px-6 lg:px-8",
+            "innerContainer": "container mx-auto max-w-7xl",
+            "grid": "grid lg:grid-cols-2 gap-12 lg:gap-16 items-center",
+            "content": {
+              "wrapper": "space-y-6 sm:space-y-8 text-center lg:text-left",
+              "specialist": {
+                "container": "flex items-center justify-center gap-3 lg:justify-start",
+                "icon": "w-5 h-5 text-rose-500 fill-current",
+                "text": "text-rose-700 text-sm font-medium"
+              },
+              "title": "text-4xl sm:text-5xl lg:text-6xl font-light leading-tight",
+              "description": "text-rose-700 text-base sm:text-lg leading-relaxed max-w-lg mx-auto lg:mx-0",
+              "buttons": {
+                "container": "flex flex-col sm:flex-row gap-4 justify-center lg:justify-start",
+                "primary": "bg-gradient-to-r from-rose-500 to-rose-400 hover:from-rose-600 hover:to-rose-500 text-white font-medium px-8 py-3 rounded-full",
+                "secondary": "text-gray-800 border-rose-200 hover:border-rose-400 hover:text-rose-500 hover:bg-transparent font-medium px-8 py-3 rounded-full border flex items-center cursor-pointer"
+              }
+            },
+            "image": {
+              "container": "relative flex justify-center mt-8 lg:mt-0 lg:justify-end",
+              "wrapper": "w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 rounded-full bg-gradient-to-br from-rose-100 to-rose-50 flex items-center justify-center overflow-hidden border-2 border-rose-300 shadow-lg shadow-rose-200",
+              "image": "w-full h-full object-cover"
+            }
+          },
+          "services": {
+            "container": "py-16 sm:py-20 px-4 sm:px-6 lg:px-8",
+            "innerContainer": "container mx-auto max-w-7xl",
+            "title": "text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4",
+            "titleUnderline": "absolute bottom-0 w-20 h-1 bg-gradient-to-r from-rose-400 to-rose-300 left-0",
+            "grid": "grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8",
+            "card": {
+              "container": "bg-white/80 backdrop-blur-sm border border-rose-200 p-6 sm:p-8 hover:border-rose-400 transition-colors group shadow-lg hover:shadow-rose-100",
+              "content": "p-0",
+              "header": "flex items-start justify-between mb-4 sm:mb-6",
+              "number": "text-rose-600/80 text-sm text-rose-500",
+              "arrow": "w-5 h-5 text-rose-600/80 group-hover:text-rose-500 transition-colors",
+              "title": "text-lg sm:text-xl font-medium mb-3 sm:mb-4",
+              "description": "text-rose-700 text-sm sm:text-base leading-relaxed"
+            }
+          },
+          "experience": {
+            "container": "py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-white/50",
+            "innerContainer": "container mx-auto max-w-7xl",
+            "title": "text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4",
+            "titleUnderline": "absolute bottom-0 w-20 h-1 bg-gradient-to-r from-rose-400 to-rose-300 left-0",
+            "grid": "grid md:grid-cols-2 gap-12 md:gap-8",
+            "column": {
+              "title": "text-xl sm:text-2xl font-medium mb-6 sm:mb-8 flex items-center gap-3",
+              "icon": "w-5 h-5 sm:w-6 sm:h-6 text-rose-500",
+              "timeline": "space-y-8 relative",
+              "item": {
+                "container": "relative pl-6",
+                "line": "absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-rose-400 to-rose-300",
+                "dot": "absolute -left-2 top-0 w-4 h-4 rounded-full bg-rose-400 ring-2 ring-rose-200",
+                "year": "text-rose-700 font-medium text-sm mb-1",
+                "title": "text-base sm:text-lg font-medium mb-1",
+                "institution": "text-rose-700 text-sm mb-1",
+                "description": "text-rose-600/80 text-xs mt-2",
+                "badge": "bg-gradient-to-r from-rose-400 to-rose-300 text-white text-xs"
+              }
+            }
+          },
+          "skills": {
+            "container": "py-16 sm:py-20 px-4 sm:px-6 lg:px-8",
+            "innerContainer": "container mx-auto max-w-7xl",
+            "title": "text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4",
+            "titleUnderline": "absolute bottom-0 w-20 h-1 bg-gradient-to-r from-rose-400 to-rose-300 left-0",
+            "wrapper": "space-y-10 sm:space-y-12",
+            "category": {
+              "title": "text-xl sm:text-2xl font-medium mb-6 sm:mb-8 flex items-center gap-3",
+              "icon": "w-5 h-5 sm:w-6 sm:h-6 text-rose-500",
+              "grid": "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6",
+              "card": {
+                "container": "bg-white/80 backdrop-blur-sm border border-rose-200 p-5 sm:p-6 text-center transition-all duration-300 hover:border-rose-400 hover:shadow-lg hover:shadow-rose-100",
+                "content": "p-0 flex flex-col items-center",
+                "icon": "w-7 h-7 sm:w-8 sm:h-8 text-rose-500 mb-2 sm:mb-3",
+                "title": "font-medium text-base sm:text-lg mb-1",
+                "examples": "text-rose-600/80 text-xs sm:text-sm list-disc pl-4"
+              }
+            }
+          },
+          "projects": {
+            "container": "py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-white/50",
+            "innerContainer": "container mx-auto max-w-7xl",
+            "title": "text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4",
+            "titleUnderline": "absolute bottom-0 w-20 h-1 bg-gradient-to-r from-rose-400 to-rose-300 left-0",
+            "grid": "grid md:grid-cols-2 gap-6 sm:gap-8",
+            "card": {
+              "container": "bg-white/80 backdrop-blur-sm border border-rose-200 overflow-hidden transition-all duration-300 hover:border-rose-400 hover:shadow-lg hover:shadow-rose-100",
+              "image": {
+                "container": "relative h-48 sm:h-56 overflow-hidden",
+                "image": "absolute inset-0 w-full h-full object-cover",
+                "placeholder": "absolute inset-0 bg-rose-100 flex items-center justify-center",
+                "placeholderText": "text-rose-600/80"
+              },
+              "content": {
+                "container": "p-6",
+                "title": "text-xl sm:text-2xl font-medium mb-2 sm:mb-3",
+                "description": "text-rose-700 text-sm sm:text-base leading-relaxed mb-4 sm:mb-6",
+                "techStack": {
+                  "container": "flex flex-wrap gap-2 mb-4 sm:mb-6",
+                  "badge": "bg-rose-100 text-rose-800 border-rose-200 border px-3 py-1 text-xs"
+                },
+                "button": {
+                  "container": "flex gap-3 sm:gap-4",
+                  "button": "border-rose-200 text-gray-800 hover:bg-rose-100 flex items-center gap-2 text-sm sm:text-base",
+                  "icon": "w-4 h-4"
+                }
+              }
+            },
+            "emptyState": {
+              "container": "text-center py-12",
+              "text": "text-rose-700 text-lg"
+            }
+          },
+          "about": {
+            "container": "py-16 sm:py-20 px-4 sm:px-6 lg:px-8",
+            "innerContainer": "container mx-auto max-w-7xl",
+            "grid": "grid lg:grid-cols-2 gap-12 lg:gap-16",
+            "leftColumn": {
+              "title": "text-3xl sm:text-4xl lg:text-5xl font-light mb-12 sm:mb-16 relative pb-4",
+              "titleUnderline": "absolute bottom-0 w-20 h-1 bg-gradient-to-r from-rose-400 to-rose-300 left-0",
+              "description": "text-rose-700 text-base sm:text-lg leading-relaxed mb-6 sm:mb-8",
+              "personalInfo": {
+                "container": "grid grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8",
+                "item": {
+                  "container": "flex items-start gap-2",
+                  "icon": "w-4 h-4 mt-0.5 text-rose-500",
+                  "label": "text-rose-600/80 text-xs sm:text-sm mb-1",
+                  "value": "font-medium text-sm sm:text-base"
+                }
+              }
+            },
+            "rightColumn": {
+              "container": "space-y-8",
+              "languages": {
+                "title": "text-xl sm:text-2xl font-medium mb-4 sm:mb-6 flex items-center gap-3",
+                "icon": "w-5 h-5 sm:w-6 sm:h-6 text-rose-500",
+                "list": "space-y-3 sm:space-y-4",
+                "item": {
+                  "header": "flex justify-between mb-1 sm:mb-2",
+                  "name": "font-medium text-sm sm:text-base capitalize",
+                  "level": "text-rose-700 text-xs sm:text-sm",
+                  "progressBg": "w-full bg-rose-100 rounded-full h-1",
+                  "progress": "bg-gradient-to-r from-rose-400 to-rose-300 h-1 rounded-full transition-all duration-1000"
+                }
+              },
+              "interests": {
+                "title": "text-xl sm:text-2xl font-medium mb-4 sm:mb-6 flex items-center gap-3",
+                "icon": "w-5 h-5 sm:w-6 sm:h-6 text-rose-500",
+                "container": "flex flex-wrap gap-3 sm:gap-4",
+                "badge": {
+                  "container": "bg-rose-100 text-rose-800 border-rose-200 border px-3 sm:px-4 py-1 sm:py-2 text-sm flex items-center gap-2",
+                  "icon": "w-3 h-3"
+                }
+              }
+            }
+          },
+          "contact": {
+            "container": "py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-white/50",
+            "innerContainer": "container mx-auto max-w-4xl text-center",
+            "title": "text-3xl sm:text-4xl lg:text-5xl font-light mb-6 sm:mb-8",
+            "description": "text-rose-700 text-base sm:text-lg mb-10 sm:mb-12 max-w-2xl mx-auto",
+            "grid": "grid md:grid-cols-3 gap-6 sm:gap-8 mb-10 sm:mb-12",
+            "contactItem": {
+              "container": "text-center",
+              "iconWrapper": "w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-rose-500 to-rose-400 hover:from-rose-600 hover:to-rose-500 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4",
+              "icon": "w-5 h-5 sm:w-6 sm:h-6 text-white",
+              "title": "font-medium text-base sm:text-lg mb-1 sm:mb-2",
+              "value": "text-rose-700 text-sm sm:text-base",
+              "link": "hover:underline hover:text-rose-500"
+            },
+            "button": {
+              "container": "inline-flex items-center bg-gradient-to-r from-rose-500 to-rose-400 hover:from-rose-600 hover:to-rose-500 text-white font-medium px-8 py-3 rounded-full text-base sm:text-lg transition-colors",
+              "icon": "w-5 h-5"
+            }
+          }
+        },
+        "footer": {
+          "container": "py-6 sm:py-8 px-4 sm:px-6 lg:px-8 border-t border-rose-200",
+          "innerContainer": "container mx-auto max-w-7xl",
+          "content": "flex flex-col md:flex-row justify-between items-center",
+          "left": "flex items-center space-x-3 mb-4 md:mb-0",
+          "copyright": "text-rose-700",
+          "rights": "text-rose-600/80 text-xs sm:text-sm"
+        },
+        "rtl": {
+          "textAlign": "lg:text-right",
+          "justify": "lg:justify-end",
+          "margin": "lg:mr-0",
+          "padding": "pr-6",
+          "position": "right-0",
+          "dot": "-right-2",
+          "examples": "pr-4",
+          "clearButton": "left-3",
+          "icon": "ml-2",
+          "titleUnderline": "right-0"
+        }
+      }
+    }
+  },
+  "customThemes": {
+    "ocean": {
+      "name": "Ocean Blue Theme",
+      "darkMode": {
+        "colors": {
+          "background": "bg-slate-900",
+          "text": "text-white",
+          "textSecondary": "text-blue-300",
+          "textMuted": "text-blue-400",
+          "cardBg": "bg-slate-800",
+          "cardBorder": "border-blue-700",
+          "sectionBg": "bg-slate-800",
+          "accentGold": "text-blue-400",
+          "accentGoldBg": "bg-blue-500",
+          "accentGoldBorder": "border-blue-500",
+          "accentGoldHover": "hover:bg-blue-600"
+        }
+      },
+      "whiteMode": {
+        "colors": {
+          "background": "bg-blue-50",
+          "text": "text-slate-900",
+          "textSecondary": "text-blue-700",
+          "textMuted": "text-blue-600",
+          "cardBg": "bg-white",
+          "cardBorder": "border-blue-200",
+          "sectionBg": "bg-blue-100",
+          "accentGold": "text-blue-600",
+          "accentGoldBg": "bg-blue-500",
+          "accentGoldBorder": "border-blue-500",
+          "accentGoldHover": "hover:bg-blue-600"
+        }
+      }
+    },
+    "forest": {
+      "name": "Forest Green Theme",
+      "darkMode": {
+        "colors": {
+          "background": "bg-gray-900",
+          "text": "text-white",
+          "textSecondary": "text-green-300",
+          "textMuted": "text-green-400",
+          "cardBg": "bg-gray-800",
+          "cardBorder": "border-green-700",
+          "sectionBg": "bg-gray-800",
+          "accentGold": "text-green-400",
+          "accentGoldBg": "bg-green-500",
+          "accentGoldBorder": "border-green-500",
+          "accentGoldHover": "hover:bg-green-600"
+        }
+      },
+      "whiteMode": {
+        "colors": {
+          "background": "bg-green-50",
+          "text": "text-gray-900",
+          "textSecondary": "text-green-700",
+          "textMuted": "text-green-600",
+          "cardBg": "bg-white",
+          "cardBorder": "border-green-200",
+          "sectionBg": "bg-green-100",
+          "accentGold": "text-green-600",
+          "accentGoldBg": "bg-green-500",
+          "accentGoldBorder": "border-green-500",
+          "accentGoldHover": "hover:bg-green-600"
+        }
+      }
+    }
+  }
+}
