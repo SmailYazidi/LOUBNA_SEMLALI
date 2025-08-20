@@ -38,57 +38,58 @@ const defaultData: EducationData = {
 const normalizeEducationData = (data: any): EducationData => {
   if (!data) return defaultData;
   
-  return {
-    journeyTitle: {
-      fr: data.journeyTitle?.fr || data.journeyTitle || "",
-      en: data.journeyTitle?.en || "",
-      ar: data.journeyTitle?.ar || ""
+return {
+  journeyTitle: {
+    fr: typeof data.journeyTitle?.fr === "string" ? data.journeyTitle.fr : "",
+    en: typeof data.journeyTitle?.en === "string" ? data.journeyTitle.en : "",
+    ar: typeof data.journeyTitle?.ar === "string" ? data.journeyTitle.ar : ""
+  },
+  education: Array.isArray(data.education) ? data.education.map((item: any) => ({
+    year: {
+      fr: item.year?.fr || "",
+      en: item.year?.en || "",
+      ar: item.year?.ar || ""
     },
-    education: Array.isArray(data.education) ? data.education.map((item: any) => ({
-      year: {
-        fr: item.year?.fr || item.year || "",
-        en: item.year?.en || "",
-        ar: item.year?.ar || ""
-      },
-      title: {
-        fr: item.title?.fr || item.title || "",
-        en: item.title?.en || "",
-        ar: item.title?.ar || ""
-      },
-      institution: {
-        fr: item.institution?.fr || item.institution || "",
-        en: item.institution?.en || "",
-        ar: item.institution?.ar || ""
-      },
-      description: {
-        fr: item.description?.fr || item.description || "",
-        en: item.description?.en || "",
-        ar: item.description?.ar || ""
-      }
-    })) : [],
-    experience: Array.isArray(data.experience) ? data.experience.map((item: any) => ({
-      year: {
-        fr: item.year?.fr || item.year || "",
-        en: item.year?.en || "",
-        ar: item.year?.ar || ""
-      },
-      title: {
-        fr: item.title?.fr || item.title || "",
-        en: item.title?.en || "",
-        ar: item.title?.ar || ""
-      },
-      institution: {
-        fr: item.institution?.fr || item.institution || "",
-        en: item.institution?.en || "",
-        ar: item.institution?.ar || ""
-      },
-      description: {
-        fr: item.description?.fr || item.description || "",
-        en: item.description?.en || "",
-        ar: item.description?.ar || ""
-      }
-    })) : []
-  };
+    title: {
+      fr: item.title?.fr || "",
+      en: item.title?.en || "",
+      ar: item.title?.ar || ""
+    },
+    institution: {
+      fr: item.institution?.fr || "",
+      en: item.institution?.en || "",
+      ar: item.institution?.ar || ""
+    },
+    description: {
+      fr: item.description?.fr || "",
+      en: item.description?.en || "",
+      ar: item.description?.ar || ""
+    }
+  })) : [],
+  experience: Array.isArray(data.experience) ? data.experience.map((item: any) => ({
+    year: {
+      fr: item.year?.fr || "",
+      en: item.year?.en || "",
+      ar: item.year?.ar || ""
+    },
+    title: {
+      fr: item.title?.fr || "",
+      en: item.title?.en || "",
+      ar: item.title?.ar || ""
+    },
+    institution: {
+      fr: item.institution?.fr || "",
+      en: item.institution?.en || "",
+      ar: item.institution?.ar || ""
+    },
+    description: {
+      fr: item.description?.fr || "",
+      en: item.description?.en || "",
+      ar: item.description?.ar || ""
+    }
+  })) : []
+};
+
 };
 
 export default function EducationAdminPage() {
@@ -288,46 +289,7 @@ export default function EducationAdminPage() {
         </h1>
       </div>
 
-      {/* Journey Title */}
-    {/*   <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
-        <div className="flex items-center gap-2 mb-4">
-          <LucideIcons.Type size={20} className="text-gray-600 dark:text-gray-300" />
-          <h2 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Journey Title</h2>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <div>
-            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">French title</label>
-            <input
-              type="text"
-              value={data.journeyTitle.fr}
-              placeholder="French journey title"
-              onChange={(e) => handleChange("journeyTitle", null, "fr", "fr", e.target.value)}
-              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">English title</label>
-            <input
-              type="text"
-              value={data.journeyTitle.en}
-              placeholder="English journey title"
-              onChange={(e) => handleChange("journeyTitle", null, "en", "en", e.target.value)}
-              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Arabic title</label>
-            <input
-              type="text"
-              value={data.journeyTitle.ar}
-              placeholder="Arabic journey title"
-              onChange={(e) => handleChange("journeyTitle", null, "ar", "ar", e.target.value)}
-              className="border border-gray-300 dark:border-gray-600 p-2 rounded-lg w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-            />
-          </div>
-        </div>
-      </div>
- */}
+    
       {/* Rest of your component remains the same... */}
       {/* Education Section */}
       <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
