@@ -573,24 +573,30 @@ export default function Portfolio() {
                       </div>
                     </div>
                   ) : (
-                    <div className="md:w-1/2 flex justify-center fade-in delay-200">
-                      <div className={`profile-image-container ${isDarkMode ? 'dark-profile-glow' : 'light-profile-glow'}`}>
-                        <div className="rounded-full overflow-hidden border-4" style={{ 
-                          borderColor: isDarkMode ? 'rgba(166, 124, 255, 0.2)' : 'rgba(200, 162, 200, 0.2)',
-                          width: '350px',
-                          height: '350px'
-                        }}>
-                          <Image
-                            src={"https://woxgxzelncuqwury.public.blob.vercel-storage.com/profile_1755462555430_HanSooyoung.png"}
-                            alt="Profile photo"
-                            width={350}
-                            height={350}
-                            className="object-cover w-full h-full"
-                            priority
-                          />
-                        </div>
-                      </div>
-                    </div>
+         <div className="md:w-1/2 flex justify-center fade-in delay-200">
+  <div className={`profile-image-container ${isDarkMode ? 'dark-profile-glow' : 'light-profile-glow'}`}>
+    <div
+      className="overflow-hidden border-4"
+      style={{ 
+        borderColor: isDarkMode ? 'rgba(166, 124, 255, 0.2)' : 'rgba(200, 162, 200, 0.2)',
+        width: '350px',
+        height: '350px'
+      }}
+    >
+      <Image
+                src={"https://woxgxzelncuqwury.public.blob.vercel-storage.com/profile_1755462555430_HanSooyoung.png"}
+
+              
+        alt="Profile photo"
+        width={350}
+        height={350}
+        className="object-cover w-full h-full"
+        priority
+      />
+    </div>
+  </div>
+</div>
+
                   )}
                 </div>
               </div>
@@ -755,7 +761,7 @@ export default function Portfolio() {
 
                               return (
                                 <div key={skillIndex} className={`p-4 rounded-lg ${isDarkMode 
-                                  ? 'bg-[#0b0c1d] border border-purple-900/30' 
+                                  ? ' border border-purple-900/30' 
                                   : 'bg-gray-50 border border-gray-200'}`}>
                                   <div className="flex items-start">
                                     {SkillIcon && (
@@ -1024,7 +1030,7 @@ export default function Portfolio() {
                       const IconComponent = getIcon(info.icon);
                       return (
                         <div key={index} className={`p-6 rounded-xl ${isDarkMode 
-                          ? 'bg-[#0b0c1d] border border-purple-900/30' 
+                          ? ' border border-purple-900/30' 
                           : 'bg-gray-50 border border-gray-200'}`}>
                           <div className={`inline-flex items-center justify-center w-12 h-12 rounded-full mb-4 ${isDarkMode 
                             ? 'bg-purple-900/30 text-purple-300' 

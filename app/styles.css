@@ -227,41 +227,42 @@
       box-shadow: 0 0 10px rgba(183, 110, 121, 0.3);
     }
 
-    /* Profile image glow */
-    .profile-image-container {
-      position: relative;
-      display: inline-block;
-    }
+/* Profile image glow */
+.profile-image-container {
+  position: relative;
+  display: inline-block;
+}
 
-    .profile-image-container::after {
-      content: '';
-      position: absolute;
-      top: -5px;
-      left: -5px;
-      right: -5px;
-      bottom: -5px;
-      border-radius: 50%;
-      z-index: -1;
-      animation: pulse 2s infinite;
-    }
+.profile-image-container::after {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  border-radius: 10px; /* Changed from 50% to a small radius for square corners */
+  z-index: -1;
+  animation: pulse 2s infinite;
+}
 
-    .dark-profile-glow::after {
-      background: linear-gradient(90deg, #ff9acb, #a67cff);
-      filter: blur(15px);
-      opacity: 0.5;
-    }
+.dark-profile-glow::after {
+  background: linear-gradient(90deg, #ff9acb, #a67cff);
+  filter: blur(15px);
+  opacity: 0.5;
+}
 
-    .light-profile-glow::after {
-      background: linear-gradient(90deg, #f6a5c0, #c8a2c8);
-      filter: blur(10px);
-      opacity: 0.3;
-    }
+.light-profile-glow::after {
+  background: linear-gradient(90deg, #f6a5c0, #c8a2c8);
+  filter: blur(10px);
+  opacity: 0.3;
+}
 
-    @keyframes pulse {
-      0% { opacity: 0.5; }
-      50% { opacity: 0.8; }
-      100% { opacity: 0.5; }
-    }
+@keyframes pulse {
+  0% { opacity: 0.5; }
+  50% { opacity: 0.8; }
+  100% { opacity: 0.5; }
+}
+
 
     /* Language menu */
     .language-menu {
