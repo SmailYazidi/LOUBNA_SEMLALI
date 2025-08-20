@@ -654,63 +654,83 @@ export default function Portfolio() {
         </section>
       )}
 
-      {/* Services Section */}
-      {!isServicesEmpty && (
-        <section id="services" className="py-20 px-4">
+   
+      {/* Skills Section */}
+      {!isSkillsDataEmpty && (
+        <section id="skills" className="py-20 px-4">
           <div className="container mx-auto">
             <h2 className={`text-3xl md:text-4xl font-bold text-center mb-16 ${isDarkMode ? 
               'text-white' : 
               'text-[#ff4d7a]'}`}>
-              {t.servicesTitle}
+              {t.skillsTitle}
               <span className={`block w-20 h-1 mx-auto mt-4 ${isDarkMode ? 
                 'bg-gradient-to-r from-[#ff9acb] to-[#a67cff]' : 
                 'bg-gradient-to-r from-[#ff6b9c] to-[#ff4d7a]'}`}></span>
             </h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {Array.isArray(servicesData?.servicesList) && servicesData.servicesList.length > 0 ? (
-                servicesData.servicesList.map((service, index) => {
-                  const title = service.title?.[currentLang] ||
-                    service.title?.[currentLang === 'fr' ? 'en' : currentLang === 'en' ? 'ar' : 'fr'] ||
-                    service.title?.[currentLang === 'ar' ? 'fr' : 'en'];
-                  const description = service.description?.[currentLang] ||
-                    service.description?.[currentLang === 'fr' ? 'en' : currentLang === 'en' ? 'ar' : 'fr'] ||
-                    service.description?.[currentLang === 'ar' ? 'fr' : 'en'];
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+              {skillsData?.skills?.map((category, catIndex) => {
+                const CategoryIcon = getIcon(category.skillicon);
 
-                  if (!title) return null;
+                return (
+                  <div key={catIndex} className={`p-6 rounded-2xl ${isDarkMode ? 
+                    'bg-[#1a103d]' : 
+                    'bg-white'} shadow-lg`}>
+                    <h3 className={`text-xl font-semibold mb-6 flex items-center ${isDarkMode ? 
+                      'text-white' : 
+                      'text-[#ff4d7a]'}`}>
+                      {CategoryIcon && (
+                        <CategoryIcon className="mr-3" />
+                      )}
+                      {category.title?.[currentLang]}
+                    </h3>
 
-                  return (
-                    <Card
-                      key={index}
-                      className={`group transition-all duration-500 hover:scale-105 ${isDarkMode ? 
-                        'bg-[#1a103d] border-[#2a205d] hover:border-[#ff9acb]' : 
-                        'bg-white border-[#ffe4ec] hover:border-[#ff6b9c]'} overflow-hidden`}
-                    >
-                      <CardContent className="p-6">
-                        <div className="flex justify-between items-start mb-4">
-                          <span className={`text-2xl font-bold ${isDarkMode ? 
-                            'text-[#ff9acb]' : 
-                            'text-[#ff6b9c]'}`}>0{index + 1}</span>
-                          <ArrowUpRight className={`transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 ${isDarkMode ? 
-                            'text-[#a67cff]' : 
-                            'text-[#ff4d7a]'}`}
-                          />
-                        </div>
-                        <h3 className={`text-xl font-semibold mb-2 ${isDarkMode ? 
-                          'text-white' : 
-                          'text-[#ff4d7a]'}`}>{title}</h3>
-                        {description && <p className={isDarkMode ? 'text-gray-300' : 'text-gray-700'}>{description}</p>}
-                      </CardContent>
-                    </Card>
-                  );
-                })
-              ) : (
-                <p className="text-center col-span-full">No services available</p>
-              )}
+                    {category.items.length > 0 ? (
+                      <div className="grid grid-cols-2 gap-4">
+                        {category.items.map((skill, skillIndex) => {
+                          const SkillIcon = getIcon(skill.icon);
+
+                          return (
+                            <Card
+                              key={skillIndex}
+                              className={`transition-all duration-300 hover:scale-105 ${isDarkMode ? 
+                                ' border-[#2a205d]' : 
+                                'bg-[#ffe4ec] border-[#ffc2d6]'} border`}
+                            >
+                              <CardContent className="p-4 flex flex-col items-center text-center">
+                                {SkillIcon && (
+                                  <SkillIcon className={`h-8 w-8 mb-2 ${isDarkMode ? 
+                                    'text-[#ff9acb]' : 
+                                    'text-[#ff6b9c]'}`} />
+                                )}
+                                <h4 className={`font-medium ${isDarkMode ? 
+                                  'text-white' : 
+                                  'text-gray-800'}`}>
+                                  {skill.name?.[currentLang]}
+                                </h4>
+                                {skill.examples?.length > 0 && (
+                                  <ul className="mt-2 space-y-1">
+                                    {skill.examples.map((ex, exIndex) => (
+                                      <li key={exIndex} className={`text-xs ${isDarkMode ? 
+                                        'text-gray-400' : 
+                                        'text-gray-600'}`}>{ex?.[currentLang]}</li>
+                                    ))}
+                                  </ul>
+                                )}
+                              </CardContent>
+                            </Card>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>No skills listed.</p>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
-        </section>
-      )}
+        </section>)}
 
       {/* Experience & Education Section */}
       {!isJourneyDataEmpty && (
@@ -843,83 +863,6 @@ export default function Portfolio() {
           </div>
         </section>
       )}
-
-      {/* Skills Section */}
-      {!isSkillsDataEmpty && (
-        <section id="skills" className="py-20 px-4">
-          <div className="container mx-auto">
-            <h2 className={`text-3xl md:text-4xl font-bold text-center mb-16 ${isDarkMode ? 
-              'text-white' : 
-              'text-[#ff4d7a]'}`}>
-              {t.skillsTitle}
-              <span className={`block w-20 h-1 mx-auto mt-4 ${isDarkMode ? 
-                'bg-gradient-to-r from-[#ff9acb] to-[#a67cff]' : 
-                'bg-gradient-to-r from-[#ff6b9c] to-[#ff4d7a]'}`}></span>
-            </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-              {skillsData?.skills?.map((category, catIndex) => {
-                const CategoryIcon = getIcon(category.skillicon);
-
-                return (
-                  <div key={catIndex} className={`p-6 rounded-2xl ${isDarkMode ? 
-                    'bg-[#1a103d]' : 
-                    'bg-white'} shadow-lg`}>
-                    <h3 className={`text-xl font-semibold mb-6 flex items-center ${isDarkMode ? 
-                      'text-white' : 
-                      'text-[#ff4d7a]'}`}>
-                      {CategoryIcon && (
-                        <CategoryIcon className="mr-3" />
-                      )}
-                      {category.title?.[currentLang]}
-                    </h3>
-
-                    {category.items.length > 0 ? (
-                      <div className="grid grid-cols-2 gap-4">
-                        {category.items.map((skill, skillIndex) => {
-                          const SkillIcon = getIcon(skill.icon);
-
-                          return (
-                            <Card
-                              key={skillIndex}
-                              className={`transition-all duration-300 hover:scale-105 ${isDarkMode ? 
-                                ' border-[#2a205d]' : 
-                                'bg-[#ffe4ec] border-[#ffc2d6]'} border`}
-                            >
-                              <CardContent className="p-4 flex flex-col items-center text-center">
-                                {SkillIcon && (
-                                  <SkillIcon className={`h-8 w-8 mb-2 ${isDarkMode ? 
-                                    'text-[#ff9acb]' : 
-                                    'text-[#ff6b9c]'}`} />
-                                )}
-                                <h4 className={`font-medium ${isDarkMode ? 
-                                  'text-white' : 
-                                  'text-gray-800'}`}>
-                                  {skill.name?.[currentLang]}
-                                </h4>
-                                {skill.examples?.length > 0 && (
-                                  <ul className="mt-2 space-y-1">
-                                    {skill.examples.map((ex, exIndex) => (
-                                      <li key={exIndex} className={`text-xs ${isDarkMode ? 
-                                        'text-gray-400' : 
-                                        'text-gray-600'}`}>{ex?.[currentLang]}</li>
-                                    ))}
-                                  </ul>
-                                )}
-                              </CardContent>
-                            </Card>
-                          );
-                        })}
-                      </div>
-                    ) : (
-                      <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>No skills listed.</p>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>)}
 
       {/* Projects Section */}
       {!isProjectsEmpty && (
@@ -1164,6 +1107,63 @@ export default function Portfolio() {
                   </div>
                 )}
               </div>
+            </div>
+          </div>
+        </section>
+      )}
+   {/* Services Section */}
+      {!isServicesEmpty && (
+        <section id="services" className="py-20 px-4">
+          <div className="container mx-auto">
+            <h2 className={`text-3xl md:text-4xl font-bold text-center mb-16 ${isDarkMode ? 
+              'text-white' : 
+              'text-[#ff4d7a]'}`}>
+              {t.servicesTitle}
+              <span className={`block w-20 h-1 mx-auto mt-4 ${isDarkMode ? 
+                'bg-gradient-to-r from-[#ff9acb] to-[#a67cff]' : 
+                'bg-gradient-to-r from-[#ff6b9c] to-[#ff4d7a]'}`}></span>
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {Array.isArray(servicesData?.servicesList) && servicesData.servicesList.length > 0 ? (
+                servicesData.servicesList.map((service, index) => {
+                  const title = service.title?.[currentLang] ||
+                    service.title?.[currentLang === 'fr' ? 'en' : currentLang === 'en' ? 'ar' : 'fr'] ||
+                    service.title?.[currentLang === 'ar' ? 'fr' : 'en'];
+                  const description = service.description?.[currentLang] ||
+                    service.description?.[currentLang === 'fr' ? 'en' : currentLang === 'en' ? 'ar' : 'fr'] ||
+                    service.description?.[currentLang === 'ar' ? 'fr' : 'en'];
+
+                  if (!title) return null;
+
+                  return (
+                    <Card
+                      key={index}
+                      className={`group transition-all duration-500 hover:scale-105 ${isDarkMode ? 
+                        'bg-[#1a103d] border-[#2a205d] hover:border-[#ff9acb]' : 
+                        'bg-white border-[#ffe4ec] hover:border-[#ff6b9c]'} overflow-hidden`}
+                    >
+                      <CardContent className="p-6">
+                        <div className="flex justify-between items-start mb-4">
+                          <span className={`text-2xl font-bold ${isDarkMode ? 
+                            'text-[#ff9acb]' : 
+                            'text-[#ff6b9c]'}`}>0{index + 1}</span>
+                          <ArrowUpRight className={`transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 ${isDarkMode ? 
+                            'text-[#a67cff]' : 
+                            'text-[#ff4d7a]'}`}
+                          />
+                        </div>
+                        <h3 className={`text-xl font-semibold mb-2 ${isDarkMode ? 
+                          'text-white' : 
+                          'text-[#ff4d7a]'}`}>{title}</h3>
+                        {description && <p className={isDarkMode ? 'text-gray-300' : 'text-gray-700'}>{description}</p>}
+                      </CardContent>
+                    </Card>
+                  );
+                })
+              ) : (
+                <p className="text-center col-span-full">No services available</p>
+              )}
             </div>
           </div>
         </section>
