@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import Loading from '@/components/Loading';
 import Image from "next/image"
-import './styles.css';
+
 import {
   Send,
   Star,
@@ -14,12 +14,12 @@ import {
   ArrowUpRight,
   Briefcase,
   GraduationCap,
-  Languages,
+  LanguagesIcon,
   Heart,
   Sun,
   Moon,
   ChevronDown,
-  Link as LinkIcon,
+  Link,
   Search,
 } from "lucide-react"
 import * as LucideIcons from "lucide-react";
@@ -105,6 +105,7 @@ export default function Portfolio() {
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = sessionStorage.getItem('darkMode');
@@ -255,7 +256,7 @@ export default function Portfolio() {
         setSkillsLoading(false);
       })
       .catch((err) => {
-        console.error("Error fetching skills data:", err);
+        console.error("Error fetching education data:", err);
         setSkillsLoading(false);
       });
   }, []);
@@ -268,7 +269,7 @@ export default function Portfolio() {
         setProjetsLoading(false);
       })
       .catch((err) => {
-        console.error("Error fetching projets data:", err);
+        console.error("Error fetching Projets data:", err);
         setProjetsLoading(false);
       });
   }, []);
@@ -337,765 +338,1002 @@ export default function Portfolio() {
     return LucideIcons[pascalCase] || null; 
   };
 
- 
-
-  const getThemeClass = (baseClass, darkVariant, lightVariant) => {
-    return `${baseClass} ${isDarkMode ? darkVariant : lightVariant}`;
-  };
-
   if (heroLoading || servicesLoading || photoLoading || educationLoading || aboutLoading || contactLoading || projetsLoading || skillsLoading || usernameLoading) return <Loading/>;
   
   return (
-    <>
-   
-      <div className={`portfolio-container ${isDarkMode ? 'dark-mode' : 'light-mode'}`}>
-        <header className={`header ${isDarkMode ? 'dark-header' : 'light-header'} py-4`}>
-          <div className="container mx-auto px-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <div className="text-xl font-bold">
-                  <span className={isDarkMode ? 'gradient-text' : 'light-gradient-text'}>
-                    {usernameData?.[currentLang]}
-                  </span>
-                </div>
-
-                {/* Desktop Navigation */}
-                <nav className="hidden md:flex ml-12 space-x-8">
-                  {navItems.map((item) => (
-                    <button
-                      key={item.id}
-                      onClick={() => scrollToSection(item.id)}
-                      className={`nav-link ${getThemeClass('', 'dark-nav-link', 'light-nav-link')} ${
-                        activeSection === item.id ? 'active-nav-link' : ''
-                      }`}
-                    >
-                      {item.label}
-                    </button>
-                  ))}
-                </nav>
-              </div>
-
-              <div className="flex items-center space-x-3">
-                {/* Language Selector */}
-                <div className="relative">
-                  <Button
-                    onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
-                    className={getThemeClass('secondary-btn', 'dark-secondary-btn', 'light-secondary-btn')}
-                  >
-                    <span>{currentLang.toUpperCase()}</span>
-                    <ChevronDown size={16} className="ml-1" />
-                  </Button>
-
-                  {isLangMenuOpen && (
-                    <div className={`language-menu ${isDarkMode ? 'dark-language-menu' : 'light-language-menu'}`}>
-                      {languageOptions.map((option) => (
-                        <button
-                          key={option.code}
-                          onClick={() => changeLanguage(option.code as "fr" | "en" | "ar")}
-                          className="w-full text-left px-4 py-2 hover:bg-opacity-10 hover:bg-purple-500 flex items-center"
-                        >
-                          <span className="mr-2">{option.flag}</span>
-                          <span>{option.label}</span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Theme Toggle */}
-                <Button
-                  onClick={toggleTheme}
-                  className={getThemeClass('secondary-btn', 'dark-secondary-btn', 'light-secondary-btn')}
-                >
-                  {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
-                </Button>
-
-                {/* Search Button */}
-                <Button
-                  onClick={() => setIsSearchOpen(!isSearchOpen)}
-                  className={getThemeClass('secondary-btn', 'dark-secondary-btn', 'light-secondary-btn')}
-                >
-                  {isSearchOpen ? <X size={18} /> : <Search size={18} />}
-                </Button>
-
-                {/* Hire Me Button */}
-                <Button
-                  onClick={() => scrollToSection("contact")}
-                  className={isDarkMode ? 'gradient-btn' : 'light-gradient-btn'}
-                >
-                  {t.hireMe}
-                </Button>
-
-                {/* Mobile Menu Button */}
-                <Button
-                  onClick={() => setIsMenuOpen(!isMenuOpen)}
-                  className={`md:hidden ${getThemeClass('secondary-btn', 'dark-secondary-btn', 'light-secondary-btn')}`}
-                >
-                  {isMenuOpen ? <X size={18} /> : <Menu size={18} />}
-                </Button>
+    <div className={`min-h-screen transition-colors duration-500 ${isDarkMode ? 
+      'bg-gradient-to-br from-[#0b0c1d] to-[#1a103d] text-white' : 
+      'bg-gradient-to-br from-[#ffd6e7] to-[#ffc2d6] text-gray-800'}`}>
+      
+      {/* Header */}
+      <header className={`fixed w-full z-50 transition-all duration-500 ${isDarkMode ? 
+        'bg-[#0b0c1d]/90 backdrop-blur-sm' : 
+        'bg-[#ffd6e7]/90 backdrop-blur-sm'} shadow-md`}>
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <div className={`font-bold text-xl ${isDarkMode ? 
+                'bg-gradient-to-r from-[#ff9acb] to-[#a67cff] bg-clip-text text-transparent' : 
+                'bg-gradient-to-r from-[#ff6b9c] to-[#ff4d7a] bg-clip-text text-transparent'}`}>
+                <span>{usernameData?.[currentLang]}</span>
               </div>
             </div>
 
-            {/* Mobile Menu */}
-            {isMenuOpen && (
-              <div className={`mobile-menu ${isDarkMode ? 'dark-mobile-menu' : 'light-mobile-menu'} md:hidden`}>
-                <nav className="flex flex-col items-center space-y-8">
-                  {navItems.map((item) => (
-                    <button
-                      key={item.id}
-                      onClick={() => scrollToSection(item.id)}
-                      className={`text-xl font-medium ${activeSection === item.id ? 'gradient-text' : ''}`}
-                    >
-                      {item.label}
-                    </button>
-                  ))}
-                  <div className="mt-6">
-                    <Button
-                      onClick={() => scrollToSection("contact")}
-                      className={isDarkMode ? 'gradient-btn' : 'light-gradient-btn'}
-                    >
-                      {t.hireMe}
-                    </Button>
-                  </div>
-                </nav>
-              </div>
-            )}
+            <div className="hidden md:flex items-center custom-nav-spacing">
+              <nav className="flex space-x-8">
+                {navItems.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => scrollToSection(item.id)}
+                    className={`font-medium transition-all duration-300 hover:scale-105 ${activeSection === item.id ? 
+                      (isDarkMode ? 'text-[#ff9acb]' : 'text-[#ff6b9c]') : 
+                      'text-inherit'}`}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </nav>
+            </div>
 
-            {/* Search Overlay */}
-            {isSearchOpen && (
-              <div className={`search-overlay ${isDarkMode ? 'dark-search-overlay' : 'light-search-overlay'}`}>
-                <div className="w-full max-w-2xl px-4">
-                  <div className="relative">
-                    <input
-                      type="text"
-                      placeholder={currentLang === "fr" ? "Rechercher..." : currentLang === "en" ? "Search..." : "البحث..."}
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full py-4 px-6 rounded-lg border-0 text-lg focus:ring-2 focus:outline-none"
-                      style={{
-                        background: isDarkMode ? 'rgba(26, 16, 61, 0.5)' : 'rgba(255, 253, 252, 0.7)',
-                        color: isDarkMode ? '#f9f9fb' : '#1a103d',
-                        boxShadow: isDarkMode 
-                          ? '0 4px 20px rgba(166, 124, 255, 0.15)' 
-                          : '0 4px 20px rgba(200, 162, 200, 0.1)'
-                      }}
-                    />
-                    {searchTerm && (
+            <div className="hidden md:flex items-center space-x-4">
+              <div className="relative language-menu">
+                <Button
+                  onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
+                  className={`rounded-full ${isDarkMode ? 
+                    'bg-[#1a103d] hover:bg-[#2a205d] text-white' : 
+                    'bg-white hover:bg-[#ffe4ec] text-[#ff6b9c]'} transition-all duration-300`}
+                >
+                  <span>{currentLang.toUpperCase()}</span>
+                  <ChevronDown className="ml-1 h-4 w-4" />
+                </Button>
+
+                {isLangMenuOpen && (
+                  <div className={`absolute right-0 mt-2 w-48 rounded-md shadow-lg ${isDarkMode ? 
+                    'bg-[#1a103d] border border-[#2a205d]' : 
+                    'bg-white border border-[#ffe4ec]'} py-1 z-50`}>
+                    {languageOptions.map((option) => (
                       <button
-                        onClick={() => setSearchTerm("")}
-                        className="absolute right-4 top-1/2 transform -translate-y-1/2"
-                        aria-label="Clear search"
+                        key={option.code}
+                        onClick={() => changeLanguage(option.code as "fr" | "en" | "ar")}
+                        className={`block w-full text-left px-4 py-2 text-sm ${isDarkMode ? 
+                          'hover:bg-[#2a205d] text-white' : 
+                          'hover:bg-[#ffe4ec] text-[#ff6b9c]'} transition-colors duration-200`}
                       >
-                        <X size={20} />
+                        <span className="mr-2">{option.flag}</span>
+                        <span>{option.label}</span>
                       </button>
-                    )}
+                    ))}
                   </div>
-                </div>
+                )}
               </div>
-            )}
-          </div>
-        </header>
 
-        <main className="pt-20">
-          {/* Hero Section */}
-          {!isHeroDataEmpty && (
-            <section id="home" className="min-h-screen flex items-center py-20">
-              <div className="container mx-auto px-4">
-                <div className="flex flex-col md:flex-row items-center justify-between">
-                  <div className="md:w-1/2 mb-12 md:mb-0 fade-in">
-                    {heroData.specialist?.[currentLang] && (
-                      <div className="flex items-center mb-6">
-                        <div className={`p-2 rounded-full mr-3 ${isDarkMode ? 'bg-purple-900' : 'bg-purple-100'}`}>
-                          <Star size={16} className={isDarkMode ? 'text-purple-300' : 'text-purple-600'} />
-                        </div>
-                        <span className={isDarkMode ? 'text-purple-300' : 'text-purple-600'}>
-                          {heroData.specialist[currentLang]}
-                        </span>
-                      </div>
-                    )}
+              <Button
+                onClick={toggleTheme}
+                className={`rounded-full ${isDarkMode ? 
+                  'bg-[#1a103d] hover:bg-[#2a205d] text-white' : 
+                  'bg-white hover:bg-[#ffe4ec] text-[#ff6b9c]'} transition-all duration-300`}
+              >
+                {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+              </Button>
 
-                    {heroData.heroTitle?.[currentLang] && (
-                      <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-                        {heroData.heroTitle[currentLang]}
-                      </h1>
-                    )}
+              <Button
+                onClick={() => setIsSearchOpen(!isSearchOpen)}
+                className={`rounded-full ${isDarkMode ? 
+                  'bg-[#1a103d] hover:bg-[#2a205d] text-white' : 
+                  'bg-white hover:bg-[#ffe4ec] text-[#ff6b9c]'} transition-all duration-300`}
+              >
+                {isSearchOpen ? <X size={18} /> : <Search size={18} />}
+              </Button>
 
-                    {heroData.heroDescription?.[currentLang] && (
-                      <p className="text-xl mb-8 opacity-80">
-                        {heroData.heroDescription[currentLang]}
-                      </p>
-                    )}
+              <Button
+                onClick={() => scrollToSection("contact")}
+                className={`rounded-full font-medium transition-all duration-300 hover:scale-105 ${isDarkMode ? 
+                  'bg-gradient-to-r from-[#ff9acb] to-[#a67cff] text-white hover:shadow-lg hover:shadow-[#ff9acb]/30' : 
+                  'bg-gradient-to-r from-[#ff6b9c] to-[#ff4d7a] text-white hover:shadow-lg hover:shadow-[#ff6b9c]/30'}`}
+              >
+                {t.hireMe}
+              </Button>
+            </div>
 
-                    <div className="flex flex-wrap gap-4">
-                      <Button
-                        onClick={() => (window.location.href = '/cv')}
-                        className={isDarkMode ? 'gradient-btn' : 'light-gradient-btn'}
+            <div className="flex md:hidden items-center space-x-2">
+              <Button
+                onClick={toggleTheme}
+                className={`rounded-full ${isDarkMode ? 
+                  'bg-[#1a103d] hover:bg-[#2a205d] text-white' : 
+                  'bg-white hover:bg-[#ffe4ec] text-[#ff6b9c]'} transition-all duration-300`}
+              >
+                {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+              </Button>
+
+              <div className="relative language-menu">
+                <Button
+                  onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
+                  className={`rounded-full ${isDarkMode ? 
+                    'bg-[#1a103d] hover:bg-[#2a205d] text-white' : 
+                    'bg-white hover:bg-[#ffe4ec] text-[#ff6b9c]'} transition-all duration-300`}
+                >
+                  <span>{currentLang.toUpperCase()}</span>
+                  <ChevronDown className="ml-1 h-4 w-4" />
+                </Button>
+
+                {isLangMenuOpen && (
+                  <div className={`absolute right-0 mt-2 w-48 rounded-md shadow-lg ${isDarkMode ? 
+                    'bg-[#1a103d] border border-[#2a205d]' : 
+                    'bg-white border border-[#ffe4ec]'} py-1 z-50`}>
+                    {languageOptions.map((option) => (
+                      <button
+                        key={option.code}
+                        onClick={() => changeLanguage(option.code as "fr" | "en" | "ar")}
+                        className={`block w-full text-left px-4 py-2 text-sm ${isDarkMode ? 
+                          'hover:bg-[#2a205d] text-white' : 
+                          'hover:bg-[#ffe4ec] text-[#ff6b9c]'} transition-colors duration-200`}
                       >
-                        {t.viewJourney}
-                      </Button>
-
-                      {heroData.heroButtons?.map((button, index) => {
-                        const Icon = getIcon(button.icon);
-                        const handleClick = () => {
-                          if (button.link) window.location.href = button.link;
-                        };
-                        return (
-                          <Button
-                            key={index}
-                            onClick={handleClick}
-                            className={getThemeClass('secondary-btn', 'dark-secondary-btn', 'light-secondary-btn')}
-                          >
-                            {Icon && <Icon size={18} className="mr-2" />}
-                            {button.text?.[currentLang]}
-                          </Button>
-                        );
-                      })}
-                    </div>
+                        <span className="mr-2">{option.flag}</span>
+                        <span>{option.code.toUpperCase()}</span>
+                      </button>
+                    ))}
                   </div>
-
-                  {photoUrl ? (
-                    <div className="md:w-1/2 flex justify-center fade-in delay-200">
-                      <div className={`profile-image-container ${isDarkMode ? 'dark-profile-glow' : 'light-profile-glow'}`}>
-                        <div className="rounded-full overflow-hidden border-4" style={{ 
-                          borderColor: isDarkMode ? 'rgba(166, 124, 255, 0.2)' : 'rgba(200, 162, 200, 0.2)',
-                          width: '350px',
-                          height: '350px'
-                        }}>
-                          <Image
-                            src={photoUrl}
-                            alt="Profile photo"
-                            width={350}
-                            height={350}
-                            className="object-cover w-full h-full"
-                            priority
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-         <div className="md:w-1/2 flex justify-center fade-in delay-200">
-  <div className={`profile-image-container ${isDarkMode ? 'dark-profile-glow' : 'light-profile-glow'}`}>
-    <div
-      className="overflow-hidden border-4"
-      style={{ 
-        borderColor: isDarkMode ? 'rgba(166, 124, 255, 0.2)' : 'rgba(200, 162, 200, 0.2)',
-        width: '350px',
-        height: '350px'
-      }}
-    >
-      <Image
-                src={"https://woxgxzelncuqwury.public.blob.vercel-storage.com/profile_1755462555430_HanSooyoung.png"}
-
-              
-        alt="Profile photo"
-        width={350}
-        height={350}
-        className="object-cover w-full h-full"
-        priority
-      />
-    </div>
-  </div>
-</div>
-
-                  )}
-                </div>
+                )}
               </div>
-            </section>
+
+              <Button
+                onClick={() => setIsSearchOpen(!isSearchOpen)}
+                className={`rounded-full ${isDarkMode ? 
+                  'bg-[#1a103d] hover:bg-[#2a205d] text-white' : 
+                  'bg-white hover:bg-[#ffe4ec] text-[#ff6b9c]'} transition-all duration-300`}
+              >
+                {isSearchOpen ? <X size={18} /> : <Search size={18} />}
+              </Button>
+
+              <button 
+                onClick={() => setIsMenuOpen(!isMenuOpen)} 
+                className={`p-2 rounded-full ${isDarkMode ? 
+                  'bg-[#1a103d] hover:bg-[#2a205d] text-white' : 
+                  'bg-white hover:bg-[#ffe4ec] text-[#ff6b9c]'} transition-all duration-300`}
+              >
+                {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+              </button>
+            </div>
+          </div>
+
+          {isMenuOpen && (
+            <div className={`md:hidden mt-4 py-4 ${isDarkMode ? 
+              'bg-[#1a103d]' : 
+              'bg-white'} rounded-lg shadow-lg`}>
+              <nav className="flex flex-col space-y-3">
+                {navItems.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => scrollToSection(item.id)}
+                    className={`px-4 py-2 text-left font-medium transition-all duration-300 ${activeSection === item.id ? 
+                      (isDarkMode ? 'text-[#ff9acb]' : 'text-[#ff6b9c]') : 
+                      'text-inherit'}`}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+                <div className="px-4 pt-2">
+                  <Button
+                    onClick={() => scrollToSection("contact")}
+                    className={`w-full rounded-full font-medium transition-all duration-300 hover:scale-105 ${isDarkMode ? 
+                      'bg-gradient-to-r from-[#ff9acb] to-[#a67cff] text-white hover:shadow-lg hover:shadow-[#ff9acb]/30' : 
+                      'bg-gradient-to-r from-[#ff6b9c] to-[#ff4d7a] text-white hover:shadow-lg hover:shadow-[#ff6b9c]/30'}`}
+                  >
+                    {t.hireMe}
+                  </Button>
+                </div>
+              </nav>
+            </div>
           )}
 
-          {/* Services Section */}
-          {!isServicesEmpty && (
-            <section id="services" className="py-20">
-              <div className="container mx-auto px-4">
-                <h2 className={`section-title text-3xl font-bold text-center ${getThemeClass('', 'dark-title', 'light-title')}`}>
-                  {t.servicesTitle}
-                </h2>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
-                  {Array.isArray(servicesData?.servicesList) && servicesData.servicesList.length > 0 ? (
-                    servicesData.servicesList.map((service, index) => {
-                      const title = service.title?.[currentLang] || service.title?.en || service.title?.fr || service.title?.ar;
-                      const description = service.description?.[currentLang] || service.description?.en || service.description?.fr || service.description?.ar;
-
-                      if (!title) return null;
-
-                      return (
-                        <Card
-                          key={index}
-                          className={`portfolio-card fade-in delay-${(index % 3) * 100} ${getThemeClass('', 'dark-card', 'light-card')}`}
-                        >
-                          <CardContent className="p-6">
-                            <div className="flex justify-between items-start mb-4">
-                              <span className="text-2xl font-bold opacity-70">0{index + 1}</span>
-                              <ArrowUpRight size={20} className={isDarkMode ? 'text-purple-300' : 'text-purple-600'} />
-                            </div>
-                            <h3 className="text-xl font-semibold mb-3">{title}</h3>
-                            {description && <p className="opacity-80">{description}</p>}
-                          </CardContent>
-                        </Card>
-                      );
-                    })
-                  ) : (
-                    <p>No services available</p>
-                  )}
-                </div>
+          {isSearchOpen && (
+            <div className={`mt-4 p-4 rounded-lg ${isDarkMode ? 
+              'bg-[#1a103d]' : 
+              'bg-white'} shadow-lg`}>
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder={currentLang === "fr" ? "Rechercher..." : currentLang === "en" ? "Search..." : "البحث..."}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className={`w-full py-2 px-4 pr-10 rounded-full ${isDarkMode ? 
+                    'bg-[#0b0c1d] text-white border border-[#2a205d] focus:border-[#ff9acb]' : 
+                    'bg-[#ffe4ec] text-[#ff6b9c] border border-[#ffc2d6] focus:border-[#ff6b9c]'} focus:outline-none transition-colors duration-300`}
+                />
+                {searchTerm && (
+                  <button
+                    onClick={() => setSearchTerm("")}
+                    aria-label="Clear search"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                  >
+                    <X size={18} className={isDarkMode ? "text-gray-400" : "text-[#ff6b9c]"} />
+                  </button>
+                )}
               </div>
-            </section>
+            </div>
           )}
+        </div>
+      </header>
 
-          {/* Experience & Education Section */}
-          {!isJourneyDataEmpty && (
-            <section id="experience" className="py-20">
-              <div className="container mx-auto px-4">
-                <h2 className={`section-title text-3xl font-bold text-center ${getThemeClass('', 'dark-title', 'light-title')}`}>
-                  {t.journeyTitle}
-                </h2>
+      {/* Hero Section */}
+      {!isHeroDataEmpty && (
+        <section id="home" className="pt-32 pb-20 px-4">
+          <div className="container mx-auto">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-10">
+              <div className="md:w-1/2 space-y-6">
+                {heroData.specialist?.[currentLang] && (
+                  <div className={`inline-flex items-center px-4 py-2 rounded-full ${isDarkMode ? 
+                    'bg-[#1a103d] text-[#ff9acb]' : 
+                    'bg-white text-[#ff6b9c]'} font-medium`}>
+                    <Star className="mr-2 h-4 w-4" />
+                    <span>
+                      {heroData.specialist[currentLang]}
+                    </span>
+                  </div>
+                )}
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-12">
-                  {educationData?.education?.length > 0 && (
-                    <div>
-                      <h3 className={`text-xl font-semibold mb-8 flex items-center ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                        <GraduationCap size={24} className="mr-3" />
-                        {currentLang === "fr" ? "Formation" : currentLang === "en" ? "Education" : "التعليم"}
-                      </h3>
-                      <div className="relative">
-                        <div className={`absolute left-6 top-0 bottom-0 w-0.5 ${isDarkMode ? 'bg-purple-800' : 'bg-purple-200'}`}></div>
-                        {educationData?.education && [...educationData.education].reverse().map((event, index) => (
-                          <div key={index} className="relative pl-20 pb-10">
-                            <div className={`absolute left-6 w-4 h-4 rounded-full -translate-x-1/2 ${isDarkMode 
-                              ? 'bg-gradient-to-r from-[#ff9acb] to-[#a67cff]' 
-                              : 'bg-gradient-to-r from-[#f6a5c0] to-[#b76e79]'}`}></div>
-                            <p className={`text-sm mb-1 ${isDarkMode ? 'text-purple-300' : 'text-purple-600'}`}>
-                              {event.year?.[currentLang]}
-                            </p>
-                            <h4 className={`text-lg font-semibold mb-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                              {event.title?.[currentLang]}
-                            </h4>
-                            <p className={`font-medium mb-2 ${isDarkMode ? 'text-purple-300' : 'text-purple-600'}`}>
-                              {event.institution?.[currentLang]}
-                            </p>
-                            {event.description && (
-                              <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
-                                {event.description?.[currentLang]}
-                              </p>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                {heroData.heroTitle?.[currentLang] && (
+                  <h1 className={`text-4xl md:text-5xl lg:text-6xl font-bold leading-tight ${isDarkMode ? 
+                    'text-white' : 
+                    'text-[#ff4d7a]'}`}>
+                    {heroData.heroTitle[currentLang]}
+                  </h1>
+                )}
 
-                  {educationData.experience?.length > 0 && (
-                    <div>
-                      <h3 className={`text-xl font-semibold mb-8 flex items-center ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                        <Briefcase size={24} className="mr-3" />
-                        {currentLang === "fr" ? "Expérience" : currentLang === "en" ? "Experience" : "الخبرة"}
-                      </h3>
-                      <div className="relative">
-                        <div className={`absolute left-6 top-0 bottom-0 w-0.5 ${isDarkMode ? 'bg-purple-800' : 'bg-purple-200'}`}></div>
-                        {educationData?.experience && [...educationData.experience].reverse().map((event, index) => (
-                          <div key={index} className="relative pl-20 pb-10">
-                            <div className={`absolute left-6 w-4 h-4 rounded-full -translate-x-1/2 ${isDarkMode 
-                              ? 'bg-gradient-to-r from-[#ff9acb] to-[#a67cff]' 
-                              : 'bg-gradient-to-r from-[#f6a5c0] to-[#b76e79]'}`}></div>
-                            <div className="flex items-center mb-1">
-                              <p className={`text-sm mr-3 ${isDarkMode ? 'text-purple-300' : 'text-purple-600'}`}>
-                                {event.year?.[currentLang]}
-                              </p>
-                              {event.duration && (
-                                <Badge className={isDarkMode 
-                                  ? 'bg-purple-900/30 text-purple-300 border-purple-700' 
-                                  : 'bg-purple-100 text-purple-600 border-purple-200'}>
-                                  {event.duration}
-                                </Badge>
-                              )}
-                            </div>
-                            <h4 className={`text-lg font-semibold mb-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                              {event.title?.[currentLang]}
-                            </h4>
-                            <p className={`font-medium mb-2 ${isDarkMode ? 'text-purple-300' : 'text-purple-600'}`}>
-                              {event.institution?.[currentLang]}
-                            </p>
-                            {event.description && (
-                              <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
-                                {event.description?.[currentLang]}
-                              </p>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </section>
-          )}
+                {heroData.heroDescription?.[currentLang] && (
+                  <p className={`text-lg ${isDarkMode ? 
+                    'text-gray-300' : 
+                    'text-gray-700'}`}>
+                    {heroData.heroDescription[currentLang]}
+                  </p>
+                )}
 
-          {/* Skills Section */}
-          {!isSkillsDataEmpty && (
-            <section id="skills" className="py-20">
-              <div className="container mx-auto px-4">
-                <h2 className={`section-title text-3xl font-bold text-center ${getThemeClass('', 'dark-title', 'light-title')}`}>
-                  {t.skillsTitle}
-                </h2>
+                <div className="flex flex-wrap gap-4 mt-8">
+                  <Button
+                    onClick={() => (window.location.href = '/cv')}
+                    className={`rounded-full font-medium transition-all duration-300 hover:scale-105 ${isDarkMode ? 
+                      'bg-gradient-to-r from-[#ff9acb] to-[#a67cff] text-white hover:shadow-lg hover:shadow-[#ff9acb]/30' : 
+                      'bg-gradient-to-r from-[#ff6b9c] to-[#ff4d7a] text-white hover:shadow-lg hover:shadow-[#ff6b9c]/30'}`}
+                  >
+                    {t.viewJourney}
+                  </Button>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
-                  {skillsData?.skills?.map((category, catIndex) => {
-                    const CategoryIcon = getIcon(category.skillicon);
-
+                  {heroData.heroButtons?.map((button, index) => {
+                    const Icon = getIcon(button.icon);
+                    const handleClick = () => {
+                      if (button.link) window.location.href = button.link;
+                    };
                     return (
-                      <div key={catIndex} className={`p-6 rounded-xl ${isDarkMode 
-                        ? 'bg-[#1a103d] border border-purple-800/30' 
-                        : 'bg-white border border-gray-200'}`}>
-                        <h3 className={`text-xl font-semibold mb-6 flex items-center ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                          {CategoryIcon && (
-                            <CategoryIcon size={20} className="mr-3" />
-                          )}
-                          {category.title?.[currentLang]}
-                        </h3>
-
-                        {category.items.length > 0 ? (
-                          <div className="space-y-4">
-                            {category.items.map((skill, skillIndex) => {
-                              const SkillIcon = getIcon(skill.icon);
-
-                              return (
-                                <div key={skillIndex} className={`p-4 rounded-lg ${isDarkMode 
-                                  ? ' border border-purple-900/30' 
-                                  : 'bg-gray-50 border border-gray-200'}`}>
-                                  <div className="flex items-start">
-                                    {SkillIcon && (
-                                      <SkillIcon size={18} className={`mt-1 mr-3 ${isDarkMode ? 'text-purple-400' : 'text-purple-500'}`} />
-                                    )}
-                                    <div className="flex-1">
-                                      <h4 className={`font-medium mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                                        {skill.name?.[currentLang]}
-                                      </h4>
-                                      {skill.examples?.length > 0 && (
-                                        <ul className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                          {skill.examples.map((ex, exIndex) => (
-                                            <li key={exIndex} className="mb-1 last:mb-0">• {ex?.[currentLang]}</li>
-                                          ))}
-                                        </ul>
-                                      )}
-                                    </div>
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        ) : (
-                          <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>No skills listed.</p>
-                        )}
-                      </div>
+                      <Button
+                        key={index}
+                        onClick={handleClick}
+                        className={`rounded-full font-medium transition-all duration-300 hover:scale-105 ${isDarkMode ? 
+                          'bg-[#1a103d] text-white border border-[#2a205d] hover:bg-[#2a205d]' : 
+                          'bg-white text-[#ff6b9c] border border-[#ffc2d6] hover:bg-[#ffe4ec]'}`}
+                      >
+                        {Icon && <Icon className="mr-2 h-4 w-4" />}
+                        {button.text?.[currentLang]}
+                      </Button>
                     );
                   })}
                 </div>
               </div>
-            </section>
-          )}
 
-          {/* Projects Section */}
-          {!isProjectsEmpty && (
-            <section id="projects" className="py-20">
-              <div className="container mx-auto px-4">
-                <h2 className={`section-title text-3xl font-bold text-center ${getThemeClass('', 'dark-title', 'light-title')}`}>
-                  {t.myProjects}
-                </h2>
-
-                {projetsLoading ? (
-                  <div className="flex justify-center">
-                    <Loading />
+              {photoUrl ? (
+                <div className="md:w-1/2 flex justify-center">
+                  <div className={`relative w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden ${isDarkMode ? 
+                    'ring-4 ring-[#ff9acb] shadow-lg shadow-[#ff9acb]/30' : 
+                    'ring-4 ring-[#ff6b9c] shadow-lg shadow-[#ff6b9c]/30'} transition-all duration-500`}>
+                    <Image
+                      src={photoUrl}
+                      alt="Profile photo"
+                      width={400}
+                      height={400}
+                      priority
+                      className="object-cover w-full h-full"
+                    />
                   </div>
-                ) : projetsData?.projects?.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
-                    {projetsData.projects.map((project: any) => (
-                      <Card
-                        key={project._id}
-                        className={`portfolio-card ${getThemeClass('', 'dark-card', 'light-card')}`}
-                      >
-                        <div className="overflow-hidden">
-                          {project.image ? (
-                            <Image
-                              src={project.image}
-                              alt={`${project.title?.[currentLang] || project.title?.fr || project.title?.en || 'Project'}`}
-                              width={800}
-                              height={450}
-                              className="w-full h-48 object-cover transition-transform duration-500 hover:scale-110"
-                            />
-                          ) : (
-                            <div className={`w-full h-48 flex items-center justify-center ${isDarkMode 
-                              ? 'bg-purple-900/20' 
-                              : 'bg-purple-100'}`}>
-                              <span className={isDarkMode ? 'text-gray-400' : 'text-gray-500'}>
-                                {currentLang === 'fr' ? 'Pas d\'image disponible' :
-                                  currentLang === 'en' ? 'No image available' :
-                                    'لا توجد صورة متاحة'}
-                              </span>
-                            </div>
-                          )}
+                </div>) : (
+                <div className="md:w-1/2 flex justify-center">
+                  <div className={`relative w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden ${isDarkMode ? 
+                    'ring-4 ring-[#ff9acb] shadow-lg shadow-[#ff9acb]/30' : 
+                    'ring-4 ring-[#ff6b9c] shadow-lg shadow-[#ff6b9c]/30'} transition-all duration-500`}>
+                    <Image
+                      src={"https://woxgxzelncuqwury.public.blob.vercel-storage.com/profile_1755462555430_HanSooyoung.png"}
+                      alt="Profile photo"
+                      width={400}
+                      height={400}
+                      priority
+                      className="object-cover w-full h-full"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Services Section */}
+      {!isServicesEmpty && (
+        <section id="services" className="py-20 px-4">
+          <div className="container mx-auto">
+            <h2 className={`text-3xl md:text-4xl font-bold text-center mb-16 ${isDarkMode ? 
+              'text-white' : 
+              'text-[#ff4d7a]'}`}>
+              {t.servicesTitle}
+              <span className={`block w-20 h-1 mx-auto mt-4 ${isDarkMode ? 
+                'bg-gradient-to-r from-[#ff9acb] to-[#a67cff]' : 
+                'bg-gradient-to-r from-[#ff6b9c] to-[#ff4d7a]'}`}></span>
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {Array.isArray(servicesData?.servicesList) && servicesData.servicesList.length > 0 ? (
+                servicesData.servicesList.map((service, index) => {
+                  const title = service.title?.[currentLang] ||
+                    service.title?.[currentLang === 'fr' ? 'en' : currentLang === 'en' ? 'ar' : 'fr'] ||
+                    service.title?.[currentLang === 'ar' ? 'fr' : 'en'];
+                  const description = service.description?.[currentLang] ||
+                    service.description?.[currentLang === 'fr' ? 'en' : currentLang === 'en' ? 'ar' : 'fr'] ||
+                    service.description?.[currentLang === 'ar' ? 'fr' : 'en'];
+
+                  if (!title) return null;
+
+                  return (
+                    <Card
+                      key={index}
+                      className={`group transition-all duration-500 hover:scale-105 ${isDarkMode ? 
+                        'bg-[#1a103d] border-[#2a205d] hover:border-[#ff9acb]' : 
+                        'bg-white border-[#ffe4ec] hover:border-[#ff6b9c]'} overflow-hidden`}
+                    >
+                      <CardContent className="p-6">
+                        <div className="flex justify-between items-start mb-4">
+                          <span className={`text-2xl font-bold ${isDarkMode ? 
+                            'text-[#ff9acb]' : 
+                            'text-[#ff6b9c]'}`}>0{index + 1}</span>
+                          <ArrowUpRight className={`transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 ${isDarkMode ? 
+                            'text-[#a67cff]' : 
+                            'text-[#ff4d7a]'}`}
+                          />
                         </div>
+                        <h3 className={`text-xl font-semibold mb-2 ${isDarkMode ? 
+                          'text-white' : 
+                          'text-[#ff4d7a]'}`}>{title}</h3>
+                        {description && <p className={isDarkMode ? 'text-gray-300' : 'text-gray-700'}>{description}</p>}
+                      </CardContent>
+                    </Card>
+                  );
+                })
+              ) : (
+                <p className="text-center col-span-full">No services available</p>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
 
-                        <CardContent className="p-6">
-                          <h3 className={`text-xl font-semibold mb-3 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                            {project.title?.[currentLang] || project.title?.fr || project.title?.en || project.title?.ar}
-                          </h3>
-                          <p className={`mb-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                            {project.description?.[currentLang] || project.description?.fr || project.description?.en || project.description?.ar}
+      {/* Experience & Education Section */}
+      {!isJourneyDataEmpty && (
+        <section
+          id="experience"
+          className={`py-20 px-4 ${isDarkMode ? 
+            'bg-[#0f1029]' : 
+            'bg-[#ffecf1]'}`}
+        >
+          <div className="container mx-auto">
+            <h2 className={`text-3xl md:text-4xl font-bold text-center mb-16 ${isDarkMode ? 
+              'text-white' : 
+              'text-[#ff4d7a]'}`}>
+              {t.journeyTitle}
+              <span className={`block w-20 h-1 mx-auto mt-4 ${isDarkMode ? 
+                'bg-gradient-to-r from-[#ff9acb] to-[#a67cff]' : 
+                'bg-gradient-to-r from-[#ff6b9c] to-[#ff4d7a]'}`}></span>
+            </h2>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+              {educationData?.education?.length > 0 && (
+                <div>
+                  <h3 className={`text-2xl font-semibold mb-8 flex items-center ${isDarkMode ? 
+                    'text-white' : 
+                    'text-[#ff4d7a]'}`}>
+                    <GraduationCap className="mr-3" />
+                    {currentLang === "fr" ? "Formation" : currentLang === "en" ? "Education" : "التعليم"}
+                  </h3>
+                  <div className="relative">
+                    <div className={`absolute left-5 top-0 h-full w-0.5 ${isDarkMode ? 
+                      'bg-[#2a205d]' : 
+                      'bg-[#ffc2d6]'}`}></div>
+                    {educationData?.education && [...educationData.education].reverse().map((event, index) => (
+                      <div key={index} className="relative mb-10 pl-16">
+                        <div
+                          className={`absolute left-5 top-1.5 h-3 w-3 -translate-x-1/2 rounded-full ${isDarkMode ? 
+                            'bg-[#ff9acb] ring-4 ring-[#ff9acb]/20' : 
+                            'bg-[#ff6b9c] ring-4 ring-[#ff6b9c]/20'}`}
+                        ></div>
+                        <div
+                          className={`absolute left-11 top-3 h-0.5 w-6 ${isDarkMode ? 
+                            'bg-[#2a205d]' : 
+                            'bg-[#ffc2d6]'}`}
+                        ></div>
+                        <p className={`text-sm font-medium mb-1 ${isDarkMode ? 
+                          'text-[#ff9acb]' : 
+                          'text-[#ff6b9c]'}`}>
+                          {event.year?.[currentLang]}
+                        </p>
+                        <h4 className={`text-xl font-semibold mb-1 ${isDarkMode ? 
+                          'text-white' : 
+                          'text-gray-800'}`}>
+                          {event.title?.[currentLang]}
+                        </h4>
+                        <p className={`font-medium mb-2 ${isDarkMode ? 
+                          'text-gray-400' : 
+                          'text-gray-600'}`}>
+                          {event.institution?.[currentLang]}
+                        </p>
+                        {event.description && (
+                          <p className={isDarkMode ? 'text-gray-300' : 'text-gray-700'}>
+                            {event.description?.[currentLang]}
                           </p>
-
-                          {project.techStack?.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mb-4">
-                              {project.techStack.map((tech: string, techIndex: number) => (
-                                <Badge
-                                  key={techIndex}
-                                  className={isDarkMode 
-                                    ? 'bg-purple-900/30 text-purple-300 border-purple-700' 
-                                    : 'bg-purple-100 text-purple-600 border-purple-200'}
-                                >
-                                  {tech}
-                                </Badge>
-                              ))}
-                            </div>
-                          )}
-
-                          {project.button && (
-                            <div className="mt-4">
-                              <Button
-                                onClick={() => window.open(project.button.link, "_blank")}
-                                className={`w-full font-medium ${isDarkMode 
-                                  ? 'bg-gradient-to-r from-[#ff9acb] to-[#a67cff] text-white hover:shadow-lg hover:shadow-purple-500/30' 
-                                  : 'bg-gradient-to-r from-[#f6a5c0] to-[#b76e79] text-white hover:shadow-lg hover:shadow-pink-300'}`}
-                              >
-                                <LinkIcon size={16} className="mr-2" />
-                                {project.button.label?.[currentLang] ||
-                                  project.button.label?.fr ||
-                                  project.button.label?.en ||
-                                  project.button.label?.ar ||
-                                  (currentLang === 'fr' ? 'Voir le projet' :
-                                    currentLang === 'en' ? 'View Project' :
-                                      'عرض المشروع')}
-                              </Button>
-                            </div>
-                          )}
-                        </CardContent>
-                      </Card>
+                        )}
+                      </div>
                     ))}
                   </div>
-                ) : (
-                  <div className="text-center py-12">
-                    <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
-                      {currentLang === 'fr' ? 'Aucun projet trouvé' :
-                        currentLang === 'en' ? 'No projects found' :
-                          'لم يتم العثور على مشاريع'}
-                    </p>
+                </div>
+              )}
+
+              {educationData.experience?.length > 0 && (
+                <div>
+                  <h3 className={`text-2xl font-semibold mb-8 flex items-center ${isDarkMode ? 
+                    'text-white' : 
+                    'text-[#ff4d7a]'}`}>
+                    <Briefcase className="mr-3" />
+                    {currentLang === "fr" ? "Expérience" : currentLang === "en" ? "Experience" : "الخبرة"}
+                  </h3>
+                  <div className="relative">
+                    <div className={`absolute left-5 top-0 h-full w-0.5 ${isDarkMode ? 
+                      'bg-[#2a205d]' : 
+                      'bg-[#ffc2d6]'}`}></div>
+                    {educationData?.experience && [...educationData.experience].reverse().map((event, index) => (
+                      <div key={index} className="relative mb-10 pl-16">
+                        <div
+                          className={`absolute left-5 top-1.5 h-3 w-3 -translate-x-1/2 rounded-full ${isDarkMode ? 
+                            'bg-[#ff9acb] ring-4 ring-[#ff9acb]/20' : 
+                            'bg-[#ff6b9c] ring-4 ring-[#ff6b9c]/20'}`}
+                        ></div>
+                        <div
+                          className={`absolute left-11 top-3 h-0.5 w-6 ${isDarkMode ? 
+                            'bg-[#2a205d]' : 
+                            'bg-[#ffc2d6]'}`}
+                        ></div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className={`text-sm font-medium ${isDarkMode ? 
+                            'text-[#ff9acb]' : 
+                            'text-[#ff6b9c]'}`}>
+                            {event.year?.[currentLang]}
+                          </p>
+                          {event.duration && (
+                            <Badge className={isDarkMode ? 
+                              'bg-[#2a205d] text-[#ff9acb]' : 
+                              'bg-[#ffe4ec] text-[#ff6b9c]'}>
+                              {event.duration}
+                            </Badge>
+                          )}
+                        </div>
+                        <h4 className={`text-xl font-semibold mb-1 ${isDarkMode ? 
+                          'text-white' : 
+                          'text-gray-800'}`}>
+                          {event.title?.[currentLang]}
+                        </h4>
+                        <p className={`font-medium mb-2 ${isDarkMode ? 
+                          'text-gray-400' : 
+                          'text-gray-600'}`}>
+                          {event.institution?.[currentLang]}
+                        </p>
+                        {event.description && (
+                          <p className={isDarkMode ? 'text-gray-300' : 'text-gray-700'}>
+                            {event.description?.[currentLang]}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Skills Section */}
+      {!isSkillsDataEmpty && (
+        <section id="skills" className="py-20 px-4">
+          <div className="container mx-auto">
+            <h2 className={`text-3xl md:text-4xl font-bold text-center mb-16 ${isDarkMode ? 
+              'text-white' : 
+              'text-[#ff4d7a]'}`}>
+              {t.skillsTitle}
+              <span className={`block w-20 h-1 mx-auto mt-4 ${isDarkMode ? 
+                'bg-gradient-to-r from-[#ff9acb] to-[#a67cff]' : 
+                'bg-gradient-to-r from-[#ff6b9c] to-[#ff4d7a]'}`}></span>
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+              {skillsData?.skills?.map((category, catIndex) => {
+                const CategoryIcon = getIcon(category.skillicon);
+
+                return (
+                  <div key={catIndex} className={`p-6 rounded-2xl ${isDarkMode ? 
+                    'bg-[#1a103d]' : 
+                    'bg-white'} shadow-lg`}>
+                    <h3 className={`text-xl font-semibold mb-6 flex items-center ${isDarkMode ? 
+                      'text-white' : 
+                      'text-[#ff4d7a]'}`}>
+                      {CategoryIcon && (
+                        <CategoryIcon className="mr-3" />
+                      )}
+                      {category.title?.[currentLang]}
+                    </h3>
+
+                    {category.items.length > 0 ? (
+                      <div className="grid grid-cols-2 gap-4">
+                        {category.items.map((skill, skillIndex) => {
+                          const SkillIcon = getIcon(skill.icon);
+
+                          return (
+                            <Card
+                              key={skillIndex}
+                              className={`transition-all duration-300 hover:scale-105 ${isDarkMode ? 
+                                ' border-[#2a205d]' : 
+                                'bg-[#ffe4ec] border-[#ffc2d6]'} border`}
+                            >
+                              <CardContent className="p-4 flex flex-col items-center text-center">
+                                {SkillIcon && (
+                                  <SkillIcon className={`h-8 w-8 mb-2 ${isDarkMode ? 
+                                    'text-[#ff9acb]' : 
+                                    'text-[#ff6b9c]'}`} />
+                                )}
+                                <h4 className={`font-medium ${isDarkMode ? 
+                                  'text-white' : 
+                                  'text-gray-800'}`}>
+                                  {skill.name?.[currentLang]}
+                                </h4>
+                                {skill.examples?.length > 0 && (
+                                  <ul className="mt-2 space-y-1">
+                                    {skill.examples.map((ex, exIndex) => (
+                                      <li key={exIndex} className={`text-xs ${isDarkMode ? 
+                                        'text-gray-400' : 
+                                        'text-gray-600'}`}>{ex?.[currentLang]}</li>
+                                    ))}
+                                  </ul>
+                                )}
+                              </CardContent>
+                            </Card>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>No skills listed.</p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>)}
+
+      {/* Projects Section */}
+      {!isProjectsEmpty && (
+        <section
+          id="projects"
+          className={`py-20 px-4 ${isDarkMode ? 
+            'bg-[#0f1029]' : 
+            'bg-[#ffecf1]'}`}
+        >
+          <div className="container mx-auto">
+            <h2 className={`text-3xl md:text-4xl font-bold text-center mb-16 ${isDarkMode ? 
+              'text-white' : 
+              'text-[#ff4d7a]'}`}>
+              {t.myProjects}
+              <span className={`block w-20 h-1 mx-auto mt-4 ${isDarkMode ? 
+                'bg-gradient-to-r from-[#ff9acb] to-[#a67cff]' : 
+                'bg-gradient-to-r from-[#ff6b9c] to-[#ff4d7a]'}`}></span>
+            </h2>
+
+            {projetsLoading ? (
+              <div className="flex justify-center">
+                <Loading />
+              </div>
+            ) : projetsData?.projects?.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {projetsData.projects.map((project: any) => (
+                  <Card
+                    key={project._id}
+                    className={`group overflow-hidden transition-all duration-500 hover:scale-105 ${isDarkMode ? 
+                      'bg-[#1a103d] border-[#2a205d]' : 
+                      'bg-white border-[#ffe4ec]'} shadow-lg`}
+                  >
+                    <div className="overflow-hidden">
+                      {project.image ? (
+                        <Image
+                          src={project.image}
+                          alt={`${project.title?.[currentLang] || project.title?.fr || project.title?.en || 'Project'}`}
+                          width={800}
+                          height={450}
+                          className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className={`w-full h-48 flex items-center justify-center ${isDarkMode ? 
+                          '' : 
+                          'bg-[#ffe4ec]'}`}>
+                          <span className={isDarkMode ? 'text-gray-500' : 'text-gray-400'}>
+                            {currentLang === 'fr' ? 'Pas d\'image disponible' :
+                              currentLang === 'en' ? 'No image available' :
+                                'لا توجد صورة متاحة'}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    <CardContent className="p-6">
+                      <h3 className={`text-xl font-semibold mb-2 ${isDarkMode ? 
+                        'text-white' : 
+                        'text-[#ff4d7a]'}`}>
+                        {project.title?.[currentLang] || project.title?.fr || project.title?.en || project.title?.ar}
+                      </h3>
+                      <p
+                        className={`mb-4 ${isDarkMode ? 
+                          'text-gray-300' : 
+                          'text-gray-700'}`}
+                      >
+                        {project.description?.[currentLang] || project.description?.fr || project.description?.en || project.description?.ar}
+                      </p>
+
+                      {project.techStack?.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          {project.techStack.map((tech: string, techIndex: number) => (
+                            <Badge
+                              key={techIndex}
+                              className={isDarkMode ? 
+                                'bg-[#2a205d] text-[#ff9acb]' : 
+                                'bg-[#ffe4ec] text-[#ff6b9c]'}
+                            >
+                              {tech}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
+
+                      {project.button && (
+                        <div className="mt-4">
+                          <Button
+                            onClick={() => window.open(project.button.link, "_blank")}
+                            className={`w-full rounded-full font-medium transition-all duration-300 hover:scale-105 ${isDarkMode ? 
+                              'bg-gradient-to-r from-[#ff9acb] to-[#a67cff] text-white hover:shadow-lg hover:shadow-[#ff9acb]/30' : 
+                              'bg-gradient-to-r from-[#ff6b9c] to-[#ff4d7a] text-white hover:shadow-lg hover:shadow-[#ff6b9c]/30'}`}
+                          >
+                            <Link className="mr-2 h-4 w-4" />
+                            {project.button.label?.[currentLang] ||
+                              project.button.label?.fr ||
+                              project.button.label?.en ||
+                              project.button.label?.ar ||
+                              (currentLang === 'fr' ? 'Voir le projet' :
+                                currentLang === 'en' ? 'View Project' :
+                                  'عرض المشروع')}
+                          </Button>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-10">
+                <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
+                  {currentLang === 'fr' ? 'Aucun projet trouvé' :
+                    currentLang === 'en' ? 'No projects found' :
+                      'لم يتم العثور على مشاريع'}
+                </p>
+              </div>
+            )}
+          </div>
+        </section>)}
+
+      {/* About Section */}
+      {!isAboutDataEmpty && (
+        <section id="about" className="py-20 px-4">
+          <div className="container mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+              <div>
+                <h2 className={`text-3xl md:text-4xl font-bold mb-8 ${isDarkMode ? 
+                  'text-white' : 
+                  'text-[#ff4d7a]'}`}>
+                  {t.aboutTitle}
+                  <span className={`block w-20 h-1 mt-4 ${isDarkMode ? 
+                    'bg-gradient-to-r from-[#ff9acb] to-[#a67cff]' : 
+                    'bg-gradient-to-r from-[#ff6b9c] to-[#ff4d7a]'}`}></span>
+                </h2>
+
+                <p className={`text-lg mb-8 ${isDarkMode ? 
+                  'text-gray-300' : 
+                  'text-gray-700'}`}>
+                  {aboutData.aboutDescription?.[currentLang]}
+                </p>
+
+                {aboutData.personalInfo && (
+                  <div className="space-y-4">
+                    {aboutData.personalInfo?.map((info, index) => {
+                      const IconComponent = getIcon(info.icon);
+                      return (
+                        <div key={index} className="flex items-start">
+                          {IconComponent && (
+                            <IconComponent className={`h-5 w-5 mt-1 mr-4 ${isDarkMode ? 
+                              'text-[#ff9acb]' : 
+                              'text-[#ff6b9c]'}`} />
+                          )}
+                          <div>
+                            <p className={`font-medium ${isDarkMode ? 
+                              'text-gray-400' : 
+                              'text-gray-600'}`}>
+                              {info.label?.[currentLang]}
+                            </p>
+                            <p className={isDarkMode ? 'text-white' : 'text-gray-800'}>
+                              {info.value?.[currentLang]}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </div>
-            </section>
-          )}
 
-           {/* About Section */}
-      {!isAboutDataEmpty && (
-        <section id="about" className="py-20">
-          <div className="container mx-auto px-4">
-            <div className={`rounded-2xl p-8 md:p-12 ${isDarkMode 
-              ? 'bg-[#1a103d] border border-purple-800/30' 
-              : 'bg-white border border-gray-200'}`}>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                <div>
-                  <h2 className={`text-3xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                    {t.aboutTitle}
-                    <span className={`block h-1 w-16 mt-4 rounded-full ${isDarkMode 
-                      ? 'bg-gradient-to-r from-[#ff9acb] to-[#a67cff]' 
-                      : 'bg-gradient-to-r from-[#f6a5c0] to-[#b76e79]'}`}></span>
-                  </h2>
-
-                  <p className={`text-lg mb-8 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                    {aboutData.aboutDescription?.[currentLang]}
-                  </p>
-
-                  {aboutData.personalInfo && (
+              <div className="space-y-10">
+                {aboutData.languages && (
+                  <div className={`p-6 rounded-2xl ${isDarkMode ? 
+                    'bg-[#1a103d]' : 
+                    'bg-white'} shadow-lg`}>
+                    <h3 className={`text-xl font-semibold mb-6 flex items-center ${isDarkMode ? 
+                      'text-white' : 
+                      'text-[#ff4d7a]'}`}>
+                      <LanguagesIcon className="mr-3" />
+                      {aboutData.languages?.title?.[currentLang]}
+                    </h3>
                     <div className="space-y-4">
-                      {aboutData.personalInfo?.map((info, index) => {
-                        const IconComponent = getIcon(info.icon);
+                      {aboutData.languages?.list?.map((lang, index) => {
+                        const levelKey = lang.level.toLowerCase();
+                        const levelText = aboutData.languages?.levels?.[levelKey]?.[currentLang] || '';
+
                         return (
-                          <div key={index} className="flex items-start">
-                            {IconComponent && (
-                              <IconComponent size={20} className={`mt-1 mr-4 ${isDarkMode ? 'text-purple-400' : 'text-purple-500'}`} />
-                            )}
-                            <div>
-                              <p className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                                {info.label?.[currentLang]}
-                              </p>
-                              <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
-                                {info.value?.[currentLang]}
-                              </p>
+                          <div key={index}>
+                            <div className="flex justify-between mb-1">
+                              <span className={isDarkMode ? 'text-gray-300' : 'text-gray-800'}>
+                                {lang.name?.[currentLang]}
+                              </span>
+                              <span className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
+                                {levelText}
+                              </span>
+                            </div>
+                            <div className={`h-2 rounded-full ${isDarkMode ? 
+                              '' : 
+                              'bg-[#ffe4ec]'}`}>
+                              <div 
+                                className={`h-full rounded-full ${isDarkMode ? 
+                                  'bg-gradient-to-r from-[#ff9acb] to-[#a67cff]' : 
+                                  'bg-gradient-to-r from-[#ff6b9c] to-[#ff4d7a]'}`}
+                                style={{ width: `${(['native', 'fluent', 'c2'].includes(levelKey) ? 100 : 
+                                                ['advanced', 'c1'].includes(levelKey) ? 80 :
+                                                ['intermediate', 'b1', 'b2'].includes(levelKey) ? 60 :
+                                                ['beginner', 'a1', 'a2'].includes(levelKey) ? 40 : 20)}%` }}
+                              ></div>
                             </div>
                           </div>
                         );
                       })}
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
 
-                <div className="space-y-8">
-                  {aboutData.languages && (
-                    <div>
-                      <h3 className={`text-xl font-semibold mb-6 flex items-center ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                        <Languages size={24} className="mr-3" />
-                        {aboutData.languages?.title?.[currentLang]}
-                      </h3>
-                      <div className="space-y-4">
-                        {aboutData.languages?.list?.map((lang, index) => {
-                          const levelKey = lang.level.toLowerCase();
-                          const levelText = aboutData.languages?.levels?.[levelKey]?.[currentLang] || '';
-
-                          return (
-                            <div key={index}>
-                              <div className="flex justify-between mb-2">
-                                <span className={isDarkMode ? 'text-gray-300' : 'text-gray-700'}>
-                                  {lang.name?.[currentLang]}
-                                </span>
-                                <span className={isDarkMode ? 'text-purple-300' : 'text-purple-600'}>
-                                  {levelText}
-                                </span>
-                              </div>
-                              <div className={`h-2 rounded-full overflow-hidden ${isDarkMode 
-                                ? 'bg-purple-900/30' 
-                                : 'bg-purple-100'}`}>
-                                <div 
-                                  className={`h-full rounded-full ${isDarkMode 
-                                    ? 'bg-gradient-to-r from-[#ff9acb] to-[#a67cff]' 
-                                    : 'bg-gradient-to-r from-[#f6a5c0] to-[#b76e79]'}`}
-                                  style={{ width: `${(lang.level === 'native' ? 100 : lang.level === 'fluent' ? 90 : lang.level === 'intermediate' ? 70 : 50)}%` }}
-                                ></div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
+                {aboutData.interests && (
+                  <div className={`p-6 rounded-2xl ${isDarkMode ? 
+                    'bg-[#1a103d]' : 
+                    'bg-white'} shadow-lg`}>
+                    <h3 className={`text-xl font-semibold mb-6 flex items-center ${isDarkMode ? 
+                      'text-white' : 
+                      'text-[#ff4d7a]'}`}>
+                      <Heart className="mr-3" />
+                      {t.interests}
+                    </h3>
+                    <div className="flex flex-wrap gap-3">
+                      {aboutData.interests?.map((interest, index) => {
+                        const IconComponent = getIcon(interest.icon);
+                        return (
+                          <Badge
+                            key={index}
+                            className={`py-2 px-4 rounded-full transition-all duration-300 hover:scale-105 ${isDarkMode ? 
+                              ' text-[#ff9acb] hover:bg-[#2a205d]' : 
+                              'bg-[#ffe4ec] text-[#ff6b9c] hover:bg-[#ffc2d6]'}`}
+                          >
+                            {IconComponent && (
+                              <IconComponent className="mr-2 h-4 w-4" />
+                            )}
+                            {interest.name?.[currentLang]}
+                          </Badge>
+                        );
+                      })}
                     </div>
-                  )}
-
-                  {aboutData.interests && (
-                    <div>
-                      <h3 className={`text-xl font-semibold mb-6 flex items-center ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                        <Heart size={24} className="mr-3" />
-                        {t.interests}
-                      </h3>
-                      <div className="flex flex-wrap gap-3">
-                        {aboutData.interests?.map((interest, index) => {
-                          const IconComponent = getIcon(interest.icon);
-                          return (
-                            <Badge
-                              key={index}
-                              className={`py-2 px-4 ${isDarkMode 
-                                ? 'bg-purple-900/30 text-purple-300 border-purple-700' 
-                                : 'bg-purple-100 text-purple-600 border-purple-200'}`}
-                            >
-                              {IconComponent && (
-                                <IconComponent size={16} className="mr-2" />
-                              )}
-                              {interest.name?.[currentLang]}
-                            </Badge>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </section>
       )}
 
-          {/* Contact Section */}
-          {!isContactDataEmpty && (
-            <section id="contact" className="py-20">
-              <div className="container mx-auto px-4">
-                <div className={`rounded-2xl p-8 md:p-12 text-center ${isDarkMode 
-                  ? 'bg-[#1a103d] border border-purple-800/30' 
-                  : 'bg-white border border-gray-200'}`}>
-                  <h2 className={`text-3xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                    {contactData.contactTitle?.[currentLang]}
-                  </h2>
-                  <p className={`text-xl mb-12 max-w-2xl mx-auto ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                    {contactData.contactDescription?.[currentLang]}
-                  </p>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-                    {contactData.contactInfo?.map((info, index) => {
-                      const IconComponent = getIcon(info.icon);
-                      return (
-                        <div key={index} className={`p-6 rounded-xl ${isDarkMode 
-                          ? ' border border-purple-900/30' 
-                          : 'bg-gray-50 border border-gray-200'}`}>
-                          <div className={`inline-flex items-center justify-center w-12 h-12 rounded-full mb-4 ${isDarkMode 
-                            ? 'bg-purple-900/30 text-purple-300' 
-                            : 'bg-purple-100 text-purple-600'}`}>
-                            {IconComponent && (
-                              <IconComponent size={20} />
-                            )}
-                          </div>
-                          <h3 className={`font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                            {info.label?.[currentLang]}
-                          </h3>
-                          <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
-                            {info.link ? (
-                              <a
-                                href={info.link}
-                                target={info.link.startsWith("http") ? "_blank" : "_self"}
-                                rel={info.link.startsWith("http") ? "noopener noreferrer" : ""}
-                                className={`hover:underline ${isDarkMode ? 'text-purple-300' : 'text-purple-600'}`}
-                              >
-                                {typeof info.value === "object"
-                                  ? info.value[currentLang]
-                                  : info.value}
-                              </a>
-                            ) : (
-                              typeof info.value === "object"
-                                ? info.value[currentLang]
-                                : info.value
-                            )}
-                          </p>
-                        </div>
-                      );
-                    })}
+      {/* Contact Section */}
+      {!isContactDataEmpty && (
+        <section id="contact" className={`py-20 px-4 ${isDarkMode ? 
+          'bg-[#0f1029]' : 
+          'bg-[#ffecf1]'}`}>
+          <div className="container mx-auto text-center">
+            <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${isDarkMode ? 
+              'text-white' : 
+              'text-[#ff4d7a]'}`}>
+              {contactData.contactTitle?.[currentLang]}
+            </h2>
+            <p className={`text-lg max-w-2xl mx-auto mb-12 ${isDarkMode ? 
+              'text-gray-300' : 
+              'text-gray-700'}`}>
+              {contactData.contactDescription?.[currentLang]}
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+              {contactData.contactInfo?.map((info, index) => {
+                const IconComponent = getIcon(info.icon);
+                return (
+                  <div key={index} className={`p-6 rounded-2xl transition-all duration-300 hover:scale-105 ${isDarkMode ? 
+                    'bg-[#1a103d]' : 
+                    'bg-white'} shadow-lg`}>
+                    <div className={`inline-flex items-center justify-center w-12 h-12 rounded-full mb-4 ${isDarkMode ? 
+                      ' text-[#ff9acb]' : 
+                      'bg-[#ffe4ec] text-[#ff6b9c]'}`}>
+                      {IconComponent && (
+                        <IconComponent className="h-6 w-6" />
+                      )}
+                    </div>
+                    <h3 className={`font-semibold mb-2 ${isDarkMode ? 
+                      'text-white' : 
+                      'text-gray-800'}`}>
+                      {info.label?.[currentLang]}
+                    </h3>
+                    <p className={isDarkMode ? 'text-gray-300' : 'text-gray-700'}>
+                      {info.link ? (
+                        <a
+                          href={info.link}
+                          target={info.link.startsWith("http") ? "_blank" : "_self"}
+                          rel={info.link.startsWith("http") ? "noopener noreferrer" : ""}
+                          className={`hover:underline ${isDarkMode ? 
+                            'text-[#ff9acb]' : 
+                            'text-[#ff6b9c]'}`}
+                        >
+                          {typeof info.value === "object"
+                            ? info.value[currentLang]
+                            : info.value}
+                        </a>
+                      ) : (
+                        typeof info.value === "object"
+                          ? info.value[currentLang]
+                          : info.value
+                      )}
+                    </p>
                   </div>
-
-                  <a
-                    href={contactData.contactButton?.link || "#contact-form"}
-                    className={`inline-flex items-center px-8 py-4 rounded-full font-medium ${isDarkMode 
-                      ? 'bg-gradient-to-r from-[#ff9acb] to-[#a67cff] text-white hover:shadow-lg hover:shadow-purple-500/30' 
-                      : 'bg-gradient-to-r from-[#f6a5c0] to-[#b76e79] text-white hover:shadow-lg hover:shadow-pink-300'}`}
-                  >
-                    <Send size={18} className="mr-2" />
-                    {contactData.contactButton?.startProject?.[currentLang]}
-                  </a>
-                </div>
-              </div>
-            </section>
-          )}
-        </main>
-
-        {/* Footer */}
-        <footer className={`py-8 ${isDarkMode 
-          ? 'bg-[#0b0c1d] border-t border-purple-900/30' 
-          : 'bg-gray-50 border-t border-gray-200'}`}>
-          <div className="container mx-auto px-4">
-            <div className="flex flex-col md:flex-row justify-between items-center">
-              <div className="mb-4 md:mb-0">
-                <span className={`font-medium ${isDarkMode ? 'text-purple-300' : 'text-purple-600'}`}>
-                  © 2025 {usernameData?.[currentLang]}
-                </span>
-              </div>
-              <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>{t.rightsReserved}</p>
+                );
+              })}
             </div>
+
+            <a
+              href={contactData.contactButton?.link || "#contact-form"}
+              className={`inline-flex items-center px-8 py-4 rounded-full font-medium transition-all duration-300 hover:scale-105 ${isDarkMode ? 
+                'bg-gradient-to-r from-[#ff9acb] to-[#a67cff] text-white hover:shadow-lg hover:shadow-[#ff9acb]/30' : 
+                'bg-gradient-to-r from-[#ff6b9c] to-[#ff4d7a] text-white hover:shadow-lg hover:shadow-[#ff6b9c]/30'}`}
+            >
+              <Send className="mr-2 h-5 w-5" />
+              {contactData.contactButton?.startProject?.[currentLang]}
+            </a>
           </div>
-        </footer>
-      </div>  
-    </>
-  );
+        </section>)}
+
+      {/* Footer */}
+      <footer className={`py-8 px-4 ${isDarkMode ? 
+        'bg-[#0b0c1d]' : 
+        'bg-[#ffd6e7]'}`}>
+        <div className="container mx-auto">
+          <div className="flex flex-col md:flex-row items-center justify-between">
+            <div className="flex items-center space-x-2 mb-4 md:mb-0">
+              <span className={`font-bold ${isDarkMode ? 
+                'bg-gradient-to-r from-[#ff9acb] to-[#a67cff] bg-clip-text text-transparent' : 
+                'bg-gradient-to-r from-[#ff6b9c] to-[#ff4d7a] bg-clip-text text-transparent'}`}>
+                © 2025 {usernameData?.[currentLang]}
+              </span>
+            </div>
+            <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>{t.rightsReserved}</p>
+          </div>
+        </div>
+      </footer>
+
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+          font-family: 'Inter', 'Poppins', sans-serif;
+          scroll-behavior: smooth;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+          width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+          background: ${isDarkMode ? '#0b0c1d' : '#ffd6e7'};
+        }
+        
+        ::-webkit-scrollbar-thumb {
+          background: ${isDarkMode ? 
+            'linear-gradient(to bottom, #ff9acb, #a67cff)' : 
+            'linear-gradient(to bottom, #ff6b9c, #ff4d7a)'};
+          border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+          background: ${isDarkMode ? 
+            'linear-gradient(to bottom, #ff7eb9, #9b5fff)' : 
+            'linear-gradient(to bottom, #ff5a8c, #ff3d70)'};
+        }
+        
+        /* Animation for section reveal */
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        section {
+          animation: fadeInUp 0.8s ease-out forwards;
+        }
+        
+        /* Gradient text animation */
+        .gradient-text {
+          background: ${isDarkMode ? 
+            'linear-gradient(45deg, #ff9acb, #a67cff, #9cecfb)' : 
+            'linear-gradient(45deg, #ff6b9c, #ff4d7a, #ff8eb4)'};
+          background-size: 200% 200%;
+          animation: gradientShift 3s ease infinite;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+        
+        @keyframes gradientShift {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        
+        /* Custom navigation spacing */
+        .custom-nav-spacing > *:not(:last-child) {
+          margin-right: 20px;
+        }
+
+        @media (min-width: 1990px) {
+          .custom-nav-spacing > *:not(:last-child) {
+            margin-right: 48px;
+          }
+        }
+      `}</style>
+    </div>
+  )
 }
