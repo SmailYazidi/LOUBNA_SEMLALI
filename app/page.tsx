@@ -465,11 +465,12 @@ const [mockData, setMockData] = useState(baseMockData);
   ]
 
   const navItems = [
-    { id: "services", label: t.services },
+ 
     { id: "experience", label: t.experience },
     { id: "skills", label: t.skills },
     { id: "projects", label: t.projects },
     { id: "about", label: t.about },
+       { id: "services", label: t.services },
     { id: "contact", label: t.contact },
   ];
 
@@ -1109,61 +1110,135 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
           </div>
         </div>
       </section>
-      {/* Contact Section */}
-      <section id="contact" className={`py-20 ${themeClasses.background}`}>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className={`text-3xl md:text-4xl font-bold mb-6 ${themeClasses.text}`}>
-            {mockData.contact.contactTitle?.[currentLang]}
-          </h2>
-          <p className={`text-lg ${themeClasses.textMuted} mb-12 max-w-2xl mx-auto`}>
-            {mockData.contact.contactDescription?.[currentLang]}
-          </p>
-          
-          <div className="grid md:grid-cols-2 gap-8 mb-12">
-            {mockData.contact.contactInfo?.map((info, index) => {
-              const IconComponent = getIcon(info.icon);
-              return (
-                <div key={index} className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 hover:scale-105 group`}>
-                  <div className={`${themeClasses.accentBg} w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                    {IconComponent && (
-                      <IconComponent className="h-8 w-8 text-white" />
-                    )}
-                  </div>
-                  <h3 className={`text-xl font-semibold mb-4 ${themeClasses.text} group-hover:${themeClasses.accent} transition-colors duration-300`}>
-                    {info.label?.[currentLang]}
-                  </h3>
-                  <p className={`${themeClasses.textMuted}`}>
-                    {info.link ? (
-                      <a
-                        href={info.link}
-                        target={info.link.startsWith("http") ? "_blank" : "_self"}
-                        rel={info.link.startsWith("http") ? "noopener noreferrer" : ""}
-                        className={`hover:${themeClasses.accent} transition-colors duration-300`}
-                      >
-                        {typeof info.value === "object"
-                          ? info.value[currentLang]
-                          : info.value}
-                      </a>
-                    ) : (
-                      typeof info.value === "object"
-                        ? info.value[currentLang]
-                        : info.value
-                    )}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
+   {/* Contact Section */}
+<section id="contact" className={`py-20 ${themeClasses.background}`}>
+  <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <h2 className={`text-3xl md:text-4xl font-bold mb-6 ${themeClasses.text}`}>
+      {mockData.contact.contactTitle?.[currentLang]}
+    </h2>
+    <p className={`text-lg ${themeClasses.textMuted} mb-12 max-w-2xl mx-auto`}>
+      {mockData.contact.contactDescription?.[currentLang]}
+    </p>
 
-          <a
-            href={mockData.contact.contactButton?.link || "#contact-form"}
-            className={`inline-flex items-center ${themeClasses.accentBg} hover:bg-[#0A2647]/90 text-white px-8 py-4 rounded-2xl ${themeClasses.shadow} transition-all duration-300 hover:scale-105 text-lg font-semibold`}
+    {/* Contact Info Cards */}
+    <div className="grid md:grid-cols-2 gap-8 mb-12">
+      {mockData.contact.contactInfo?.map((info, index) => {
+        const IconComponent = getIcon(info.icon);
+        return (
+          <div
+            key={index}
+            className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 hover:scale-105 group`}
           >
-            <Send className="mr-3 h-5 w-5" />
-            {mockData.contact.contactButton?.startProject?.[currentLang]}
-          </a>
-        </div>
-      </section>
+            <div
+              className={`${themeClasses.accentBg} w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300`}
+            >
+              {IconComponent && <IconComponent className="h-8 w-8 text-white" />}
+            </div>
+            <h3
+              className={`text-xl font-semibold mb-4 ${themeClasses.text} group-hover:${themeClasses.accent} transition-colors duration-300`}
+            >
+              {info.label?.[currentLang]}
+            </h3>
+            <p className={`${themeClasses.textMuted}`}>
+              {info.link ? (
+                <a
+                  href={info.link}
+                  target={info.link.startsWith("http") ? "_blank" : "_self"}
+                  rel={info.link.startsWith("http") ? "noopener noreferrer" : ""}
+                  className={`hover:${themeClasses.accent} transition-colors duration-300`}
+                >
+                  {typeof info.value === "object"
+                    ? info.value[currentLang]
+                    : info.value}
+                </a>
+              ) : typeof info.value === "object" ? (
+                info.value[currentLang]
+              ) : (
+                info.value
+              )}
+            </p>
+          </div>
+        );
+      })}
+    </div>   {/* Button */}
+    <a
+      href={mockData.contact.contactButton?.link || "#contact-form"}
+      className={`inline-flex items-center ${themeClasses.accentBg} hover:opacity-90 text-white px-8 py-4 rounded-2xl ${themeClasses.shadow} transition-all duration-300 hover:scale-105 text-lg font-semibold`}
+    >
+      <Send className="mr-3 h-5 w-5" />
+      {mockData.contact.contactButton?.startProject?.[currentLang]}
+    </a>
+
+ <br /><br /><br />
+  {/* Contact Form */}
+<div className="max-w-2xl mx-auto mb-12">
+  <h3 className={`text-2xl font-bold mb-8 text-center ${themeClasses.text}`}>
+    {currentLang === "en"
+      ? "Contact Me"
+      : currentLang === "fr"
+      ? "Contactez-moi"
+      : "اتصل بي"}
+  </h3>
+
+  <form id="contact-form" className="space-y-6 text-left">
+    <input
+      type="text"
+      name="name"
+      placeholder={
+        currentLang === "en"
+          ? "Your name"
+          : currentLang === "fr"
+          ? "Votre nom"
+          : "اسمك"
+      }
+      className={`w-full px-4 py-3 rounded-xl ${themeClasses.surface} ${themeClasses.text} border border-gray-500/20 focus:outline-none focus:ring-2 focus:${themeClasses.accentBorder}`}
+      required
+    />
+
+    <input
+      type="email"
+      name="email"
+      placeholder={
+        currentLang === "en"
+          ? "Your email"
+          : currentLang === "fr"
+          ? "Votre email"
+          : "بريدك الإلكتروني"
+      }
+      className={`w-full px-4 py-3 rounded-xl ${themeClasses.surface} ${themeClasses.text} border border-gray-500/20 focus:outline-none focus:ring-2 focus:${themeClasses.accentBorder}`}
+      required
+    />
+
+    <textarea
+      name="message"
+      rows="5"
+      placeholder={
+        currentLang === "en"
+          ? "Write your message..."
+          : currentLang === "fr"
+          ? "Écrivez votre message..."
+          : "اكتب رسالتك..."
+      }
+      className={`w-full px-4 py-3 rounded-xl ${themeClasses.surface} ${themeClasses.text} border border-gray-500/20 focus:outline-none focus:ring-2 focus:${themeClasses.accentBorder}`}
+      required
+    ></textarea>
+
+    <button
+      type="submit"
+      className={`w-full flex justify-center items-center ${themeClasses.accentBg} hover:opacity-90 text-white px-8 py-4 rounded-2xl ${themeClasses.shadow} transition-all duration-300 text-lg font-semibold`}
+    >
+      {currentLang === "en"
+        ? "Send Message"
+        : currentLang === "fr"
+        ? "Envoyer le message"
+        : "إرسال الرسالة"}
+    </button>
+  </form>
+</div>
+
+ 
+  </div>
+</section>
 
       {/* Footer */}
       <footer className={`${themeClasses.glassDark} border-t border-white/10`}>
