@@ -527,7 +527,7 @@ const [mockData, setMockData] = useState(baseMockData);
   surfaceSolid: isDarkMode ? 'bg-black' : 'bg-white',
   text: isDarkMode ? 'text-white' : 'text-gray-900',
   textMuted: isDarkMode ? 'text-gray-400' : 'text-gray-600',
-accent: isDarkMode ? 'text-[#3A6EA5]' : 'text-[#0A2647]',
+accent: isDarkMode ? 'text-[#00BFFF]' : 'text-[#0A2647]',
 accentBg: isDarkMode ? 'bg-[#3A6EA5]' : 'bg-[#0A2647]',
 accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
 
@@ -548,7 +548,7 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
             {/* Logo */}
             <div className="flex-shrink-0">
 
-<div className={`${themeClasses.glassDark} border border-white/20 min-w-[35px] w-12 h-12 ${themeClasses.text} hover:${themeClasses.accent} rounded-full transition-all duration-300 hover:scale-105 flex items-center justify-center text-2xl font-bold sm:hidden`}>
+<div className={`${themeClasses.glassDark} ${themeClasses.accent} border border-white/20 min-w-[30px] w-10 h-10  hover:${themeClasses.accent} rounded-full transition-all duration-300 hover:scale-105 flex items-center justify-center text-2xl font-bold sm:hidden`}>
   {/* Show first English letter, uppercased */}
   <span>
     { (mockData.username[currentLang].replace(/[^A-Za-z]/g, '').charAt(0) || 'L').toUpperCase() }
@@ -556,8 +556,8 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
 </div>
 
   {/* Full username for larger screens */}
-  <div className="hidden sm:block ">
-    <span>{mockData.username[currentLang]}</span>
+  <div className={`hidden sm:block  ${themeClasses.accent}  `}>
+    <span>{mockData.username[currentLang].toUpperCase()}</span>
   </div>
 </div>
 
