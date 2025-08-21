@@ -661,7 +661,7 @@ shadow: 'shadow-xl',
 
   {/* Menu Toggle */}
   <button
-    onClick={() => setIsMenuOpen(!isMenuOpen)}
+    onClick={() => {setIsMenuOpen(!isMenuOpen);setIsSearchOpen(!isSearchOpen); setSearchTerm("");}}
     className={`${themeClasses.text} hover:${themeClasses.accent} transition-colors duration-300`}
   >
     {isMenuOpen ? <X className="h-5 w-5 sm:h-6 sm:w-6" /> : <Menu className="h-5 w-5 sm:h-6 sm:w-6" />}
