@@ -723,7 +723,7 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
               )}
 
               {mockData.hero.heroDescription?.[currentLang] && (
-                <p className={`text-lg md:text-xl ${themeClasses.textMuted} max-w-2xl leading-relaxed`}>
+                <p className={`text-lg md:text-xl ${themeClasses.textMuted} max-w-2xl leading-relaxed font-sans`}>
                   {mockData.hero.heroDescription[currentLang]}
                 </p>
               )}
