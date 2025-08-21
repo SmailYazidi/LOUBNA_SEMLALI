@@ -559,7 +559,7 @@ shadow: 'shadow-xl',
           <button
             key={option.code}
             onClick={() => changeLanguage(option.code as "fr" | "en" | "ar")}
-            className={`w-full px-4 py-3 text-left hover:${themeClasses.accentBg} hover:text-white rounded-2xl transition-all duration-300 flex items-center ${
+            className={`w-full px-4 py-3 text-left  rounded-2xl transition-all duration-300 flex items-center ${
               currentLang === "ar" ? "space-x-reverse space-x-3" : "space-x-3"
             }`}
           >
@@ -638,7 +638,7 @@ shadow: 'shadow-xl',
           <button
             key={option.code}
             onClick={() => changeLanguage(option.code as "fr" | "en" | "ar")}
-            className={`w-full px-2 py-1 sm:px-3 sm:py-2 text-left hover:${themeClasses.accentBg} hover:text-white rounded-xl sm:rounded-2xl transition-all duration-300 flex items-center ${
+            className={`w-full px-2 py-1 sm:px-3 sm:py-2 text-left  rounded-xl sm:rounded-2xl transition-all duration-300 flex items-center ${
               currentLang === "ar" ? "space-x-reverse space-x-1 sm:space-x-2" : "space-x-1 sm:space-x-2"
             } text-xs sm:text-sm`}
           >
