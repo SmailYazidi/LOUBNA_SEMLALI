@@ -1181,7 +1181,8 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
 
  <br /><br /><br />
   {/* Contact Form */}
-<div className="max-w-2xl mx-auto mb-12">
+  
+  <div className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 hover:scale-105`}>
   <h3 className={`text-2xl font-bold mb-8 text-center ${themeClasses.text}`}>
     {currentLang === "en"
       ? "Contact Me"
