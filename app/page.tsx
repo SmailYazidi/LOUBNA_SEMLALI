@@ -125,189 +125,7 @@ const baseMockData = {
   contact: { contactTitle: {}, contactDescription: {}, contactInfo: [], contactButton: {} },
   photoUrl: ""
 };
-/* // Mock data for demo purposes
-const mockData = {
-  username: { fr: "Jean Dupont", en: "John Doe", ar: "جون دو" },
-  hero: {
-    specialist: { 
-      fr: "Développeur Full Stack", 
-      en: "Full Stack Developer", 
-      ar: "مطور مكدس كامل" 
-    },
-    heroTitle: { 
-      fr: "Créateur d'expériences digitales", 
-      en: "Digital Experience Creator", 
-      ar: "مصمم التجارب الرقمية" 
-    },
-    heroDescription: { 
-      fr: "Passionné par le développement web moderne et la création d'interfaces utilisateur exceptionnelles.", 
-      en: "Passionate about modern web development and creating exceptional user interfaces.", 
-      ar: "شغوف بتطوير الويب الحديث وإنشاء واجهات مستخدم استثنائية." 
-    },
-    heroButtons: [
-      { 
-        text: { fr: "Voir Portfolio", en: "View Portfolio", ar: "عرض الأعمال" }, 
-        icon: "arrowUpRight", 
-        link: "#projects" 
-      }
-    ]
-  },
-  services: {
-    servicesList: [
-      {
-        title: { fr: "Développement Web", en: "Web Development", ar: "تطوير الويب" },
-        description: { 
-          fr: "Création d'applications web modernes et responsives", 
-          en: "Building modern and responsive web applications", 
-          ar: "إنشاء تطبيقات ويب حديثة ومتجاوبة" 
-        }
-      },
-      {
-        title: { fr: "Design UI/UX", en: "UI/UX Design", ar: "تصميم واجهة المستخدم" },
-        description: { 
-          fr: "Design d'interfaces utilisateur intuitives et esthétiques", 
-          en: "Designing intuitive and aesthetic user interfaces", 
-          ar: "تصميم واجهات مستخدم بديهية وجمالية" 
-        }
-      },
-      {
-        title: { fr: "Consultation", en: "Consultation", ar: "الاستشارة" },
-        description: { 
-          fr: "Conseil en stratégie digitale et architecture technique", 
-          en: "Digital strategy and technical architecture consulting", 
-          ar: "استشارات في الإستراتيجية الرقمية والهندسة التقنية" 
-        }
-      }
-    ]
-  },
-  education: {
-    education: [
-      {
-        year: { fr: "2023", en: "2023", ar: "2023" },
-        title: { fr: "Master en Informatique", en: "Master in Computer Science", ar: "ماجستير في علوم الحاسوب" },
-        institution: { fr: "Université de Paris", en: "University of Paris", ar: "جامعة باريس" },
-        description: { fr: "Spécialisé en développement web", en: "Specialized in web development", ar: "متخصص في تطوير الويب" }
-      }
-    ],
-    experience: [
-      {
-        year: { fr: "2023 - Présent", en: "2023 - Present", ar: "2023 - الحاضر" },
-        title: { fr: "Développeur Senior", en: "Senior Developer", ar: "مطور أول" },
-        institution: { fr: "TechCorp", en: "TechCorp", ar: "تيك كورب" },
-        duration: "1 an",
-        description: { fr: "Développement d'applications web", en: "Web application development", ar: "تطوير تطبيقات الويب" }
-      }
-    ]
-  },
-  skills: {
-    skills: [
-      {
-        title: { fr: "Technologies Frontend", en: "Frontend Technologies", ar: "تقنيات الواجهة الأمامية" },
-        skillicon: "code",
-        items: [
-          {
-            name: { fr: "React", en: "React", ar: "ريأكت" },
-            icon: "react",
-            examples: [
-              { fr: "Next.js", en: "Next.js", ar: "Next.js" },
-              { fr: "TypeScript", en: "TypeScript", ar: "TypeScript" }
-            ]
-          },
-          {
-            name: { fr: "CSS/Design", en: "CSS/Design", ar: "CSS/التصميم" },
-            icon: "palette",
-            examples: [
-              { fr: "Tailwind", en: "Tailwind", ar: "Tailwind" },
-              { fr: "Figma", en: "Figma", ar: "Figma" }
-            ]
-          }
-        ]
-      }
-    ]
-  },
-  projects: {
-    projects: [
-      {
-        _id: "1",
-        title: { fr: "Portfolio Personnel", en: "Personal Portfolio", ar: "الموقع الشخصي" },
-        description: { 
-          fr: "Site web personnel avec design moderne et responsive", 
-          en: "Personal website with modern and responsive design", 
-          ar: "موقع شخصي بتصميم حديث ومتجاوب" 
-        },
-        techStack: ["React", "Next.js", "Tailwind CSS"],
-        button: {
-          label: { fr: "Voir le projet", en: "View Project", ar: "عرض المشروع" },
-          link: "https://example.com"
-        },
-        image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=450&fit=crop"
-      }
-    ]
-  },
-  about: {
-    aboutDescription: { 
-      fr: "Développeur passionné avec 5 ans d'expérience dans le développement web moderne.", 
-      en: "Passionate developer with 5 years of experience in modern web development.", 
-      ar: "مطور شغوف بخبرة 5 سنوات في تطوير الويب الحديث." 
-    },
-    personalInfo: [
-      {
-        icon: "mail",
-        label: { fr: "Email", en: "Email", ar: "البريد الإلكتروني" },
-        value: { fr: "john@example.com", en: "john@example.com", ar: "john@example.com" }
-      },
-      {
-        icon: "phone",
-        label: { fr: "Téléphone", en: "Phone", ar: "الهاتف" },
-        value: { fr: "+33 1 23 45 67 89", en: "+33 1 23 45 67 89", ar: "+33 1 23 45 67 89" }
-      }
-    ],
-    languages: {
-      title: { fr: "Langues", en: "Languages", ar: "اللغات" },
-      list: [
-        { name: { fr: "Français", en: "French", ar: "الفرنسية" }, level: "native" },
-        { name: { fr: "Anglais", en: "English", ar: "الإنجليزية" }, level: "advanced" },
-        { name: { fr: "Arabe", en: "Arabic", ar: "العربية" }, level: "intermediate" }
-      ],
-      levels: {
-        native: { fr: "Natif", en: "Native", ar: "أصلي" },
-        advanced: { fr: "Avancé", en: "Advanced", ar: "متقدم" },
-        intermediate: { fr: "Intermédiaire", en: "Intermediate", ar: "متوسط" }
-      }
-    },
-    interests: [
-      { name: { fr: "Photographie", en: "Photography", ar: "التصوير" }, icon: "camera" },
-      { name: { fr: "Voyage", en: "Travel", ar: "السفر" }, icon: "plane" },
-      { name: { fr: "Musique", en: "Music", ar: "الموسيقى" }, icon: "music" }
-    ]
-  },
-  contact: {
-    contactTitle: { fr: "Contactez-moi", en: "Contact Me", ar: "اتصل بي" },
-    contactDescription: { 
-      fr: "N'hésitez pas à me contacter pour discuter de votre projet.", 
-      en: "Feel free to contact me to discuss your project.", 
-      ar: "لا تتردد في الاتصال بي لمناقشة مشروعك." 
-    },
-    contactInfo: [
-      {
-        icon: "mail",
-        label: { fr: "Email", en: "Email", ar: "البريد الإلكتروني" },
-        value: "john@example.com",
-        link: "mailto:john@example.com"
-      },
-      {
-        icon: "phone",
-        label: { fr: "Téléphone", en: "Phone", ar: "الهاتف" },
-        value: "+33 1 23 45 67 89",
-        link: "tel:+33123456789"
-      }
-    ],
-    contactButton: {
-      startProject: { fr: "Démarrer un projet", en: "Start a Project", ar: "بدء مشروع" },
-      link: "mailto:john@example.com"
-    }
-  }
-}; */
+
 
 export default function Portfolio() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -579,7 +397,8 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
             {/* Logo */}
             <div className="flex-shrink-0">
 
-<div className={`${themeClasses.glassDark} ${isDarkMode ? 'text-white' : 'text-[#0A2647]'} border border-white/20 min-w-[30px] w-10 h-10  hover:${themeClasses.accent} rounded-full transition-all duration-300 hover:scale-105 flex items-center justify-center text-2xl font-bold sm:hidden`}>
+<div className={`${themeClasses.glassDark} ${isDarkMode ? 'text-white' : 'text-[#0A2647]'} border border-white/20 min-w-[30px] w-10 h-10  hover:${themeClasses.accent} rounded-full transition-all duration-300 sm:hover:scale-105
+ flex items-center justify-center text-2xl font-bold sm:hidden`}>
   {/* Show first English letter, uppercased */}
   <span>
     { (mockData.username[currentLang].replace(/[^A-Za-z]/g, '').charAt(0) || 'L').toUpperCase() }
@@ -599,7 +418,8 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
                 <button
                   key={item.id}
                   onClick={() => scrollToSection(item.id)}
-                  className={`px-4 py-2 rounded-2xl transition-all duration-300 hover:scale-105 ${
+                  className={`px-4 py-2 rounded-2xl transition-all duration-300 sm:hover:scale-105
+ ${
                     activeSection === item.id
                       ? `${themeClasses.accentBg} text-white ${themeClasses.shadow}`
                       : `${themeClasses.text} hover:${themeClasses.accent}`
@@ -617,7 +437,8 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
                 <Button
                   variant="outline"
                   onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
-                  className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} hover:${themeClasses.accent} rounded-2xl transition-all duration-300 hover:scale-105`}
+                  className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} hover:${themeClasses.accent} rounded-2xl transition-all duration-300 sm:hover:scale-105
+`}
                 >
                   <span>{currentLang.toUpperCase()}</span>
                   <ChevronDown className={`ml-2 h-4 w-4 transition-transform duration-300 ${isLangMenuOpen ? 'rotate-180' : ''}`} />
@@ -643,7 +464,8 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
               <Button
                 variant="outline"
                 onClick={toggleTheme}
-                className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} hover:${themeClasses.accent} rounded-2xl transition-all duration-300 hover:scale-105`}
+                className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} hover:${themeClasses.accent} rounded-2xl transition-all duration-300 sm:hover:scale-105
+`}
               >
                 {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
               </Button>
@@ -652,7 +474,8 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
               <Button
                 variant="outline"
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} hover:${themeClasses.accent} rounded-2xl transition-all duration-300 hover:scale-105`}
+                className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} hover:${themeClasses.accent} rounded-2xl transition-all duration-300 sm:hover:scale-105
+`}
               >
                 {isSearchOpen ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}
               </Button>
@@ -660,7 +483,8 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
               {/* Hire Me Button */}
               <Button
                 onClick={() => scrollToSection("contact")}
-                className={`${themeClasses.accentBg} hover:bg-[#0A2647]/90 text-white rounded-2xl px-6 py-2 ${themeClasses.shadow} transition-all duration-300 hover:scale-105`}
+                className={`${themeClasses.accentBg} hover:bg-[#0A2647]/90 text-white rounded-2xl px-6 py-2 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
+`}
               >
                 {t.hireMe}
               </Button>
@@ -789,7 +613,8 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8 animate-in slide-in-from-left duration-1000">
               {mockData.hero.specialist?.[currentLang] && (
-                <div className={`inline-flex items-center space-x-2 ${themeClasses.glassDark} px-4 py-2 rounded-2xl ${themeClasses.shadow} transition-all duration-300 hover:scale-105`}>
+                <div className={`inline-flex items-center space-x-2 ${themeClasses.glassDark} px-4 py-2 rounded-2xl ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
+`}>
                   <Star className={`h-5 w-5 ${themeClasses.accent}`} />
                   <span className={`${themeClasses.textMuted} font-medium`}>
                     {mockData.hero.specialist[currentLang]}
@@ -812,7 +637,8 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
               <div className="flex flex-wrap gap-4">
                 <Button
                   onClick={() => scrollToSection("experience")}
-                  className={`${themeClasses.accentBg} hover:bg-[#0A2647]/90 text-white rounded-2xl px-8 py-3 ${themeClasses.shadow} transition-all duration-300 hover:scale-105 text-lg`}
+                  className={`${themeClasses.accentBg} hover:bg-[#0A2647]/90 text-white rounded-2xl px-8 py-3 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
+ text-lg`}
                 >
                   {t.viewJourney}
                 </Button>
@@ -827,7 +653,8 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
                       key={index}
                       variant="outline"
                       onClick={handleClick}
-                      className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} hover:${themeClasses.accentBg} hover:text-white rounded-2xl px-8 py-3 transition-all duration-300 hover:scale-105 text-lg`}
+                      className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} hover:${themeClasses.accentBg} hover:text-white rounded-2xl px-8 py-3 transition-all duration-300 sm:hover:scale-105
+ text-lg`}
                     >
                       {Icon && <Icon className="mr-2 h-5 w-5" />}
                       {button.text?.[currentLang]}
@@ -838,7 +665,8 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
             </div>
 
         <div className="flex justify-center lg:justify-end animate-in slide-in-from-right duration-1000">
-  <div className={`relative ${themeClasses.glassDark} rounded-2xl p-4 sm:p-6 md:p-8 ${themeClasses.shadow} transition-all duration-300 hover:scale-105`}>
+  <div className={`relative ${themeClasses.glassDark} rounded-2xl p-4 sm:p-6 md:p-8 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
+`}>
     <div className="relative w-48 h-48 sm:w-60 sm:h-60 md:w-80 md:h-80 rounded-2xl overflow-hidden">
       <Image
         src={mockData.photoUrl || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face"}
@@ -870,7 +698,8 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
               const CategoryIcon = getIcon(category.skillicon);
 
               return (
-                <div key={catIndex} className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 hover:scale-105`}>
+                <div key={catIndex} className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
+`}>
                   <h3 className={`text-2xl font-semibold mb-8 ${themeClasses.text} flex items-center`}>
                     {CategoryIcon && (
                       <CategoryIcon className={`mr-3 h-6 w-6 ${themeClasses.accent}`} />
@@ -885,7 +714,8 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
                       return (
                         <Card
                           key={skillIndex}
-                          className={`${themeClasses.glassDark} border-white/10 rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-lg group`}
+                          className={`${themeClasses.glassDark} border-white/10 rounded-2xl transition-all duration-300 sm:hover:scale-105
+ hover:shadow-lg group`}
                         >
                           <CardContent className="p-6">
                             {SkillIcon && (
@@ -926,7 +756,8 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
 
           <div className="grid lg:grid-cols-2 gap-12">
             {/* Education */}
-            <div className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 hover:scale-105`}>
+            <div className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
+`}>
               <h3 className={`text-2xl font-semibold mb-8 ${themeClasses.text} flex items-center`}>
                 <GraduationCap className={`mr-3 h-6 w-6 ${themeClasses.accent}`} />
                 {currentLang === "fr" ? "Formation" : currentLang === "en" ? "Education" : "التعليم"}
@@ -956,7 +787,8 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
             </div>
 
             {/* Experience */}
-            <div className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 hover:scale-105`}>
+            <div className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
+`}>
               <h3 className={`text-2xl font-semibold mb-8 ${themeClasses.text} flex items-center`}>
                 <Briefcase className={`mr-3 h-6 w-6 ${themeClasses.accent}`} />
                 {currentLang === "fr" ? "Expérience" : currentLang === "en" ? "Experience" : "الخبرة"}
@@ -1009,7 +841,8 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
             {mockData.projects.projects.map((project: any) => (
               <Card
                 key={project._id}
-                className={`${themeClasses.glassDark} border-white/10 rounded-2xl overflow-hidden ${themeClasses.shadow} transition-all duration-300 hover:scale-105 hover:shadow-2xl group`}
+                className={`${themeClasses.glassDark} border-white/10 rounded-2xl overflow-hidden ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
+ hover:shadow-2xl group`}
               >
                 <div className="relative h-64 overflow-hidden">
                   <Image
@@ -1047,7 +880,8 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
                     <div>
                       <Button
                         onClick={() => window.open(project.button.link, "_blank")}
-                        className={`${themeClasses.accentBg} hover:bg-[#0A2647]/90 text-white rounded-2xl transition-all duration-300 hover:scale-105`}
+                        className={`${themeClasses.accentBg} hover:bg-[#0A2647]/90 text-white rounded-2xl transition-all duration-300 sm:hover:scale-105
+`}
                       >
                         <Link className="mr-2 h-4 w-4" />
                         {project.button.label?.[currentLang] || 'View Project'}
@@ -1069,7 +903,8 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
             <span className={`block w-20 h-1 ${themeClasses.accentBg} mx-auto mt-4 rounded-full`}></span>
           </h2>
           <div className="grid lg:grid-cols-2 gap-12 items-start">
-            <div className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 hover:scale-105`}>
+            <div className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
+`}>
              <h2 className={`text-3xl md:text-4xl font-bold mb-8 ${themeClasses.text}`}>
                 {mockData.username?.[currentLang]}
           
@@ -1105,7 +940,8 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
 
             <div className="space-y-8">
               {/* Languages */}
-              <div className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 hover:scale-105`}>
+              <div className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
+`}>
                 <h3 className={`text-2xl font-semibold mb-6 ${themeClasses.text} flex items-center`}>
                   <LanguagesIcon className={`mr-3 h-6 w-6 ${themeClasses.accent}`} />
                   {mockData.about.languages?.title?.[currentLang]}
@@ -1139,7 +975,8 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
               </div>
 
               {/* Interests */}
-              <div className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 hover:scale-105`}>
+              <div className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
+`}>
                 <h3 className={`text-2xl font-semibold mb-6 ${themeClasses.text} flex items-center`}>
                   <Heart className={`mr-3 h-6 w-6 ${themeClasses.accent}`} />
                   {t.interests}
@@ -1150,7 +987,8 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
                     return (
                       <Badge
                         key={index}
-                        className={`${themeClasses.glassDark} ${themeClasses.text} border border-white/20 px-4 py-2 rounded-2xl hover:${themeClasses.accentBg} hover:text-white transition-all duration-300 hover:scale-105`}
+                        className={`${themeClasses.glassDark} ${themeClasses.text} border border-white/20 px-4 py-2 rounded-2xl hover:${themeClasses.accentBg} hover:text-white transition-all duration-300 sm:hover:scale-105
+`}
                       >
                         {IconComponent && (
                           <IconComponent className="mr-2 h-4 w-4" />
@@ -1181,7 +1019,8 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
               return (
                 <Card
                   key={index}
-                  className={`${themeClasses.glassDark} border-white/10 rounded-2xl ${themeClasses.shadow} transition-all duration-300 hover:scale-105 hover:shadow-2xl group`}
+                  className={`${themeClasses.glassDark} border-white/10 rounded-2xl ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
+ hover:shadow-2xl group`}
                 >
                   <CardContent className="p-8">
                     <div className="flex justify-between items-start mb-6">
@@ -1222,7 +1061,8 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
         return (
           <div
             key={index}
-            className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 hover:scale-105 group`}
+            className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
+ group`}
           >
             <div
               className={`${themeClasses.accentBg} w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300`}
@@ -1258,7 +1098,8 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
     </div>   {/* Button */}
     <a
       href={mockData.contact.contactButton?.link || "#contact-form"}
-      className={`inline-flex items-center ${themeClasses.accentBg} hover:opacity-90 text-white px-8 py-4 rounded-2xl ${themeClasses.shadow} transition-all duration-300 hover:scale-105 text-lg font-semibold`}
+      className={`inline-flex items-center ${themeClasses.accentBg} hover:opacity-90 text-white px-8 py-4 rounded-2xl ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
+ text-lg font-semibold`}
     >
       <Send className="mr-3 h-5 w-5" />
       {mockData.contact.contactButton?.startProject?.[currentLang]}
@@ -1267,7 +1108,8 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
  <br /><br /><br />
   {/* Contact Form */}
   
-  <div className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 hover:scale-105`}>
+  <div className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
+`}>
   <h3 className={`text-2xl font-bold mb-8 text-center ${themeClasses.text}`}> 
     {currentLang === "en"
       ? "Contact Me"
