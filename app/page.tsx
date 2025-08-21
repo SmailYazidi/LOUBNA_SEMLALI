@@ -1090,30 +1090,43 @@ shadow: 'shadow-xl',
 </h3>
 
                 <div className="space-y-4">
-                  {mockData.about.languages?.list?.map((lang, index) => {
-                    const levelKey = lang.level.toLowerCase();
-                    const levelText = mockData.about.languages?.levels?.[levelKey]?.[currentLang] || '';
-                    const levelPercentage = levelKey === 'native' ? 100 : levelKey === 'advanced' ? 85 : 70;
+            {mockData.about.languages?.list?.map((lang, index) => {
+  const levelKey = lang.level.toLowerCase(); 
+  const levelText = mockData.about.languages?.levels?.[levelKey]?.[currentLang] || '';
 
-                    return (
-                      <div key={index}>
-                        <div className="flex justify-between items-center mb-2">
-                          <span className={`font-medium ${themeClasses.text}`}>
-                            {lang.name?.[currentLang]}
-                          </span>
-                          <span className={`text-sm ${themeClasses.textMuted}`}>
-                            {levelText}
-                          </span>
-                        </div>
-                        <div className={`h-2 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} rounded-full overflow-hidden`}>
-                          <div 
-                            className={`h-full ${themeClasses.accentBg} rounded-full transition-all duration-1000 ease-out`}
-                            style={{ width: `${levelPercentage}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                    );
-                  })}
+  
+  const levelPercentages = {
+    a1: 10,
+    a2: 30,
+    b1: 50,
+    b2: 70,
+    c1: 85,
+    c2: 95,
+    native: 100
+  };
+
+  const levelPercentage = levelPercentages[levelKey] || 0;
+
+  return (
+    <div key={index} className="mb-4">
+      <div className="flex justify-between items-center mb-2">
+        <span className={`font-medium ${themeClasses.text}`}>
+          {lang.name?.[currentLang]}
+        </span>
+        <span className={`text-sm ${themeClasses.textMuted}`}>
+          {levelText}
+        </span>
+      </div>
+      <div className={`h-2 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} rounded-full overflow-hidden`}>
+        <div
+          className={`h-full ${themeClasses.accentBg} rounded-full transition-all duration-1000 ease-out`}
+          style={{ width: `${levelPercentage}%` }}
+        ></div>
+      </div>
+    </div>
+  );
+})}
+
                 </div>
               </div>
 
