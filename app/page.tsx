@@ -547,10 +547,20 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
           <div className="flex justify-between items-center py-4">
             {/* Logo */}
             <div className="flex-shrink-0">
-              <div className={`text-2xl font-bold ${themeClasses.accent} hover:scale-105 transition-transform duration-300`}>
-                <span>{mockData.username[currentLang]}</span>
-              </div>
-            </div>
+
+<div className={`${themeClasses.glassDark} border border-white/20 min-w-[35px] w-12 h-12 ${themeClasses.text} hover:${themeClasses.accent} rounded-full transition-all duration-300 hover:scale-105 flex items-center justify-center text-2xl font-bold sm:hidden`}>
+  {/* Show first English letter, uppercased */}
+  <span>
+    { (mockData.username[currentLang].replace(/[^A-Za-z]/g, '').charAt(0) || 'L').toUpperCase() }
+  </span>
+</div>
+
+  {/* Full username for larger screens */}
+  <div className="hidden sm:block ">
+    <span>{mockData.username[currentLang]}</span>
+  </div>
+</div>
+
 
             {/* Desktop Navigation */}
             <nav className="hidden xl:flex space-x-8">
