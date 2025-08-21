@@ -316,11 +316,42 @@ export default function Portfolio() {
   const [searchTerm, setSearchTerm] = useState("")
   const [isSearchOpen, setIsSearchOpen] = useState(false)
 const [mockData, setMockData] = useState(baseMockData);
-
+  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const [isSendingMessage, setIsSendingMessage] = useState(false);
+  const [isMessageSent, setIsMessageSent] = useState(false);
 
  const [loading, setLoading] = useState(true);
 
- 
+ const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSendingMessage(true);
+    setIsMessageSent(false);
+
+    try {
+      const response = await fetch("/api/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setIsMessageSent(true);
+        setFormData({ name: "", email: "", message: "" });
+      } else {
+        alert("Failed to send message.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("An error occurred.");
+    } finally {
+      setIsSendingMessage(false);
+    }
+  };
+
    const [currentLang, setCurrentLang] = useState<"fr" | "en" | "ar">(() => {
       if (typeof window !== 'undefined') {
         const saved = sessionStorage.getItem('language');
@@ -1237,68 +1268,117 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
   {/* Contact Form */}
   
   <div className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 hover:scale-105`}>
-  <h3 className={`text-2xl font-bold mb-8 text-center ${themeClasses.text}`}>
+  <h3 className={`text-2xl font-bold mb-8 text-center ${themeClasses.text}`}> 
     {currentLang === "en"
       ? "Contact Me"
       : currentLang === "fr"
       ? "Contactez-moi"
       : "اتصل بي"}
   </h3>
-
-  <form id="contact-form" className="space-y-6 text-left">
-    <input
-      type="text"
-      name="name"
-      placeholder={
-        currentLang === "en"
-          ? "Your name"
-          : currentLang === "fr"
-          ? "Votre nom"
-          : "اسمك"
-      }
-      className={`w-full px-4 py-3 rounded-xl ${themeClasses.surface} ${themeClasses.text} border border-gray-500/20 focus:outline-none focus:ring-2 focus:${themeClasses.accentBorder}`}
-      required
-    />
-
-    <input
-      type="email"
-      name="email"
-      placeholder={
-        currentLang === "en"
-          ? "Your email"
-          : currentLang === "fr"
-          ? "Votre email"
-          : "بريدك الإلكتروني"
-      }
-      className={`w-full px-4 py-3 rounded-xl ${themeClasses.surface} ${themeClasses.text} border border-gray-500/20 focus:outline-none focus:ring-2 focus:${themeClasses.accentBorder}`}
-      required
-    />
-
-    <textarea
-      name="message"
-      rows="5"
-      placeholder={
-        currentLang === "en"
-          ? "Write your message..."
-          : currentLang === "fr"
-          ? "Écrivez votre message..."
-          : "اكتب رسالتك..."
-      }
-      className={`w-full px-4 py-3 rounded-xl ${themeClasses.surface} ${themeClasses.text} border border-gray-500/20 focus:outline-none focus:ring-2 focus:${themeClasses.accentBorder}`}
-      required
-    ></textarea>
-
-    <button
-      type="submit"
-      className={`w-full flex justify-center items-center ${themeClasses.accentBg} hover:opacity-90 text-white px-8 py-4 rounded-2xl ${themeClasses.shadow} transition-all duration-300 text-lg font-semibold`}
-    >
-      {currentLang === "en"
-        ? "Send Message"
+<form
+  id="contact-form"
+  className="space-y-6 text-left relative"
+  onSubmit={handleSubmit}
+>
+  <input
+    type="text"
+    name="name"
+    value={formData.name}
+    onChange={handleChange}
+    placeholder={
+      currentLang === "en"
+        ? "Your name"
         : currentLang === "fr"
-        ? "Envoyer le message"
-        : "إرسال الرسالة"}
-    </button>
-  </form>
+        ? "Votre nom"
+        : "اسمك"
+    }
+    className={`w-full px-4 py-3 rounded-xl ${themeClasses.surface} ${themeClasses.text} border border-gray-500/20 focus:outline-none focus:ring-2 focus:${themeClasses.accentBorder}`}
+    required
+  />
+
+  <input
+    type="email"
+    name="email"
+    value={formData.email}
+    onChange={handleChange}
+    placeholder={
+      currentLang === "en"
+        ? "Your email"
+        : currentLang === "fr"
+        ? "Votre email"
+        : "بريدك الإلكتروني"
+    }
+    className={`w-full px-4 py-3 rounded-xl ${themeClasses.surface} ${themeClasses.text} border border-gray-500/20 focus:outline-none focus:ring-2 focus:${themeClasses.accentBorder}`}
+    required
+  />
+
+  <textarea
+    name="message"
+    rows={5}
+    value={formData.message}
+    onChange={handleChange}
+    placeholder={
+      currentLang === "en"
+        ? "Write your message..."
+        : currentLang === "fr"
+        ? "Écrivez votre message..."
+        : "اكتب رسالتك..."
+    }
+    className={`w-full px-4 py-3 rounded-xl ${themeClasses.surface} ${themeClasses.text} border border-gray-500/20 focus:outline-none focus:ring-2 focus:${themeClasses.accentBorder}`}
+    required
+  ></textarea>
+
+  <button
+    type="submit"
+    disabled={isSendingMessage}
+    className={`w-full flex justify-center items-center gap-2 ${themeClasses.accentBg} hover:opacity-90 text-white px-8 py-4 rounded-2xl ${themeClasses.shadow} transition-all duration-300 text-lg font-semibold`}
+  >
+    {isSendingMessage && (
+      <svg
+        className="animate-spin h-5 w-5 text-white"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <circle
+          className="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          strokeWidth="4"
+        ></circle>
+        <path
+          className="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16 8 8 0 01-8-8z"
+        ></path>
+      </svg>
+    )}
+    {isSendingMessage
+      ? currentLang === "en"
+        ? "Sending..."
+        : currentLang === "fr"
+        ? "Envoi..."
+        : "جارٍ الإرسال..."
+      : currentLang === "en"
+      ? "Send Message"
+      : currentLang === "fr"
+      ? "Envoyer le message"
+      : "إرسال الرسالة"}
+  </button>
+
+  {isMessageSent && (
+    <p className="text-green-600 font-semibold mt-2 bg-green-100 p-2 rounded border border-green-300">
+      {currentLang === "en"
+        ? "Message sent successfully!"
+        : currentLang === "fr"
+        ? "Message envoyé avec succès !"
+        : "تم إرسال الرسالة بنجاح!"}
+    </p>
+  )}
+</form>
+
 </div>
 
  

@@ -3,7 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Home,
+  Home,MessageCircle,
   BookOpen,
   Briefcase,
   Code,
@@ -24,12 +24,11 @@ const navItems = [
   { href: "/admin/services", icon: Briefcase, label: "Services" },
   { href: "/admin/skills", icon: Code, label: "Skills" },
   { href: "/admin/projets", icon: FolderKanban, label: "Projets" },
-    { href: "/admin/about_me", icon: UserIcon, label: "About Me" },
-    { href: "/admin/contact", icon: Mail, label: "Contact" },
+  { href: "/admin/about_me", icon: UserIcon, label: "About Me" },
+  { href: "/admin/contact", icon: Mail, label: "Contact" },
+  { href: "/admin/messages", icon: MessageCircle, label: "Messages" }, // new item
   { href: "/admin/cv", icon: FileText, label: "CV" },
-
   { href: "/admin/photo", icon: Image, label: "Photo" },
-
 ];
 
   return (
