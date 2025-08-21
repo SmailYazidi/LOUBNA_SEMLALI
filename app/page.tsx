@@ -513,7 +513,7 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
             </div>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex space-x-8">
+            <nav className="hidden xl:flex space-x-8">
               {navItems.map((item) => (
                 <button
                   key={item.id}
@@ -530,7 +530,7 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
             </nav>
 
             {/* Desktop Controls */}
-            <div className="hidden md:flex items-center space-x-4">
+            <div className="hidden xl:flex items-center space-x-4">
               {/* Language Selector */}
               <div className="relative language-menu">
                 <Button
@@ -584,63 +584,72 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
                 {t.hireMe}
               </Button>
             </div>
+{/* Mobile & Tablet Controls */}
+<div className="xl:hidden flex items-center space-x-2 sm:space-x-2 md:space-x-3">
+  {/* Theme Toggle */}
+  <Button
+    variant="outline"
+    onClick={toggleTheme}
+    className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} rounded-xl sm:rounded-2xl px-2 py-1 sm:px-3 sm:py-2`}
+  >
+    {isDarkMode ? <Sun className="h-4 w-4 sm:h-5 sm:w-5" /> : <Moon className="h-4 w-4 sm:h-5 sm:w-5" />}
+  </Button>
 
-            {/* Mobile Controls */}
-            <div className="md:hidden flex items-center space-x-2">
-              <Button
-                variant="outline"
-                onClick={toggleTheme}
-                className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} rounded-2xl`}
-              >
-                {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-              </Button>
+  {/* Language Menu */}
+  <div className="relative language-menu">
+    <Button
+      variant="outline"
+      onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
+      className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} rounded-xl sm:rounded-2xl px-2 py-1 sm:px-3 sm:py-2`}
+    >
+      <span className="text-xs sm:text-sm">{currentLang.toUpperCase()}</span>
+      <ChevronDown
+        className={`ml-1 h-3 w-3 sm:h-4 sm:w-4 ${isLangMenuOpen ? 'rotate-180' : ''} transition-transform duration-300`}
+      />
+    </Button>
 
-              <div className="relative language-menu">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
-                  className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} rounded-2xl`}
-                >
-                  <span>{currentLang.toUpperCase()}</span>
-                  <ChevronDown className={`ml-1 h-4 w-4 ${isLangMenuOpen ? 'rotate-180' : ''} transition-transform duration-300`} />
-                </Button>
+    {isLangMenuOpen && (
+      <div
+        className={`absolute top-full right-0 mt-1 sm:mt-2 ${themeClasses.glassDark} rounded-xl sm:rounded-2xl ${themeClasses.shadow} border border-white/10 min-w-[100px] sm:min-w-[120px] z-50`}
+      >
+        {languageOptions.map((option) => (
+          <button
+            key={option.code}
+            onClick={() => changeLanguage(option.code as "fr" | "en" | "ar")}
+            className={`w-full px-2 py-1 sm:px-3 sm:py-2 text-left hover:${themeClasses.accentBg} hover:text-white rounded-xl sm:rounded-2xl transition-all duration-300 flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm`}
+          >
+            <span>{option.flag}</span>
+            <span>{option.code.toUpperCase()}</span>
+          </button>
+        ))}
+      </div>
+    )}
+  </div>
 
-                {isLangMenuOpen && (
-                  <div className={`absolute top-full right-0 mt-2 ${themeClasses.glassDark} rounded-2xl ${themeClasses.shadow} border border-white/10 min-w-[120px] z-50`}>
-                    {languageOptions.map((option) => (
-                      <button
-                        key={option.code}
-                        onClick={() => changeLanguage(option.code as "fr" | "en" | "ar")}
-                        className={`w-full px-3 py-2 text-left hover:${themeClasses.accentBg} hover:text-white rounded-2xl transition-all duration-300 flex items-center space-x-2`}
-                      >
-                        <span>{option.flag}</span>
-                        <span>{option.code.toUpperCase()}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+  {/* Search Button */}
+  <Button
+    variant="outline"
+    onClick={() => setIsSearchOpen(!isSearchOpen)}
+    className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} rounded-xl sm:rounded-2xl px-2 py-1 sm:px-3 sm:py-2`}
+  >
+    {isSearchOpen ? <X className="h-4 w-4 sm:h-5 sm:w-5" /> : <Search className="h-4 w-4 sm:h-5 sm:w-5" />}
+  </Button>
 
-              <Button
-                variant="outline"
-                onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} rounded-2xl`}
-              >
-                {isSearchOpen ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}
-              </Button>
+  {/* Menu Toggle */}
+  <button
+    onClick={() => setIsMenuOpen(!isMenuOpen)}
+    className={`${themeClasses.text} hover:${themeClasses.accent} transition-colors duration-300`}
+  >
+    {isMenuOpen ? <X className="h-5 w-5 sm:h-6 sm:w-6" /> : <Menu className="h-5 w-5 sm:h-6 sm:w-6" />}
+  </button>
+</div>
 
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className={`${themeClasses.text} hover:${themeClasses.accent} transition-colors duration-300`}
-              >
-                {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-              </button>
-            </div>
+
           </div>
 
           {/* Mobile Menu */}
           {isMenuOpen && (
-            <div className={`md:hidden ${themeClasses.glassDark} rounded-2xl mb-4 p-4 ${themeClasses.shadow} transition-all duration-300 animate-in slide-in-from-top-2`}>
+            <div className={`xl:hidden ${themeClasses.glassDark} rounded-2xl mb-4 p-4 ${themeClasses.shadow} transition-all duration-300 animate-in slide-in-from-top-2`}>
               <nav className="flex flex-col space-y-2">
                 {navItems.map((item) => (
                   <button
@@ -747,21 +756,22 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
               </div>
             </div>
 
-            <div className="flex justify-center lg:justify-end animate-in slide-in-from-right duration-1000">
-              <div className={`relative ${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 hover:scale-105`}>
-                <div className="relative w-80 h-80 rounded-2xl overflow-hidden">
-                  <Image
-                    src={mockData.photoUrl ||"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face"}
-                    alt="Profile photo"
-                    width={400}
-                    height={400}
-                    priority
-                    className="object-cover w-full h-full transition-transform duration-500 hover:scale-110"
-                  />
-                  <div className={`absolute inset-0 bg-gradient-to-t from-[#0A2647]/20 to-transparent`}></div>
-                </div>
-              </div>
-            </div>
+        <div className="flex justify-center lg:justify-end animate-in slide-in-from-right duration-1000">
+  <div className={`relative ${themeClasses.glassDark} rounded-2xl p-4 sm:p-6 md:p-8 ${themeClasses.shadow} transition-all duration-300 hover:scale-105`}>
+    <div className="relative w-48 h-48 sm:w-60 sm:h-60 md:w-80 md:h-80 rounded-2xl overflow-hidden">
+      <Image
+        src={mockData.photoUrl || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face"}
+        alt="Profile photo"
+        width={400}
+        height={400}
+        priority
+        className="object-cover w-full h-full transition-transform duration-500 hover:scale-110"
+      />
+      <div className={`absolute inset-0 bg-gradient-to-t from-[#0A2647]/20 to-transparent`}></div>
+    </div>
+  </div>
+</div>
+
           </div>
         </div>
       </section>
