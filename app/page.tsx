@@ -137,15 +137,53 @@ const [mockData, setMockData] = useState(baseMockData);
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
   const [isSendingMessage, setIsSendingMessage] = useState(false);
   const [isMessageSent, setIsMessageSent] = useState(false);
+  const [isLimitReached, setIsLimitReached] = useState(false);
 
  const [loading, setLoading] = useState(true);
 
- const handleChange = (e) => {
+
+
+
+
+  // check daily limit on mount
+  useEffect(() => {
+    const today = new Date().toDateString();
+    const storedData = JSON.parse(localStorage.getItem("messageLimit")) || {};
+    if (storedData.date === today && storedData.count >= 5) {
+      setIsLimitReached(true);
+    }
+  }, []);
+
+  const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // --- email check ---
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+
+    // --- daily limit check ---
+    const today = new Date().toDateString();
+    const storedData = JSON.parse(localStorage.getItem("messageLimit")) || {};
+    let { date, count } = storedData;
+
+    if (date !== today) {
+      date = today;
+      count = 0;
+    }
+
+    if (count >= 5) {
+      setIsLimitReached(true);
+      alert("You can only send 5 messages per day.");
+      return;
+    }
+
     setIsSendingMessage(true);
     setIsMessageSent(false);
 
@@ -157,6 +195,16 @@ const [mockData, setMockData] = useState(baseMockData);
       });
 
       if (response.ok) {
+        // update localStorage
+        localStorage.setItem(
+          "messageLimit",
+          JSON.stringify({ date: today, count: count + 1 })
+        );
+
+        if (count + 1 >= 5) {
+          setIsLimitReached(true);
+        }
+
         setIsMessageSent(true);
         setFormData({ name: "", email: "", message: "" });
       } else {
@@ -1111,12 +1159,13 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
   <div className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
 `}>
   <h3 className={`text-2xl font-bold mb-8 text-center ${themeClasses.text}`}> 
-    {currentLang === "en"
-      ? "Contact Me"
-      : currentLang === "fr"
-      ? "Contactez-moi"
-      : "اتصل بي"}
-  </h3>
+  {currentLang === "en"
+    ? "Contact Me"
+    : currentLang === "fr"
+    ? "Contactez-moi"
+    : "اتصل بي"}
+</h3>
+
 <form
   id="contact-form"
   className="space-y-6 text-left relative"
@@ -1134,8 +1183,13 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
         ? "Votre nom"
         : "اسمك"
     }
-    className={`w-full px-4 py-3 rounded-xl ${themeClasses.surface} ${themeClasses.text} border border-gray-500/20 focus:outline-none focus:ring-2 focus:${themeClasses.accentBorder}`}
+    className={`w-full px-4 py-3 rounded-xl border ${
+      isDarkMode
+        ? "bg-gray-800 text-white border-gray-600 placeholder-gray-400"
+        : "bg-white text-black border-gray-300 placeholder-gray-500"
+    }`}
     required
+    disabled={isLimitReached}
   />
 
   <input
@@ -1150,8 +1204,13 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
         ? "Votre email"
         : "بريدك الإلكتروني"
     }
-    className={`w-full px-4 py-3 rounded-xl ${themeClasses.surface} ${themeClasses.text} border border-gray-500/20 focus:outline-none focus:ring-2 focus:${themeClasses.accentBorder}`}
+    className={`w-full px-4 py-3 rounded-xl border ${
+      isDarkMode
+        ? "bg-gray-800 text-white border-gray-600 placeholder-gray-400"
+        : "bg-white text-black border-gray-300 placeholder-gray-500"
+    }`}
     required
+    disabled={isLimitReached}
   />
 
   <textarea
@@ -1166,38 +1225,31 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
         ? "Écrivez votre message..."
         : "اكتب رسالتك..."
     }
-    className={`w-full px-4 py-3 rounded-xl ${themeClasses.surface} ${themeClasses.text} border border-gray-500/20 focus:outline-none focus:ring-2 focus:${themeClasses.accentBorder}`}
+    className={`w-full px-4 py-3 rounded-xl border ${
+      isDarkMode
+        ? "bg-gray-800 text-white border-gray-600 placeholder-gray-400"
+        : "bg-white text-black border-gray-300 placeholder-gray-500"
+    }`}
     required
+    disabled={isLimitReached}
   ></textarea>
 
   <button
     type="submit"
-    disabled={isSendingMessage}
-    className={`w-full flex justify-center items-center gap-2 ${themeClasses.accentBg} hover:opacity-90 text-white px-8 py-4 rounded-2xl ${themeClasses.shadow} transition-all duration-300 text-lg font-semibold`}
+    disabled={isSendingMessage || isLimitReached}
+    className={`w-full flex justify-center items-center gap-2 px-8 py-4 rounded-2xl text-lg font-semibold ${
+      isLimitReached
+        ? "bg-gray-400 cursor-not-allowed"
+        : `${themeClasses.accentBg} hover:opacity-90 text-white`
+    }`}
   >
-    {isSendingMessage && (
-      <svg
-        className="animate-spin h-5 w-5 text-white"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-      >
-        <circle
-          className="opacity-25"
-          cx="12"
-          cy="12"
-          r="10"
-          stroke="currentColor"
-          strokeWidth="4"
-        ></circle>
-        <path
-          className="opacity-75"
-          fill="currentColor"
-          d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16 8 8 0 01-8-8z"
-        ></path>
-      </svg>
-    )}
-    {isSendingMessage
+    {isLimitReached
+      ? currentLang === "en"
+        ? "Try later"
+        : currentLang === "fr"
+        ? "Réessayez plus tard"
+        : "حاول لاحقًا"
+      : isSendingMessage
       ? currentLang === "en"
         ? "Sending..."
         : currentLang === "fr"
@@ -1220,6 +1272,7 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
     </p>
   )}
 </form>
+
 
 </div>
 
