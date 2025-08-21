@@ -1039,10 +1039,10 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
           </h2>
           <div className="grid lg:grid-cols-2 gap-12 items-start">
             <div className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 hover:scale-105`}>
-            {/*   <h2 className={`text-3xl md:text-4xl font-bold mb-8 ${themeClasses.text}`}>
-                {t.aboutTitle}
-                <span className={`block w-20 h-1 ${themeClasses.accentBg} mt-4 rounded-full`}></span>
-              </h2> */}
+             <h2 className={`text-3xl md:text-4xl font-bold mb-8 ${themeClasses.text}`}>
+                {mockData.username?.[currentLang]}
+          
+              </h2> 
 
               <p className={`${themeClasses.textMuted} text-lg leading-relaxed mb-8`}>
                 {mockData.about.aboutDescription?.[currentLang]}
