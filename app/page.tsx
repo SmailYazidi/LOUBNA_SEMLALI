@@ -428,11 +428,10 @@ accent: isDarkMode ? 'text-[#00BFFF]' : 'text-[#0A2647]',
 accentBg: isDarkMode ? 'bg-[#3A6EA5]' : 'bg-[#0A2647]',
 accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
 
-  glass: 'backdrop-blur-lg border border-white/10',
-  glassDark: isDarkMode 
-    ? 'bg-black/40 backdrop-blur-lg border border-white/10' 
-    : 'bg-white/40 backdrop-blur-lg border border-black/10',
-  shadow: 'shadow-xl',
+ glassDark: isDarkMode
+  ? 'bg-black/40 backdrop-blur-lg border border-white/20 shadow-xl' 
+  : 'bg-white/40 backdrop-blur-lg border border-black/20 shadow-xl',
+shadow: 'shadow-xl',
 };
 
   if (loading) return <Loading/>;
@@ -1067,12 +1066,12 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
               return (
                 <Card
                   key={index}
-                  className={`${themeClasses.glassDark} border-white/10 rounded-2xl ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
+                  className={`${themeClasses.glassDark} border-white/10 rounded-2xl ${themeClasses.shadow} ${themeClasses.glassDark} transition-all duration-300 sm:hover:scale-105
  hover:shadow-2xl group`}
                 >
                   <CardContent className="p-8">
                     <div className="flex justify-between items-start mb-6">
-                      <span className={`text-6xl font-bold ${themeClasses.accent} opacity-20 group-hover:opacity-40 transition-opacity duration-300`}>
+                      <span className={`text-6xl font-bold ${themeClasses.accent} opacity-40 group-hover:opacity-60 transition-opacity duration-300`}>
                         0{index + 1}
                       </span>
                       <ArrowUpRight className={`h-6 w-6 ${themeClasses.accent} group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300`} />
