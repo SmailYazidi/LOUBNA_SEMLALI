@@ -653,7 +653,7 @@ shadow: 'shadow-xl',
   {/* Search Button */}
   <Button
     variant="outline"
-    onClick={() => setIsSearchOpen(!isSearchOpen)}
+    onClick={() => {setIsSearchOpen(!isSearchOpen);setIsMenuOpen(false); setSearchTerm("");}}
     className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} rounded-xl sm:rounded-2xl px-2 py-1 sm:px-3 sm:py-2`}
   >
     {isSearchOpen ? <X className="h-4 w-4 sm:h-5 sm:w-5" /> : <Search className="h-4 w-4 sm:h-5 sm:w-5" />}
@@ -661,7 +661,7 @@ shadow: 'shadow-xl',
 
   {/* Menu Toggle */}
   <button
-    onClick={() => {setIsMenuOpen(!isMenuOpen);setIsSearchOpen(!isSearchOpen); setSearchTerm("");}}
+    onClick={() => {setIsMenuOpen(!isMenuOpen);setIsSearchOpen(false); setSearchTerm("");}}
     className={`${themeClasses.text} hover:${themeClasses.accent} transition-colors duration-300`}
   >
     {isMenuOpen ? <X className="h-5 w-5 sm:h-6 sm:w-6" /> : <Menu className="h-5 w-5 sm:h-6 sm:w-6" />}
