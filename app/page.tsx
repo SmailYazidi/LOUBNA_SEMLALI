@@ -453,7 +453,7 @@ shadow: 'shadow-xl',
 </div>
 
   {/* Full username for larger screens */}
-  <div className={`hidden sm:block text-xl font-bold ${themeClasses.accent}  `}>
+  <div className={`hidden sm:block text-xl font-bold ${   isDarkMode ? 'text-white' : 'text-[#0A2647]'}  `}>
     <span>{mockData.username[currentLang].toUpperCase()}</span>
   </div>
 </div>
@@ -811,7 +811,15 @@ shadow: 'shadow-xl',
               </h3>
               <div className="space-y-8">
                 {mockData.education.education.map((event, index) => (
-                  <div key={index} className="relative pl-8 border-l-2 border-[#0A2647]/30">
+            <div
+  key={index}
+  className={`relative pl-8 border-l-2 ${
+    isDarkMode
+      ? 'border-white/30'   // light border for dark mode
+      : 'border-[#0A2647]/30' // dark blue border for light mode
+  }`}
+>
+
                     <div className={`absolute -left-2 top-0 w-4 h-4 ${themeClasses.accentBg} rounded-full`}></div>
                     <div className={`absolute -left-1 top-1 w-2 h-2 bg-white rounded-full`}></div>
                     <p className={`text-sm ${themeClasses.accent} font-semibold mb-2`}>
@@ -842,7 +850,15 @@ shadow: 'shadow-xl',
               </h3>
               <div className="space-y-8">
                 {mockData.education.experience.map((event, index) => (
-                  <div key={index} className="relative pl-8 border-l-2 border-[#0A2647]/30">
+              <div
+  key={index}
+  className={`relative pl-8 border-l-2 ${
+    isDarkMode
+      ? 'border-white/30'   // light border for dark mode
+      : 'border-[#0A2647]/30' // dark blue border for light mode
+  }`}
+>
+
                     <div className={`absolute -left-2 top-0 w-4 h-4 ${themeClasses.accentBg} rounded-full`}></div>
                     <div className={`absolute -left-1 top-1 w-2 h-2 bg-white rounded-full`}></div>
                     <div className="flex items-center gap-3 mb-2">
@@ -888,7 +904,7 @@ shadow: 'shadow-xl',
             {mockData.projects.projects.map((project: any) => (
               <Card
                 key={project._id}
-                className={`${themeClasses.glassDark} border-white/10 rounded-2xl overflow-hidden ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
+                className={`${themeClasses.glassDark} border-white/10 rounded-2xl overflow-hidden ${themeClasses.accent}  ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
  hover:shadow-2xl group`}
               >
                 <div className="relative h-64 overflow-hidden">
@@ -1284,7 +1300,12 @@ shadow: 'shadow-xl',
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center">
             <div className="flex justify-center items-center space-x-2 mb-4">
-              <span className={`text-2xl font-bold ${themeClasses.accent}`}>
+          <span
+  className={`text-2xl font-bold ${
+    isDarkMode ? 'text-white' : 'text-[#0A2647]'
+  }`}
+>
+
                 © 2025 {mockData.username?.[currentLang]}
               </span>
             </div>
