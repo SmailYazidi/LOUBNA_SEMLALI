@@ -751,7 +751,7 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
               <div className={`relative ${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 hover:scale-105`}>
                 <div className="relative w-80 h-80 rounded-2xl overflow-hidden">
                   <Image
-                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face"
+                    src={mockData.photoUrl ||"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face"}
                     alt="Profile photo"
                     width={400}
                     height={400}
