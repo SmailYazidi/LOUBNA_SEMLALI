@@ -134,7 +134,7 @@ export default function Portfolio() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [activeSection, setActiveSection] = useState("home")
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false)
-  const [searchTerm, setSearchTerm] = useState("")
+
   const [isSearchOpen, setIsSearchOpen] = useState(false)
 const [mockData, setMockData] = useState(baseMockData);
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
@@ -144,7 +144,8 @@ const [mockData, setMockData] = useState(baseMockData);
   const router = useRouter();
  const [loading, setLoading] = useState(true);
 
-
+const [searchTerm, setSearchTerm] = useState("");
+const [searchResults, setSearchResults] = useState<any[]>([]);
 
 
 
@@ -152,7 +153,7 @@ const [mockData, setMockData] = useState(baseMockData);
   useEffect(() => {
     const today = new Date().toDateString();
     const storedData = JSON.parse(localStorage.getItem("messageLimit")) || {};
-    if (storedData.date === today && storedData.count >= 5) {
+    if (storedData.date === today && storedData.count >= 8) {
       setIsLimitReached(true);
     }
   }, []);
@@ -181,7 +182,7 @@ const [mockData, setMockData] = useState(baseMockData);
       count = 0;
     }
 
-    if (count >= 5) {
+    if (count >= 8) {
       setIsLimitReached(true);
       alert("You can only send 5 messages per day.");
       return;
@@ -204,7 +205,7 @@ const [mockData, setMockData] = useState(baseMockData);
           JSON.stringify({ date: today, count: count + 1 })
         );
 
-        if (count + 1 >= 5) {
+        if (count + 1 >= 8) {
           setIsLimitReached(true);
         }
 
@@ -273,6 +274,56 @@ const [mockData, setMockData] = useState(baseMockData);
     setIsLangMenuOpen(false);
     sessionStorage.setItem('language', lang);
   };
+
+
+useEffect(() => {
+  if (!searchTerm) {
+    setSearchResults([]);
+    console.log("Search term empty, cleared results.");
+    return;
+  }
+
+  const term = searchTerm.toLowerCase();
+  const results: any[] = [];
+
+  // Search in projects
+  mockData.projects.projects.forEach(project => {
+    if (
+      project.title?.[currentLang]?.toLowerCase().includes(term) ||
+      project.description?.[currentLang]?.toLowerCase().includes(term)
+    ) {
+      results.push({ type: "Project", item: project });
+    }
+  });
+
+  // Search in skills
+  mockData.skills.skills.forEach(category => {
+    category.items.forEach(skill => {
+      if (
+        skill.name?.[currentLang]?.toLowerCase().includes(term) ||
+        skill.examples?.some(ex => ex?.[currentLang]?.toLowerCase().includes(term))
+      ) {
+        results.push({ type: "Skill", item: skill });
+      }
+    });
+  });
+
+  // Search in experience / education
+  [...mockData.education.education, ...mockData.education.experience].forEach(event => {
+    if (
+      event.title?.[currentLang]?.toLowerCase().includes(term) ||
+      event.institution?.[currentLang]?.toLowerCase().includes(term) ||
+      event.description?.[currentLang]?.toLowerCase().includes(term)
+    ) {
+      results.push({ type: "Experience", item: event });
+    }
+  });
+
+  console.log("Search term:", searchTerm);
+  console.log("Search results:", results);
+
+  setSearchResults(results);
+}, [searchTerm, currentLang]);
 
 
 
@@ -532,7 +583,11 @@ shadow: 'shadow-xl',
   {/* Search Toggle */}
   <Button
     variant="outline"
-    onClick={() => setIsSearchOpen(!isSearchOpen)}
+ onClick={() => {
+  setIsSearchOpen(!isSearchOpen);
+  setSearchTerm("");
+}}
+
     className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} hover:${themeClasses.accent} rounded-2xl transition-all duration-300 sm:hover:scale-105`}
   >
     {isSearchOpen ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}
@@ -1384,16 +1439,24 @@ shadow: 'shadow-xl',
       ? "Envoyer le message"
       : "إرسال الرسالة"}
   </button>
+{isMessageSent && (
+  <p
+    className={`font-semibold mt-2 p-2 rounded border transition-colors duration-300 ${
+      currentLang === "ar" ? "text-right" : "text-left"
+    } ${isDarkMode 
+        ? "bg-green-800 text-green-400 border-green-600" 
+        : "bg-green-100 text-green-600 border-green-300"
+      }`}
+    dir={currentLang === "ar" ? "rtl" : "ltr"}
+  >
+    {currentLang === "en"
+      ? "Message sent successfully!"
+      : currentLang === "fr"
+      ? "Message envoyé avec succès !"
+      : "تم إرسال الرسالة بنجاح!"}
+  </p>
+)}
 
-  {isMessageSent && (
-    <p className="text-green-600 font-semibold mt-2 bg-green-100 p-2 rounded border border-green-300">
-      {currentLang === "en"
-        ? "Message sent successfully!"
-        : currentLang === "fr"
-        ? "Message envoyé avec succès !"
-        : "تم إرسال الرسالة بنجاح!"}
-    </p>
-  )}
 </form>
 
 
@@ -1414,6 +1477,8 @@ shadow: 'shadow-xl',
   }`}
 >
 
+
+
                 © 2025 {mockData.username?.[currentLang]}
               </span>
             </div>
@@ -1421,6 +1486,85 @@ shadow: 'shadow-xl',
           </div>
         </div>
       </footer>
+
+{searchTerm && (
+  <div
+    className="fixed top-40 inset-x-0 z-40 backdrop-blur-sm overflow-auto py-8"
+    style={{ maxHeight: "calc(100vh - 4rem)" }} // adjust 4rem if your header height is different
+  >
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className={`${themeClasses.glassDark} p-8 rounded-3xl shadow-xl`}>
+        <h2 className={`text-2xl md:text-3xl font-bold mb-6 text-center ${themeClasses.text}`}>
+          {currentLang === "en"
+            ? "Search Results"
+            : currentLang === "fr"
+            ? "Résultats de recherche"
+            : "نتائج البحث"}
+        </h2>
+
+        {searchResults.length > 0 ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {searchResults.map((result, idx) => (
+              <div
+                key={idx}
+                className={`${themeClasses.glassDark} p-6 rounded-2xl ${themeClasses.shadow} transition-all duration-300`}
+              >
+                <p className="font-semibold mb-2">{result.type}</p>
+                <h3 className={`${themeClasses.text} font-medium mb-2`}>
+                  {result.type === "Skill"
+                    ? result.item.name?.[currentLang]
+                    : result.item.title?.[currentLang]}
+                </h3>
+
+                {result.type === "Skill" && result.item.examples?.length > 0 && (
+                  <ul className={`${themeClasses.textMuted} text-sm mt-1 list-disc list-inside`}>
+                    {result.item.examples.map((ex, i) => (
+                      <li key={i}>{ex?.[currentLang]}</li>
+                    ))}
+                  </ul>
+                )}
+
+                {result.type === "Experience" && (
+                  <>
+                    {result.item.institution && (
+                      <p className={`${themeClasses.textMuted} text-sm`}>
+                        {result.item.institution?.[currentLang]}
+                      </p>
+                    )}
+                    {result.item.description && (
+                      <p className={`${themeClasses.textMuted} text-sm mt-1`}>
+                        {result.item.description?.[currentLang]}
+                      </p>
+                    )}
+                  </>
+                )}
+
+                {result.type === "Project" && result.item.description && (
+                  <p className={`${themeClasses.textMuted} text-sm mt-1`}>
+                    {result.item.description?.[currentLang]}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className={`text-center ${themeClasses.textMuted}`}>
+            {currentLang === "en"
+              ? "No results found."
+              : currentLang === "fr"
+              ? "Aucun résultat trouvé."
+              : "لم يتم العثور على نتائج."}
+          </p>
+        )}
+      </div>
     </div>
+  </div>
+)}
+
+
+
+      
+    </div>
+    
   )
 }
