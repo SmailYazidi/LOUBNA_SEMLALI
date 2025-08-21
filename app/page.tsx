@@ -904,8 +904,8 @@ shadow: 'shadow-xl',
             {mockData.projects.projects.map((project: any) => (
               <Card
                 key={project._id}
-                className={`${themeClasses.glassDark} border-white/10 rounded-2xl overflow-hidden ${themeClasses.accent}  ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
- hover:shadow-2xl group`}
+                className={` rounded-2xl overflow-hidden ${themeClasses.accent}   transition-all duration-300 sm:hover:scale-105
+ hover:shadow-2xl group ${themeClasses.glassDark}`}
               >
                 <div className="relative h-64 overflow-hidden">
                   <Image
