@@ -316,10 +316,31 @@ export default function Portfolio() {
   const [searchTerm, setSearchTerm] = useState("")
   const [isSearchOpen, setIsSearchOpen] = useState(false)
 const [mockData, setMockData] = useState(baseMockData);
-  const [isDarkMode, setIsDarkMode] = useState(true);
-  const [currentLang, setCurrentLang] = useState<"fr" | "en" | "ar">("en");
+
+
  const [loading, setLoading] = useState(true);
+
+ 
+   const [currentLang, setCurrentLang] = useState<"fr" | "en" | "ar">(() => {
+      if (typeof window !== 'undefined') {
+        const saved = sessionStorage.getItem('language');
+        return saved !== null ? saved as "fr" | "en" | "ar" : "fr";
+      }
+      return "fr";
+    });
+
   const t = translations[currentLang]
+    const [isDarkMode, setIsDarkMode] = useState(() => {
+      if (typeof window !== 'undefined') {
+        const saved = sessionStorage.getItem('darkMode');
+        return saved !== null ? JSON.parse(saved) : false;
+      }
+      return false;
+    });
+  
+  
+  
+
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId)
@@ -328,15 +349,34 @@ const [mockData, setMockData] = useState(baseMockData);
     }
     setIsMenuOpen(false)
   }
+  useEffect(() => {
+    sessionStorage.setItem('darkMode', JSON.stringify(isDarkMode));
+  }, [isDarkMode]);
 
+  useEffect(() => {
+    sessionStorage.setItem('language', currentLang);
+    document.documentElement.lang = currentLang;
+    // Set RTL direction for Arabic
+    document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+  }, [currentLang]);
+
+  // Modify your theme toggle function to persist the setting
   const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
+    const newMode = !isDarkMode;
+    setIsDarkMode(newMode);
+    sessionStorage.setItem('darkMode', JSON.stringify(newMode));
   };
-
+ 
+ // Modify your language change function to persist the setting
   const changeLanguage = (lang: "fr" | "en" | "ar") => {
     setCurrentLang(lang);
     setIsLangMenuOpen(false);
+    sessionStorage.setItem('language', lang);
   };
+
+
+
+
 
   useEffect(() => {
     const handleScroll = () => {
