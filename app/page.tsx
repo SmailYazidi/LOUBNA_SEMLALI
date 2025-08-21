@@ -548,7 +548,7 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
             {/* Logo */}
             <div className="flex-shrink-0">
 
-<div className={`${themeClasses.glassDark} ${themeClasses.accent} border border-white/20 min-w-[30px] w-10 h-10  hover:${themeClasses.accent} rounded-full transition-all duration-300 hover:scale-105 flex items-center justify-center text-2xl font-bold sm:hidden`}>
+<div className={`${themeClasses.glassDark} ${isDarkMode ? 'text-white' : 'text-[#0A2647]'} border border-white/20 min-w-[30px] w-10 h-10  hover:${themeClasses.accent} rounded-full transition-all duration-300 hover:scale-105 flex items-center justify-center text-2xl font-bold sm:hidden`}>
   {/* Show first English letter, uppercased */}
   <span>
     { (mockData.username[currentLang].replace(/[^A-Za-z]/g, '').charAt(0) || 'L').toUpperCase() }
