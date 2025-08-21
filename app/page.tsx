@@ -4,6 +4,9 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import Image from "next/image"
+
+import { useRouter } from "next/navigation";
+
 import Loading from "@/components/LoadingAdmin";
 import {
   Send,
@@ -138,7 +141,7 @@ const [mockData, setMockData] = useState(baseMockData);
   const [isSendingMessage, setIsSendingMessage] = useState(false);
   const [isMessageSent, setIsMessageSent] = useState(false);
   const [isLimitReached, setIsLimitReached] = useState(false);
-
+  const router = useRouter();
  const [loading, setLoading] = useState(true);
 
 
@@ -681,13 +684,12 @@ shadow: 'shadow-xl',
               )}
 
               <div className="flex flex-wrap gap-4">
-                <Button
-                  onClick={() => scrollToSection("experience")}
-                  className={`${themeClasses.accentBg} hover:bg-[#0A2647]/90 text-white rounded-2xl px-8 py-3 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
- text-lg`}
-                >
-                  {t.viewJourney}
-                </Button>
+            <Button
+       onClick={() => router.push("/cv")}
+      className={`${themeClasses.accentBg} hover:bg-[#0A2647]/90 text-white rounded-2xl px-8 py-3 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105 text-lg`}
+    >
+      {t.viewJourney}
+    </Button>
 
                 {mockData.hero.heroButtons?.map((button, index) => {
                   const Icon = getIcon(button.icon);
