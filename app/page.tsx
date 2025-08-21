@@ -3,9 +3,8 @@ import { useState, useEffect } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import Loading from '@/components/Loading';
 import Image from "next/image"
-
+import Loading from "@/components/LoadingAdmin";
 import {
   Send,
   Star,
@@ -26,6 +25,7 @@ import * as LucideIcons from "lucide-react";
 
 const translations = {
   fr: {
+    // Header
     home: "Accueil",
     services: "Services",
     experience: "Parcours",
@@ -35,15 +35,28 @@ const translations = {
     contact: "Contact",
     hireMe: "Me Contacter",
     viewJourney: "Voir Mon CV",
+
+    // Services
     servicesTitle: "Services",
+
+    // Experience & Education Timeline
     journeyTitle: "Parcours Professionnel & Éducatif",
+
+    // Skills
     skillsTitle: "Mes Compétences",
+
+    // Projects
     myProjects: "Mes Projets",
+
+    // About
     aboutTitle: "À Propos de Moi",
-    interests: "Centres d'Intérêt",
+    interests:"Centres d'Intérêt",
+    
+    // Footer
     rightsReserved: "Tous droits réservés",
   },
   en: {
+    // Header
     home: "Home",
     services: "Services",
     experience: "Journey",
@@ -52,16 +65,27 @@ const translations = {
     about: "About",
     contact: "Contact",
     hireMe: "Hire Me",
-    interests: "Interests",
+    interests:"Interests",
     viewJourney: "View My CV",
+
+    // Services
     servicesTitle: "Services",
+  
+    // Experience & Education Timeline
     journeyTitle: "Work Experience & Education Timeline",
+ 
+    // Skills
     skillsTitle: "My Skills",
+
+    // Projects
     myProjects: "My Projects",
+   
     aboutTitle: "About Me",
+    // Footer
     rightsReserved: "All rights reserved",
   },
   ar: {
+    // Header
     home: "الرئيسية",
     services: "الخدمات",
     experience: "المسيرة المهنية",
@@ -72,56 +96,229 @@ const translations = {
     hireMe: "وظفني",
     interests: "الاهتمامات",
     viewJourney: "عرض سيرتي الذاتية",
+
+    // Services
     servicesTitle: "الخدمات",
+
+    // Experience & Education Timeline
     journeyTitle: "المسيرة المهنية والتعليمية",
+
+    // Skills
     skillsTitle: "مهاراتي",
+
+    // Projects
     myProjects: "مشاريعي",
+
     aboutTitle: "نبذة عني",
+    // Footer
     rightsReserved: "جميع الحقوق محفوظة",
   }
 }
+const baseMockData = {
+  username: { fr: "Jean Dupont", en: "John Doe", ar: "جون دو" },
+  hero: { /* ... initial local hero data ... */ },
+  services: { servicesList: [] },
+  education: { education: [], experience: [] },
+  skills: { skills: [] },
+  projects: { projects: [] },
+  about: { aboutDescription: {}, personalInfo: [], languages: {}, interests: [] },
+  contact: { contactTitle: {}, contactDescription: {}, contactInfo: [], contactButton: {} },
+  photoUrl: ""
+};
+/* // Mock data for demo purposes
+const mockData = {
+  username: { fr: "Jean Dupont", en: "John Doe", ar: "جون دو" },
+  hero: {
+    specialist: { 
+      fr: "Développeur Full Stack", 
+      en: "Full Stack Developer", 
+      ar: "مطور مكدس كامل" 
+    },
+    heroTitle: { 
+      fr: "Créateur d'expériences digitales", 
+      en: "Digital Experience Creator", 
+      ar: "مصمم التجارب الرقمية" 
+    },
+    heroDescription: { 
+      fr: "Passionné par le développement web moderne et la création d'interfaces utilisateur exceptionnelles.", 
+      en: "Passionate about modern web development and creating exceptional user interfaces.", 
+      ar: "شغوف بتطوير الويب الحديث وإنشاء واجهات مستخدم استثنائية." 
+    },
+    heroButtons: [
+      { 
+        text: { fr: "Voir Portfolio", en: "View Portfolio", ar: "عرض الأعمال" }, 
+        icon: "arrowUpRight", 
+        link: "#projects" 
+      }
+    ]
+  },
+  services: {
+    servicesList: [
+      {
+        title: { fr: "Développement Web", en: "Web Development", ar: "تطوير الويب" },
+        description: { 
+          fr: "Création d'applications web modernes et responsives", 
+          en: "Building modern and responsive web applications", 
+          ar: "إنشاء تطبيقات ويب حديثة ومتجاوبة" 
+        }
+      },
+      {
+        title: { fr: "Design UI/UX", en: "UI/UX Design", ar: "تصميم واجهة المستخدم" },
+        description: { 
+          fr: "Design d'interfaces utilisateur intuitives et esthétiques", 
+          en: "Designing intuitive and aesthetic user interfaces", 
+          ar: "تصميم واجهات مستخدم بديهية وجمالية" 
+        }
+      },
+      {
+        title: { fr: "Consultation", en: "Consultation", ar: "الاستشارة" },
+        description: { 
+          fr: "Conseil en stratégie digitale et architecture technique", 
+          en: "Digital strategy and technical architecture consulting", 
+          ar: "استشارات في الإستراتيجية الرقمية والهندسة التقنية" 
+        }
+      }
+    ]
+  },
+  education: {
+    education: [
+      {
+        year: { fr: "2023", en: "2023", ar: "2023" },
+        title: { fr: "Master en Informatique", en: "Master in Computer Science", ar: "ماجستير في علوم الحاسوب" },
+        institution: { fr: "Université de Paris", en: "University of Paris", ar: "جامعة باريس" },
+        description: { fr: "Spécialisé en développement web", en: "Specialized in web development", ar: "متخصص في تطوير الويب" }
+      }
+    ],
+    experience: [
+      {
+        year: { fr: "2023 - Présent", en: "2023 - Present", ar: "2023 - الحاضر" },
+        title: { fr: "Développeur Senior", en: "Senior Developer", ar: "مطور أول" },
+        institution: { fr: "TechCorp", en: "TechCorp", ar: "تيك كورب" },
+        duration: "1 an",
+        description: { fr: "Développement d'applications web", en: "Web application development", ar: "تطوير تطبيقات الويب" }
+      }
+    ]
+  },
+  skills: {
+    skills: [
+      {
+        title: { fr: "Technologies Frontend", en: "Frontend Technologies", ar: "تقنيات الواجهة الأمامية" },
+        skillicon: "code",
+        items: [
+          {
+            name: { fr: "React", en: "React", ar: "ريأكت" },
+            icon: "react",
+            examples: [
+              { fr: "Next.js", en: "Next.js", ar: "Next.js" },
+              { fr: "TypeScript", en: "TypeScript", ar: "TypeScript" }
+            ]
+          },
+          {
+            name: { fr: "CSS/Design", en: "CSS/Design", ar: "CSS/التصميم" },
+            icon: "palette",
+            examples: [
+              { fr: "Tailwind", en: "Tailwind", ar: "Tailwind" },
+              { fr: "Figma", en: "Figma", ar: "Figma" }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  projects: {
+    projects: [
+      {
+        _id: "1",
+        title: { fr: "Portfolio Personnel", en: "Personal Portfolio", ar: "الموقع الشخصي" },
+        description: { 
+          fr: "Site web personnel avec design moderne et responsive", 
+          en: "Personal website with modern and responsive design", 
+          ar: "موقع شخصي بتصميم حديث ومتجاوب" 
+        },
+        techStack: ["React", "Next.js", "Tailwind CSS"],
+        button: {
+          label: { fr: "Voir le projet", en: "View Project", ar: "عرض المشروع" },
+          link: "https://example.com"
+        },
+        image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=450&fit=crop"
+      }
+    ]
+  },
+  about: {
+    aboutDescription: { 
+      fr: "Développeur passionné avec 5 ans d'expérience dans le développement web moderne.", 
+      en: "Passionate developer with 5 years of experience in modern web development.", 
+      ar: "مطور شغوف بخبرة 5 سنوات في تطوير الويب الحديث." 
+    },
+    personalInfo: [
+      {
+        icon: "mail",
+        label: { fr: "Email", en: "Email", ar: "البريد الإلكتروني" },
+        value: { fr: "john@example.com", en: "john@example.com", ar: "john@example.com" }
+      },
+      {
+        icon: "phone",
+        label: { fr: "Téléphone", en: "Phone", ar: "الهاتف" },
+        value: { fr: "+33 1 23 45 67 89", en: "+33 1 23 45 67 89", ar: "+33 1 23 45 67 89" }
+      }
+    ],
+    languages: {
+      title: { fr: "Langues", en: "Languages", ar: "اللغات" },
+      list: [
+        { name: { fr: "Français", en: "French", ar: "الفرنسية" }, level: "native" },
+        { name: { fr: "Anglais", en: "English", ar: "الإنجليزية" }, level: "advanced" },
+        { name: { fr: "Arabe", en: "Arabic", ar: "العربية" }, level: "intermediate" }
+      ],
+      levels: {
+        native: { fr: "Natif", en: "Native", ar: "أصلي" },
+        advanced: { fr: "Avancé", en: "Advanced", ar: "متقدم" },
+        intermediate: { fr: "Intermédiaire", en: "Intermediate", ar: "متوسط" }
+      }
+    },
+    interests: [
+      { name: { fr: "Photographie", en: "Photography", ar: "التصوير" }, icon: "camera" },
+      { name: { fr: "Voyage", en: "Travel", ar: "السفر" }, icon: "plane" },
+      { name: { fr: "Musique", en: "Music", ar: "الموسيقى" }, icon: "music" }
+    ]
+  },
+  contact: {
+    contactTitle: { fr: "Contactez-moi", en: "Contact Me", ar: "اتصل بي" },
+    contactDescription: { 
+      fr: "N'hésitez pas à me contacter pour discuter de votre projet.", 
+      en: "Feel free to contact me to discuss your project.", 
+      ar: "لا تتردد في الاتصال بي لمناقشة مشروعك." 
+    },
+    contactInfo: [
+      {
+        icon: "mail",
+        label: { fr: "Email", en: "Email", ar: "البريد الإلكتروني" },
+        value: "john@example.com",
+        link: "mailto:john@example.com"
+      },
+      {
+        icon: "phone",
+        label: { fr: "Téléphone", en: "Phone", ar: "الهاتف" },
+        value: "+33 1 23 45 67 89",
+        link: "tel:+33123456789"
+      }
+    ],
+    contactButton: {
+      startProject: { fr: "Démarrer un projet", en: "Start a Project", ar: "بدء مشروع" },
+      link: "mailto:john@example.com"
+    }
+  }
+}; */
 
 export default function Portfolio() {
-  const [heroData, setHeroData] = useState<any>(null);
-  const [educationData, setEducationData] = useState<any>(null);
-  const [skillsData, setSkillsData] = useState<any>(null);
-  const [servicesData, setServicesData] = useState<any>(null);
-  const [heroLoading, setHeroLoading] = useState(true);
-  const [servicesLoading, setServicesLoading] = useState(true);
-  const [aboutData, setAboutData] = useState<any>(null);
-  const [photoLoading, setPhotoLoading] = useState(true);
-  const [aboutLoading, setAboutLoading] = useState(true);
-  const [contactLoading, setContactLoading] = useState(true);
-  const [contactData, setContactData] = useState<any>(null);
-  const [projetsLoading, setProjetsLoading] = useState(true);
-  const [projetsData, setProjetsData] = useState<any>(null);
-  const [usernameLoading, setUsernameLoading] = useState(true);
-  const [usernameData, setUsernameData] = useState<any>(null);
-  const [educationLoading, setEducationLoading] = useState(true);
-  const [skillsLoading, setSkillsLoading] = useState(true);
-  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [activeSection, setActiveSection] = useState("home")
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [isSearchOpen, setIsSearchOpen] = useState(false)
-
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = sessionStorage.getItem('darkMode');
-      return saved !== null ? JSON.parse(saved) : true;
-    }
-    return true;
-  });
-
-  const [currentLang, setCurrentLang] = useState<"fr" | "en" | "ar">(() => {
-    if (typeof window !== 'undefined') {
-      const saved = sessionStorage.getItem('language');
-      return saved !== null ? saved as "fr" | "en" | "ar" : "fr";
-    }
-    return "fr";
-  });
-
+const [mockData, setMockData] = useState(baseMockData);
+  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [currentLang, setCurrentLang] = useState<"fr" | "en" | "ar">("en");
+ const [loading, setLoading] = useState(true);
   const t = translations[currentLang]
 
   const scrollToSection = (sectionId: string) => {
@@ -131,148 +328,15 @@ export default function Portfolio() {
     }
     setIsMenuOpen(false)
   }
-  
-  useEffect(() => {
-    sessionStorage.setItem('darkMode', JSON.stringify(isDarkMode));
-  }, [isDarkMode]);
-
-  useEffect(() => {
-    sessionStorage.setItem('language', currentLang);
-    document.documentElement.lang = currentLang;
-    document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
-  }, [currentLang]);
 
   const toggleTheme = () => {
-    const newMode = !isDarkMode;
-    setIsDarkMode(newMode);
-    sessionStorage.setItem('darkMode', JSON.stringify(newMode));
+    setIsDarkMode(!isDarkMode);
   };
 
   const changeLanguage = (lang: "fr" | "en" | "ar") => {
     setCurrentLang(lang);
     setIsLangMenuOpen(false);
-    sessionStorage.setItem('language', lang);
   };
-
-  useEffect(() => {
-    const fetchPhoto = async () => {
-      try {
-        const res = await fetch('/api/photo');
-        if (!res.ok) throw new Error('Failed to fetch photo');
-        const data = await res.json();
-        setPhotoUrl(data.url);
-      } catch (err: any) {
-        console.error('Error fetching photo:', err);
-      } finally {
-        setPhotoLoading(false);
-      }
-    };
-    fetchPhoto();
-  }, []);
-
-  useEffect(() => {
-    fetch("/api/hero")
-      .then((res) => res.json())
-      .then((data) => {
-        setHeroData(data);
-        setHeroLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching hero data:", err);
-        setHeroLoading(false);
-      });
-  }, []);
-
-  useEffect(() => {
-    fetch("/api/username")
-      .then((res) => res.json())
-      .then((data) => {
-        setUsernameData(data || { fr: "", en: "", ar: "" });
-        setUsernameLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching username data:", err);
-        setUsernameLoading(false);
-      });
-  }, []);
-
-  useEffect(() => {
-    fetch("/api/about_me")
-      .then((res) => res.json())
-      .then((data) => {
-        setAboutData(data);
-        setAboutLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching about data:", err);
-        setAboutLoading(false);
-      });
-  }, []);
-
-  useEffect(() => {
-    fetch("/api/contact")
-      .then((res) => res.json())
-      .then((data) => {
-        setContactData(data);
-        setContactLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching contact data:", err);
-        setContactLoading(false);
-      });
-  }, []);
-
-  useEffect(() => {
-    fetch("/api/services")
-      .then((res) => res.json())
-      .then((data) => {
-        setServicesData(data);
-        setServicesLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching services data:", err);
-        setServicesLoading(false);
-      });
-  }, []);
-
-  useEffect(() => {
-    fetch("/api/education")
-      .then((res) => res.json())
-      .then((data) => {
-        setEducationData(data);
-        setEducationLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching education data:", err);
-        setEducationLoading(false);
-      });
-  }, []);
-
-  useEffect(() => {
-    fetch("/api/skills")
-      .then((res) => res.json())
-      .then((data) => {
-        setSkillsData(data);
-        setSkillsLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching education data:", err);
-        setSkillsLoading(false);
-      });
-  }, []);
-
-  useEffect(() => {
-    fetch("/api/projets")
-      .then((res) => res.json())
-      .then((data) => {
-        setProjetsData(data);
-        setProjetsLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching Projets data:", err);
-        setProjetsLoading(false);
-      });
-  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -297,6 +361,91 @@ export default function Portfolio() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+
+
+
+  useEffect(() => {
+    const fetchAllData = async () => {
+      try {
+        const endpoints = {
+          photo: "/api/photo",
+          hero: "/api/hero",
+          username: "/api/username",
+          about: "/api/about_me",
+          contact: "/api/contact",
+          services: "/api/services",
+          education: "/api/education",
+          skills: "/api/skills",
+          projects: "/api/projets"
+        };
+
+        // Fetch all endpoints in parallel
+        const results = await Promise.all(
+          Object.entries(endpoints).map(async ([key, url]) => {
+            try {
+              const res = await fetch(url);
+              if (!res.ok) throw new Error(`${url} failed`);
+              const data = await res.json();
+              return { key, data };
+            } catch (err) {
+              console.error(`Error fetching ${key}:`, err);
+              return { key, data: null }; // fallback
+            }
+          })
+        );
+
+        // Build new mockData from base + API
+        let updatedData = { ...baseMockData };
+
+        results.forEach(({ key, data }) => {
+          if (!data) return; // skip failed fetches
+          switch (key) {
+            case "photo":
+              updatedData = { ...updatedData, photoUrl: data.url };
+              break;
+            case "hero":
+              updatedData = { ...updatedData, hero: data };
+              break;
+            case "username":
+              updatedData = { ...updatedData, username: data };
+              break;
+            case "about":
+              updatedData = { ...updatedData, about: data };
+              break;
+            case "contact":
+              updatedData = { ...updatedData, contact: data };
+              break;
+            case "services":
+              updatedData = { ...updatedData, services: data };
+              break;
+            case "education":
+              updatedData = { ...updatedData, education: data };
+              break;
+            case "skills":
+              updatedData = { ...updatedData, skills: data };
+              break;
+            case "projects":
+              updatedData = { ...updatedData, projects: data };
+              break;
+            default:
+              break;
+          }
+        });
+
+        setMockData(updatedData);
+      } catch (err) {
+        console.error("Error fetching all data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAllData();
+  }, []);
+
+
+
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement
@@ -315,22 +464,14 @@ export default function Portfolio() {
     { code: "ar", label: "العربية", flag: "🇸🇦" },
   ]
 
-  const isProjectsEmpty = !projetsData || !projetsData.projects?.length;
-  const isServicesEmpty = !servicesData || !servicesData.servicesList?.length;
-  const isJourneyDataEmpty = !educationData || (!educationData.education?.length && !educationData.experience?.length);
-  const isContactDataEmpty = !contactData || !((contactData.contactDescription?.[currentLang]?.trim() !== "") || (contactData.contactInfo && contactData.contactInfo.length > 0 && contactData.contactInfo.some(info => (info.label?.[currentLang]?.trim() !== "") || (info.value?.trim() !== ""))) || (contactData.contactButton?.startProject?.[currentLang]?.trim() !== ""));
-  const isAboutDataEmpty = !aboutData || !((aboutData.aboutDescription?.[currentLang]?.trim() !== "") || (aboutData.personalInfo && aboutData.personalInfo.length > 0 && aboutData.personalInfo.some(info => (info.label?.[currentLang]?.trim() !== "") || (info.value?.[currentLang]?.trim() !== ""))) || (aboutData.languages?.list && aboutData.languages.list.length > 0 && aboutData.languages.list.some(language => (language.name?.[currentLang]?.trim() !== "") || (language.level?.trim() !== ""))) || (aboutData.interests && aboutData.interests.length > 0 && aboutData.interests.some(interest => (interest.name?.[currentLang]?.trim() !== ""))));
-  const isSkillsDataEmpty = !skillsData || !((skillsData.skills && skillsData.skills.length > 0 && skillsData.skills.some(skill => (skill.title?.[currentLang]?.trim() !== "") || (skill.items && skill.items.length > 0 && skill.items.some(item => (item.name?.[currentLang]?.trim() !== "") || (item.examples && item.examples.some(ex => ex[currentLang]?.trim() !== "")))))));
-  const isHeroDataEmpty = !heroData || !((heroData.specialist?.[currentLang] && heroData.specialist[currentLang].trim() !== "") || (heroData.heroTitle?.[currentLang] && heroData.heroTitle[currentLang].trim() !== "") || (heroData.heroDescription?.[currentLang] && heroData.heroDescription[currentLang].trim() !== "") || (heroData.heroButtons && heroData.heroButtons.length > 0));
-
   const navItems = [
-    !isServicesEmpty && { id: "services", label: t.services },
-    !isJourneyDataEmpty && { id: "experience", label: t.experience },
-    !isSkillsDataEmpty && { id: "skills", label: t.skills },
-    !isProjectsEmpty && { id: "projects", label: t.projects },
-    !isAboutDataEmpty && { id: "about", label: t.about },
-    !isContactDataEmpty && { id: "contact", label: t.contact },
-  ].filter(Boolean);
+    { id: "services", label: t.services },
+    { id: "experience", label: t.experience },
+    { id: "skills", label: t.skills },
+    { id: "projects", label: t.projects },
+    { id: "about", label: t.about },
+    { id: "contact", label: t.contact },
+  ];
 
   const getIcon = (iconName?: string) => {
     if (!iconName) return null; 
@@ -338,68 +479,77 @@ export default function Portfolio() {
     return LucideIcons[pascalCase] || null; 
   };
 
-  if (heroLoading || servicesLoading || photoLoading || educationLoading || aboutLoading || contactLoading || projetsLoading || skillsLoading || usernameLoading) return <Loading/>;
-  
+  // Theme classes
+ const themeClasses = {
+  background: isDarkMode ? 'bg-black' : 'bg-[#f5f5dc]',
+  surface: isDarkMode ? 'bg-black/40' : 'bg-white/40',
+  surfaceSolid: isDarkMode ? 'bg-black' : 'bg-white',
+  text: isDarkMode ? 'text-white' : 'text-gray-900',
+  textMuted: isDarkMode ? 'text-gray-400' : 'text-gray-600',
+accent: isDarkMode ? 'text-[#3A6EA5]' : 'text-[#0A2647]',
+accentBg: isDarkMode ? 'bg-[#3A6EA5]' : 'bg-[#0A2647]',
+accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
+
+  glass: 'backdrop-blur-lg border border-white/10',
+  glassDark: isDarkMode 
+    ? 'bg-black/40 backdrop-blur-lg border border-white/10' 
+    : 'bg-white/40 backdrop-blur-lg border border-black/10',
+  shadow: 'shadow-xl',
+};
+
+  if (loading) return <Loading/>;
   return (
-    <div className={`min-h-screen transition-colors duration-500 ${isDarkMode ? 
-      'bg-gradient-to-br from-[#0b0c1d] to-[#1a103d] text-white' : 
-      'bg-gradient-to-br from-[#ffd6e7] to-[#ffc2d6] text-gray-800'}`}>
-      
+    <div className={`min-h-screen transition-all duration-500 ${themeClasses.background} ${themeClasses.text} ${currentLang === 'ar' ? 'font-arabic' : ''}`} style={{ direction: currentLang === 'ar' ? 'rtl' : 'ltr' }}>
       {/* Header */}
-      <header className={`fixed w-full z-50 transition-all duration-500 ${isDarkMode ? 
-        'bg-[#0b0c1d]/90 backdrop-blur-sm' : 
-        'bg-[#ffd6e7]/90 backdrop-blur-sm'} shadow-md`}>
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className={`font-bold text-xl ${isDarkMode ? 
-                'bg-gradient-to-r from-[#ff9acb] to-[#a67cff] bg-clip-text text-transparent' : 
-                'bg-gradient-to-r from-[#ff6b9c] to-[#ff4d7a] bg-clip-text text-transparent'}`}>
-                <span>{usernameData?.[currentLang]}</span>
+      <header className={`fixed top-0 w-full z-50 ${themeClasses.glassDark} ${themeClasses.shadow} transition-all duration-500`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4">
+            {/* Logo */}
+            <div className="flex-shrink-0">
+              <div className={`text-2xl font-bold ${themeClasses.accent} hover:scale-105 transition-transform duration-300`}>
+                <span>{mockData.username[currentLang]}</span>
               </div>
             </div>
 
-            <div className="hidden md:flex items-center custom-nav-spacing">
-              <nav className="flex space-x-8">
-                {navItems.map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => scrollToSection(item.id)}
-                    className={`font-medium transition-all duration-300 hover:scale-105 ${activeSection === item.id ? 
-                      (isDarkMode ? 'text-[#ff9acb]' : 'text-[#ff6b9c]') : 
-                      'text-inherit'}`}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </nav>
-            </div>
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex space-x-8">
+              {navItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => scrollToSection(item.id)}
+                  className={`px-4 py-2 rounded-2xl transition-all duration-300 hover:scale-105 ${
+                    activeSection === item.id
+                      ? `${themeClasses.accentBg} text-white ${themeClasses.shadow}`
+                      : `${themeClasses.text} hover:${themeClasses.accent}`
+                  }`}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </nav>
 
+            {/* Desktop Controls */}
             <div className="hidden md:flex items-center space-x-4">
+              {/* Language Selector */}
               <div className="relative language-menu">
                 <Button
+                  variant="outline"
                   onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
-                  className={`rounded-full ${isDarkMode ? 
-                    'bg-[#1a103d] hover:bg-[#2a205d] text-white' : 
-                    'bg-white hover:bg-[#ffe4ec] text-[#ff6b9c]'} transition-all duration-300`}
+                  className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} hover:${themeClasses.accent} rounded-2xl transition-all duration-300 hover:scale-105`}
                 >
                   <span>{currentLang.toUpperCase()}</span>
-                  <ChevronDown className="ml-1 h-4 w-4" />
+                  <ChevronDown className={`ml-2 h-4 w-4 transition-transform duration-300 ${isLangMenuOpen ? 'rotate-180' : ''}`} />
                 </Button>
 
                 {isLangMenuOpen && (
-                  <div className={`absolute right-0 mt-2 w-48 rounded-md shadow-lg ${isDarkMode ? 
-                    'bg-[#1a103d] border border-[#2a205d]' : 
-                    'bg-white border border-[#ffe4ec]'} py-1 z-50`}>
+                  <div className={`absolute top-full right-0 mt-2 ${themeClasses.glassDark} rounded-2xl ${themeClasses.shadow} border border-white/10 min-w-[150px] z-50 transition-all duration-300 animate-in slide-in-from-top-2`}>
                     {languageOptions.map((option) => (
                       <button
                         key={option.code}
                         onClick={() => changeLanguage(option.code as "fr" | "en" | "ar")}
-                        className={`block w-full text-left px-4 py-2 text-sm ${isDarkMode ? 
-                          'hover:bg-[#2a205d] text-white' : 
-                          'hover:bg-[#ffe4ec] text-[#ff6b9c]'} transition-colors duration-200`}
+                        className={`w-full px-4 py-3 text-left hover:${themeClasses.accentBg} hover:text-white rounded-2xl transition-all duration-300 flex items-center space-x-3`}
                       >
-                        <span className="mr-2">{option.flag}</span>
+                        <span className="text-lg">{option.flag}</span>
                         <span>{option.label}</span>
                       </button>
                     ))}
@@ -407,68 +557,62 @@ export default function Portfolio() {
                 )}
               </div>
 
+              {/* Theme Toggle */}
               <Button
+                variant="outline"
                 onClick={toggleTheme}
-                className={`rounded-full ${isDarkMode ? 
-                  'bg-[#1a103d] hover:bg-[#2a205d] text-white' : 
-                  'bg-white hover:bg-[#ffe4ec] text-[#ff6b9c]'} transition-all duration-300`}
+                className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} hover:${themeClasses.accent} rounded-2xl transition-all duration-300 hover:scale-105`}
               >
-                {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+                {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
               </Button>
 
+              {/* Search Toggle */}
               <Button
+                variant="outline"
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className={`rounded-full ${isDarkMode ? 
-                  'bg-[#1a103d] hover:bg-[#2a205d] text-white' : 
-                  'bg-white hover:bg-[#ffe4ec] text-[#ff6b9c]'} transition-all duration-300`}
+                className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} hover:${themeClasses.accent} rounded-2xl transition-all duration-300 hover:scale-105`}
               >
-                {isSearchOpen ? <X size={18} /> : <Search size={18} />}
+                {isSearchOpen ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}
               </Button>
 
+              {/* Hire Me Button */}
               <Button
                 onClick={() => scrollToSection("contact")}
-                className={`rounded-full font-medium transition-all duration-300 hover:scale-105 ${isDarkMode ? 
-                  'bg-gradient-to-r from-[#ff9acb] to-[#a67cff] text-white hover:shadow-lg hover:shadow-[#ff9acb]/30' : 
-                  'bg-gradient-to-r from-[#ff6b9c] to-[#ff4d7a] text-white hover:shadow-lg hover:shadow-[#ff6b9c]/30'}`}
+                className={`${themeClasses.accentBg} hover:bg-[#0A2647]/90 text-white rounded-2xl px-6 py-2 ${themeClasses.shadow} transition-all duration-300 hover:scale-105`}
               >
                 {t.hireMe}
               </Button>
             </div>
 
-            <div className="flex md:hidden items-center space-x-2">
+            {/* Mobile Controls */}
+            <div className="md:hidden flex items-center space-x-2">
               <Button
+                variant="outline"
                 onClick={toggleTheme}
-                className={`rounded-full ${isDarkMode ? 
-                  'bg-[#1a103d] hover:bg-[#2a205d] text-white' : 
-                  'bg-white hover:bg-[#ffe4ec] text-[#ff6b9c]'} transition-all duration-300`}
+                className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} rounded-2xl`}
               >
-                {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+                {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
               </Button>
 
               <div className="relative language-menu">
                 <Button
+                  variant="outline"
                   onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
-                  className={`rounded-full ${isDarkMode ? 
-                    'bg-[#1a103d] hover:bg-[#2a205d] text-white' : 
-                    'bg-white hover:bg-[#ffe4ec] text-[#ff6b9c]'} transition-all duration-300`}
+                  className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} rounded-2xl`}
                 >
                   <span>{currentLang.toUpperCase()}</span>
-                  <ChevronDown className="ml-1 h-4 w-4" />
+                  <ChevronDown className={`ml-1 h-4 w-4 ${isLangMenuOpen ? 'rotate-180' : ''} transition-transform duration-300`} />
                 </Button>
 
                 {isLangMenuOpen && (
-                  <div className={`absolute right-0 mt-2 w-48 rounded-md shadow-lg ${isDarkMode ? 
-                    'bg-[#1a103d] border border-[#2a205d]' : 
-                    'bg-white border border-[#ffe4ec]'} py-1 z-50`}>
+                  <div className={`absolute top-full right-0 mt-2 ${themeClasses.glassDark} rounded-2xl ${themeClasses.shadow} border border-white/10 min-w-[120px] z-50`}>
                     {languageOptions.map((option) => (
                       <button
                         key={option.code}
                         onClick={() => changeLanguage(option.code as "fr" | "en" | "ar")}
-                        className={`block w-full text-left px-4 py-2 text-sm ${isDarkMode ? 
-                          'hover:bg-[#2a205d] text-white' : 
-                          'hover:bg-[#ffe4ec] text-[#ff6b9c]'} transition-colors duration-200`}
+                        className={`w-full px-3 py-2 text-left hover:${themeClasses.accentBg} hover:text-white rounded-2xl transition-all duration-300 flex items-center space-x-2`}
                       >
-                        <span className="mr-2">{option.flag}</span>
+                        <span>{option.flag}</span>
                         <span>{option.code.toUpperCase()}</span>
                       </button>
                     ))}
@@ -477,47 +621,43 @@ export default function Portfolio() {
               </div>
 
               <Button
+                variant="outline"
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className={`rounded-full ${isDarkMode ? 
-                  'bg-[#1a103d] hover:bg-[#2a205d] text-white' : 
-                  'bg-white hover:bg-[#ffe4ec] text-[#ff6b9c]'} transition-all duration-300`}
+                className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} rounded-2xl`}
               >
-                {isSearchOpen ? <X size={18} /> : <Search size={18} />}
+                {isSearchOpen ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}
               </Button>
 
-              <button 
-                onClick={() => setIsMenuOpen(!isMenuOpen)} 
-                className={`p-2 rounded-full ${isDarkMode ? 
-                  'bg-[#1a103d] hover:bg-[#2a205d] text-white' : 
-                  'bg-white hover:bg-[#ffe4ec] text-[#ff6b9c]'} transition-all duration-300`}
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className={`${themeClasses.text} hover:${themeClasses.accent} transition-colors duration-300`}
               >
-                {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+                {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
               </button>
             </div>
           </div>
 
+          {/* Mobile Menu */}
           {isMenuOpen && (
-            <div className={`md:hidden mt-4 py-4 ${isDarkMode ? 
-              'bg-[#1a103d]' : 
-              'bg-white'} rounded-lg shadow-lg`}>
-              <nav className="flex flex-col space-y-3">
+            <div className={`md:hidden ${themeClasses.glassDark} rounded-2xl mb-4 p-4 ${themeClasses.shadow} transition-all duration-300 animate-in slide-in-from-top-2`}>
+              <nav className="flex flex-col space-y-2">
                 {navItems.map((item) => (
                   <button
                     key={item.id}
                     onClick={() => scrollToSection(item.id)}
-                    className={`px-4 py-2 text-left font-medium transition-all duration-300 ${activeSection === item.id ? 
-                      (isDarkMode ? 'text-[#ff9acb]' : 'text-[#ff6b9c]') : 
-                      'text-inherit'}`}
+                    className={`px-4 py-3 rounded-2xl text-left transition-all duration-300 ${
+                      activeSection === item.id
+                        ? `${themeClasses.accentBg} text-white`
+                        : `${themeClasses.text} hover:${themeClasses.accentBg} hover:text-white`
+                    }`}
                   >
                     {item.label}
                   </button>
                 ))}
-                <div className="px-4 pt-2">
+                <div className="pt-2">
                   <Button
                     onClick={() => scrollToSection("contact")}
-                    className={`w-full rounded-full font-medium transition-all duration-300 hover:scale-105 ${isDarkMode ? 
-                      'bg-gradient-to-r from-[#ff9acb] to-[#a67cff] text-white hover:shadow-lg hover:shadow-[#ff9acb]/30' : 
-                      'bg-gradient-to-r from-[#ff6b9c] to-[#ff4d7a] text-white hover:shadow-lg hover:shadow-[#ff6b9c]/30'}`}
+                    className={`w-full ${themeClasses.accentBg} hover:bg-[#0A2647]/90 text-white rounded-2xl`}
                   >
                     {t.hireMe}
                   </Button>
@@ -526,27 +666,24 @@ export default function Portfolio() {
             </div>
           )}
 
+          {/* Search Bar */}
           {isSearchOpen && (
-            <div className={`mt-4 p-4 rounded-lg ${isDarkMode ? 
-              'bg-[#1a103d]' : 
-              'bg-white'} shadow-lg`}>
+            <div className={`${themeClasses.glassDark} rounded-2xl mb-4 p-4 ${themeClasses.shadow} transition-all duration-300 animate-in slide-in-from-top-2`}>
               <div className="relative">
                 <input
                   type="text"
                   placeholder={currentLang === "fr" ? "Rechercher..." : currentLang === "en" ? "Search..." : "البحث..."}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className={`w-full py-2 px-4 pr-10 rounded-full ${isDarkMode ? 
-                    'bg-[#0b0c1d] text-white border border-[#2a205d] focus:border-[#ff9acb]' : 
-                    'bg-[#ffe4ec] text-[#ff6b9c] border border-[#ffc2d6] focus:border-[#ff6b9c]'} focus:outline-none transition-colors duration-300`}
+                  className={`w-full px-4 py-3 ${themeClasses.glassDark} border border-white/20 rounded-2xl ${themeClasses.text} placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#0A2647] transition-all duration-300`}
                 />
                 {searchTerm && (
                   <button
                     onClick={() => setSearchTerm("")}
                     aria-label="Clear search"
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                    className={`absolute right-3 top-1/2 -translate-y-1/2 ${themeClasses.textMuted} hover:${themeClasses.accent} transition-colors duration-300`}
                   >
-                    <X size={18} className={isDarkMode ? "text-gray-400" : "text-[#ff6b9c]"} />
+                    <X size={18} />
                   </button>
                 )}
               </div>
@@ -556,784 +693,491 @@ export default function Portfolio() {
       </header>
 
       {/* Hero Section */}
-      {!isHeroDataEmpty && (
-        <section id="home" className="pt-32 pb-20 px-4">
-          <div className="container mx-auto">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-10">
-              <div className="md:w-1/2 space-y-6">
-                {heroData.specialist?.[currentLang] && (
-                  <div className={`inline-flex items-center px-4 py-2 rounded-full ${isDarkMode ? 
-                    'bg-[#1a103d] text-[#ff9acb]' : 
-                    'bg-white text-[#ff6b9c]'} font-medium`}>
-                    <Star className="mr-2 h-4 w-4" />
-                    <span>
-                      {heroData.specialist[currentLang]}
-                    </span>
+      <section id="home" className={`pt-32 pb-20 ${themeClasses.background}`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-8 animate-in slide-in-from-left duration-1000">
+              {mockData.hero.specialist?.[currentLang] && (
+                <div className={`inline-flex items-center space-x-2 ${themeClasses.glassDark} px-4 py-2 rounded-2xl ${themeClasses.shadow} transition-all duration-300 hover:scale-105`}>
+                  <Star className={`h-5 w-5 ${themeClasses.accent}`} />
+                  <span className={`${themeClasses.textMuted} font-medium`}>
+                    {mockData.hero.specialist[currentLang]}
+                  </span>
+                </div>
+              )}
+
+              {mockData.hero.heroTitle?.[currentLang] && (
+                <h1 className={`text-4xl md:text-6xl font-bold leading-tight ${themeClasses.text} transition-all duration-500`}>
+                  {mockData.hero.heroTitle[currentLang]}
+                </h1>
+              )}
+
+              {mockData.hero.heroDescription?.[currentLang] && (
+                <p className={`text-lg md:text-xl ${themeClasses.textMuted} max-w-2xl leading-relaxed`}>
+                  {mockData.hero.heroDescription[currentLang]}
+                </p>
+              )}
+
+              <div className="flex flex-wrap gap-4">
+                <Button
+                  onClick={() => scrollToSection("experience")}
+                  className={`${themeClasses.accentBg} hover:bg-[#0A2647]/90 text-white rounded-2xl px-8 py-3 ${themeClasses.shadow} transition-all duration-300 hover:scale-105 text-lg`}
+                >
+                  {t.viewJourney}
+                </Button>
+
+                {mockData.hero.heroButtons?.map((button, index) => {
+                  const Icon = getIcon(button.icon);
+                  const handleClick = () => {
+                    if (button.link) scrollToSection(button.link.replace('#', ''));
+                  };
+                  return (
+                    <Button
+                      key={index}
+                      variant="outline"
+                      onClick={handleClick}
+                      className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} hover:${themeClasses.accentBg} hover:text-white rounded-2xl px-8 py-3 transition-all duration-300 hover:scale-105 text-lg`}
+                    >
+                      {Icon && <Icon className="mr-2 h-5 w-5" />}
+                      {button.text?.[currentLang]}
+                    </Button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="flex justify-center lg:justify-end animate-in slide-in-from-right duration-1000">
+              <div className={`relative ${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 hover:scale-105`}>
+                <div className="relative w-80 h-80 rounded-2xl overflow-hidden">
+                  <Image
+                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face"
+                    alt="Profile photo"
+                    width={400}
+                    height={400}
+                    priority
+                    className="object-cover w-full h-full transition-transform duration-500 hover:scale-110"
+                  />
+                  <div className={`absolute inset-0 bg-gradient-to-t from-[#0A2647]/20 to-transparent`}></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    {/* Skills Section */}
+      <section id="skills" className={`py-20 ${themeClasses.background}`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className={`text-3xl md:text-4xl font-bold text-center mb-16 ${themeClasses.text}`}>
+            {t.skillsTitle}
+            <span className={`block w-20 h-1 ${themeClasses.accentBg} mx-auto mt-4 rounded-full`}></span>
+          </h2>
+
+          <div className="space-y-12">
+            {mockData.skills.skills.map((category, catIndex) => {
+              const CategoryIcon = getIcon(category.skillicon);
+
+              return (
+                <div key={catIndex} className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 hover:scale-105`}>
+                  <h3 className={`text-2xl font-semibold mb-8 ${themeClasses.text} flex items-center`}>
+                    {CategoryIcon && (
+                      <CategoryIcon className={`mr-3 h-6 w-6 ${themeClasses.accent}`} />
+                    )}
+                    {category.title?.[currentLang]}
+                  </h3>
+
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {category.items.map((skill, skillIndex) => {
+                      const SkillIcon = getIcon(skill.icon);
+
+                      return (
+                        <Card
+                          key={skillIndex}
+                          className={`${themeClasses.glassDark} border-white/10 rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-lg group`}
+                        >
+                          <CardContent className="p-6">
+                            {SkillIcon && (
+                              <SkillIcon className={`h-8 w-8 ${themeClasses.accent} mb-4 group-hover:scale-110 transition-transform duration-300`} />
+                            )}
+                            <h4 className={`text-lg font-semibold mb-3 ${themeClasses.text} group-hover:${themeClasses.accent} transition-colors duration-300`}>
+                              {skill.name?.[currentLang]}
+                            </h4>
+                            {skill.examples?.length > 0 && (
+                              <ul className={`space-y-1 ${themeClasses.textMuted} text-sm`}>
+                                {skill.examples.map((ex, exIndex) => (
+                                  <li key={exIndex} className="flex items-center">
+                                    <span className={`w-2 h-2 ${themeClasses.accentBg} rounded-full mr-2`}></span>
+                                    {ex?.[currentLang]}
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
                   </div>
-                )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
 
-                {heroData.heroTitle?.[currentLang] && (
-                  <h1 className={`text-4xl md:text-5xl lg:text-6xl font-bold leading-tight ${isDarkMode ? 
-                    'text-white' : 
-                    'text-[#ff4d7a]'}`}>
-                    {heroData.heroTitle[currentLang]}
-                  </h1>
-                )}
+      {/* Experience Section */}
+      <section id="experience" className={`py-20 ${themeClasses.background}`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className={`text-3xl md:text-4xl font-bold text-center mb-16 ${themeClasses.text}`}>
+            {t.journeyTitle}
+            <span className={`block w-20 h-1 ${themeClasses.accentBg} mx-auto mt-4 rounded-full`}></span>
+          </h2>
 
-                {heroData.heroDescription?.[currentLang] && (
-                  <p className={`text-lg ${isDarkMode ? 
-                    'text-gray-300' : 
-                    'text-gray-700'}`}>
-                    {heroData.heroDescription[currentLang]}
+          <div className="grid lg:grid-cols-2 gap-12">
+            {/* Education */}
+            <div className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 hover:scale-105`}>
+              <h3 className={`text-2xl font-semibold mb-8 ${themeClasses.text} flex items-center`}>
+                <GraduationCap className={`mr-3 h-6 w-6 ${themeClasses.accent}`} />
+                {currentLang === "fr" ? "Formation" : currentLang === "en" ? "Education" : "التعليم"}
+              </h3>
+              <div className="space-y-8">
+                {mockData.education.education.map((event, index) => (
+                  <div key={index} className="relative pl-8 border-l-2 border-[#0A2647]/30">
+                    <div className={`absolute -left-2 top-0 w-4 h-4 ${themeClasses.accentBg} rounded-full`}></div>
+                    <div className={`absolute -left-1 top-1 w-2 h-2 bg-white rounded-full`}></div>
+                    <p className={`text-sm ${themeClasses.accent} font-semibold mb-2`}>
+                      {event.year?.[currentLang]}
+                    </p>
+                    <h4 className={`text-lg font-semibold mb-2 ${themeClasses.text}`}>
+                      {event.title?.[currentLang]}
+                    </h4>
+                    <p className={`${themeClasses.textMuted} mb-2`}>
+                      {event.institution?.[currentLang]}
+                    </p>
+                    {event.description && (
+                      <p className={`${themeClasses.textMuted} text-sm`}>
+                        {event.description?.[currentLang]}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Experience */}
+            <div className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 hover:scale-105`}>
+              <h3 className={`text-2xl font-semibold mb-8 ${themeClasses.text} flex items-center`}>
+                <Briefcase className={`mr-3 h-6 w-6 ${themeClasses.accent}`} />
+                {currentLang === "fr" ? "Expérience" : currentLang === "en" ? "Experience" : "الخبرة"}
+              </h3>
+              <div className="space-y-8">
+                {mockData.education.experience.map((event, index) => (
+                  <div key={index} className="relative pl-8 border-l-2 border-[#0A2647]/30">
+                    <div className={`absolute -left-2 top-0 w-4 h-4 ${themeClasses.accentBg} rounded-full`}></div>
+                    <div className={`absolute -left-1 top-1 w-2 h-2 bg-white rounded-full`}></div>
+                    <div className="flex items-center gap-3 mb-2">
+                      <p className={`text-sm ${themeClasses.accent} font-semibold`}>
+                        {event.year?.[currentLang]}
+                      </p>
+                      {event.duration && (
+                        <Badge className={`${themeClasses.accentBg} text-white text-xs`}>
+                          {event.duration}
+                        </Badge>
+                      )}
+                    </div>
+                    <h4 className={`text-lg font-semibold mb-2 ${themeClasses.text}`}>
+                      {event.title?.[currentLang]}
+                    </h4>
+                    <p className={`${themeClasses.textMuted} mb-2`}>
+                      {event.institution?.[currentLang]}
+                    </p>
+                    {event.description && (
+                      <p className={`${themeClasses.textMuted} text-sm`}>
+                        {event.description?.[currentLang]}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    
+
+      {/* Projects Section */}
+      <section id="projects" className={`py-20 ${themeClasses.background}`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className={`text-3xl md:text-4xl font-bold text-center mb-16 ${themeClasses.text}`}>
+            {t.myProjects}
+            <span className={`block w-20 h-1 ${themeClasses.accentBg} mx-auto mt-4 rounded-full`}></span>
+          </h2>
+
+          <div className="grid lg:grid-cols-2 gap-8">
+            {mockData.projects.projects.map((project: any) => (
+              <Card
+                key={project._id}
+                className={`${themeClasses.glassDark} border-white/10 rounded-2xl overflow-hidden ${themeClasses.shadow} transition-all duration-300 hover:scale-105 hover:shadow-2xl group`}
+              >
+                <div className="relative h-64 overflow-hidden">
+                  <Image
+                    src={project.image}
+                    alt={project.title?.[currentLang] || 'Project'}
+                    width={800}
+                    height={450}
+                    className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className={`absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
+                </div>
+
+                <CardContent className="p-8">
+                  <h3 className={`text-xl font-semibold mb-4 ${themeClasses.text} group-hover:${themeClasses.accent} transition-colors duration-300`}>
+                    {project.title?.[currentLang]}
+                  </h3>
+                  <p className={`${themeClasses.textMuted} mb-6 leading-relaxed`}>
+                    {project.description?.[currentLang]}
                   </p>
-                )}
 
-                <div className="flex flex-wrap gap-4 mt-8">
-                  <Button
-                    onClick={() => (window.location.href = '/cv')}
-                    className={`rounded-full font-medium transition-all duration-300 hover:scale-105 ${isDarkMode ? 
-                      'bg-gradient-to-r from-[#ff9acb] to-[#a67cff] text-white hover:shadow-lg hover:shadow-[#ff9acb]/30' : 
-                      'bg-gradient-to-r from-[#ff6b9c] to-[#ff4d7a] text-white hover:shadow-lg hover:shadow-[#ff6b9c]/30'}`}
-                  >
-                    {t.viewJourney}
-                  </Button>
+                  {project.techStack?.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-6">
+                      {project.techStack.map((tech: string, techIndex: number) => (
+                        <Badge
+                          key={techIndex}
+                          className={`${themeClasses.glassDark} ${themeClasses.textMuted} border border-white/20 hover:${themeClasses.accentBg} hover:text-white transition-all duration-300`}
+                        >
+                          {tech}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
 
-                  {heroData.heroButtons?.map((button, index) => {
-                    const Icon = getIcon(button.icon);
-                    const handleClick = () => {
-                      if (button.link) window.location.href = button.link;
-                    };
-                    return (
+                  {project.button && (
+                    <div>
                       <Button
-                        key={index}
-                        onClick={handleClick}
-                        className={`rounded-full font-medium transition-all duration-300 hover:scale-105 ${isDarkMode ? 
-                          'bg-[#1a103d] text-white border border-[#2a205d] hover:bg-[#2a205d]' : 
-                          'bg-white text-[#ff6b9c] border border-[#ffc2d6] hover:bg-[#ffe4ec]'}`}
+                        onClick={() => window.open(project.button.link, "_blank")}
+                        className={`${themeClasses.accentBg} hover:bg-[#0A2647]/90 text-white rounded-2xl transition-all duration-300 hover:scale-105`}
                       >
-                        {Icon && <Icon className="mr-2 h-4 w-4" />}
-                        {button.text?.[currentLang]}
+                        <Link className="mr-2 h-4 w-4" />
+                        {project.button.label?.[currentLang] || 'View Project'}
                       </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* About Section */}
+      <section id="about" className={`py-20 ${themeClasses.background}`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 items-start">
+            <div className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 hover:scale-105`}>
+              <h2 className={`text-3xl md:text-4xl font-bold mb-8 ${themeClasses.text}`}>
+                {t.aboutTitle}
+                <span className={`block w-20 h-1 ${themeClasses.accentBg} mt-4 rounded-full`}></span>
+              </h2>
+
+              <p className={`${themeClasses.textMuted} text-lg leading-relaxed mb-8`}>
+                {mockData.about.aboutDescription?.[currentLang]}
+              </p>
+
+              <div className="space-y-6">
+                {mockData.about.personalInfo?.map((info, index) => {
+                  const IconComponent = getIcon(info.icon);
+                  return (
+                    <div key={index} className="flex items-center space-x-4">
+                      {IconComponent && (
+                        <div className={`${themeClasses.accentBg} p-3 rounded-2xl`}>
+                          <IconComponent className="h-5 w-5 text-white" />
+                        </div>
+                      )}
+                      <div>
+                        <p className={`font-medium ${themeClasses.text}`}>
+                          {info.label?.[currentLang]}
+                        </p>
+                        <p className={`${themeClasses.textMuted}`}>
+                          {info.value?.[currentLang]}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="space-y-8">
+              {/* Languages */}
+              <div className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 hover:scale-105`}>
+                <h3 className={`text-2xl font-semibold mb-6 ${themeClasses.text} flex items-center`}>
+                  <LanguagesIcon className={`mr-3 h-6 w-6 ${themeClasses.accent}`} />
+                  {mockData.about.languages?.title?.[currentLang]}
+                </h3>
+                <div className="space-y-4">
+                  {mockData.about.languages?.list?.map((lang, index) => {
+                    const levelKey = lang.level.toLowerCase();
+                    const levelText = mockData.about.languages?.levels?.[levelKey]?.[currentLang] || '';
+                    const levelPercentage = levelKey === 'native' ? 100 : levelKey === 'advanced' ? 85 : 70;
+
+                    return (
+                      <div key={index}>
+                        <div className="flex justify-between items-center mb-2">
+                          <span className={`font-medium ${themeClasses.text}`}>
+                            {lang.name?.[currentLang]}
+                          </span>
+                          <span className={`text-sm ${themeClasses.textMuted}`}>
+                            {levelText}
+                          </span>
+                        </div>
+                        <div className={`h-2 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} rounded-full overflow-hidden`}>
+                          <div 
+                            className={`h-full ${themeClasses.accentBg} rounded-full transition-all duration-1000 ease-out`}
+                            style={{ width: `${levelPercentage}%` }}
+                          ></div>
+                        </div>
+                      </div>
                     );
                   })}
                 </div>
               </div>
 
-              {photoUrl ? (
-                <div className="md:w-1/2 flex justify-center">
-                  <div className={`relative w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden ${isDarkMode ? 
-                    'ring-4 ring-[#ff9acb] shadow-lg shadow-[#ff9acb]/30' : 
-                    'ring-4 ring-[#ff6b9c] shadow-lg shadow-[#ff6b9c]/30'} transition-all duration-500`}>
-                    <Image
-                      src={photoUrl}
-                      alt="Profile photo"
-                      width={400}
-                      height={400}
-                      priority
-                      className="object-cover w-full h-full"
-                    />
-                  </div>
-                </div>) : (
-                <div className="md:w-1/2 flex justify-center">
-                  <div className={`relative w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden ${isDarkMode ? 
-                    'ring-4 ring-[#ff9acb] shadow-lg shadow-[#ff9acb]/30' : 
-                    'ring-4 ring-[#ff6b9c] shadow-lg shadow-[#ff6b9c]/30'} transition-all duration-500`}>
-                    <Image
-                      src={"https://woxgxzelncuqwury.public.blob.vercel-storage.com/profile_1755462555430_HanSooyoung.png"}
-                      alt="Profile photo"
-                      width={400}
-                      height={400}
-                      priority
-                      className="object-cover w-full h-full"
-                    />
-                  </div>
+              {/* Interests */}
+              <div className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 hover:scale-105`}>
+                <h3 className={`text-2xl font-semibold mb-6 ${themeClasses.text} flex items-center`}>
+                  <Heart className={`mr-3 h-6 w-6 ${themeClasses.accent}`} />
+                  {t.interests}
+                </h3>
+                <div className="flex flex-wrap gap-3">
+                  {mockData.about.interests?.map((interest, index) => {
+                    const IconComponent = getIcon(interest.icon);
+                    return (
+                      <Badge
+                        key={index}
+                        className={`${themeClasses.glassDark} ${themeClasses.text} border border-white/20 px-4 py-2 rounded-2xl hover:${themeClasses.accentBg} hover:text-white transition-all duration-300 hover:scale-105`}
+                      >
+                        {IconComponent && (
+                          <IconComponent className="mr-2 h-4 w-4" />
+                        )}
+                        {interest.name?.[currentLang]}
+                      </Badge>
+                    );
+                  })}
                 </div>
-              )}
+              </div>
             </div>
           </div>
-        </section>
-      )}
+        </div>
+      </section>
+    {/* Services Section */}
+      <section id="services" className={`py-20 ${themeClasses.background}`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className={`text-3xl md:text-4xl font-bold text-center mb-16 ${themeClasses.text}`}>
+            {t.servicesTitle}
+            <span className={`block w-20 h-1 ${themeClasses.accentBg} mx-auto mt-4 rounded-full`}></span>
+          </h2>
 
-   
-      {/* Skills Section */}
-      {!isSkillsDataEmpty && (
-        <section id="skills" className="py-20 px-4">
-          <div className="container mx-auto">
-            <h2 className={`text-3xl md:text-4xl font-bold text-center mb-16 ${isDarkMode ? 
-              'text-white' : 
-              'text-[#ff4d7a]'}`}>
-              {t.skillsTitle}
-              <span className={`block w-20 h-1 mx-auto mt-4 ${isDarkMode ? 
-                'bg-gradient-to-r from-[#ff9acb] to-[#a67cff]' : 
-                'bg-gradient-to-r from-[#ff6b9c] to-[#ff4d7a]'}`}></span>
-            </h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {mockData.services.servicesList.map((service, index) => {
+              const title = service.title?.[currentLang];
+              const description = service.description?.[currentLang];
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-              {skillsData?.skills?.map((category, catIndex) => {
-                const CategoryIcon = getIcon(category.skillicon);
-
-                return (
-                  <div key={catIndex} className={`p-6 rounded-2xl ${isDarkMode ? 
-                    'bg-[#1a103d]' : 
-                    'bg-white'} shadow-lg`}>
-                    <h3 className={`text-xl font-semibold mb-6 flex items-center ${isDarkMode ? 
-                      'text-white' : 
-                      'text-[#ff4d7a]'}`}>
-                      {CategoryIcon && (
-                        <CategoryIcon className="mr-3" />
-                      )}
-                      {category.title?.[currentLang]}
+              return (
+                <Card
+                  key={index}
+                  className={`${themeClasses.glassDark} border-white/10 rounded-2xl ${themeClasses.shadow} transition-all duration-300 hover:scale-105 hover:shadow-2xl group`}
+                >
+                  <CardContent className="p-8">
+                    <div className="flex justify-between items-start mb-6">
+                      <span className={`text-6xl font-bold ${themeClasses.accent} opacity-20 group-hover:opacity-40 transition-opacity duration-300`}>
+                        0{index + 1}
+                      </span>
+                      <ArrowUpRight className={`h-6 w-6 ${themeClasses.accent} group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300`} />
+                    </div>
+                    <h3 className={`text-xl font-semibold mb-4 ${themeClasses.text} group-hover:${themeClasses.accent} transition-colors duration-300`}>
+                      {title}
                     </h3>
-
-                    {category.items.length > 0 ? (
-                      <div className="grid grid-cols-2 gap-4">
-                        {category.items.map((skill, skillIndex) => {
-                          const SkillIcon = getIcon(skill.icon);
-
-                          return (
-                            <Card
-                              key={skillIndex}
-                              className={`transition-all duration-300 hover:scale-105 ${isDarkMode ? 
-                                ' border-[#2a205d]' : 
-                                'bg-[#ffe4ec] border-[#ffc2d6]'} border`}
-                            >
-                              <CardContent className="p-4 flex flex-col items-center text-center">
-                                {SkillIcon && (
-                                  <SkillIcon className={`h-8 w-8 mb-2 ${isDarkMode ? 
-                                    'text-[#ff9acb]' : 
-                                    'text-[#ff6b9c]'}`} />
-                                )}
-                                <h4 className={`font-medium ${isDarkMode ? 
-                                  'text-white' : 
-                                  'text-gray-800'}`}>
-                                  {skill.name?.[currentLang]}
-                                </h4>
-                                {skill.examples?.length > 0 && (
-                                  <ul className="mt-2 space-y-1">
-                                    {skill.examples.map((ex, exIndex) => (
-                                      <li key={exIndex} className={`text-xs ${isDarkMode ? 
-                                        'text-gray-400' : 
-                                        'text-gray-600'}`}>{ex?.[currentLang]}</li>
-                                    ))}
-                                  </ul>
-                                )}
-                              </CardContent>
-                            </Card>
-                          );
-                        })}
-                      </div>
-                    ) : (
-                      <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>No skills listed.</p>
+                    {description && (
+                      <p className={`${themeClasses.textMuted} leading-relaxed`}>
+                        {description}
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+      {/* Contact Section */}
+      <section id="contact" className={`py-20 ${themeClasses.background}`}>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className={`text-3xl md:text-4xl font-bold mb-6 ${themeClasses.text}`}>
+            {mockData.contact.contactTitle?.[currentLang]}
+          </h2>
+          <p className={`text-lg ${themeClasses.textMuted} mb-12 max-w-2xl mx-auto`}>
+            {mockData.contact.contactDescription?.[currentLang]}
+          </p>
+          
+          <div className="grid md:grid-cols-2 gap-8 mb-12">
+            {mockData.contact.contactInfo?.map((info, index) => {
+              const IconComponent = getIcon(info.icon);
+              return (
+                <div key={index} className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 hover:scale-105 group`}>
+                  <div className={`${themeClasses.accentBg} w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                    {IconComponent && (
+                      <IconComponent className="h-8 w-8 text-white" />
                     )}
                   </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>)}
-
-      {/* Experience & Education Section */}
-      {!isJourneyDataEmpty && (
-        <section
-          id="experience"
-          className={`py-20 px-4 ${isDarkMode ? 
-            'bg-[#0f1029]' : 
-            'bg-[#ffecf1]'}`}
-        >
-          <div className="container mx-auto">
-            <h2 className={`text-3xl md:text-4xl font-bold text-center mb-16 ${isDarkMode ? 
-              'text-white' : 
-              'text-[#ff4d7a]'}`}>
-              {t.journeyTitle}
-              <span className={`block w-20 h-1 mx-auto mt-4 ${isDarkMode ? 
-                'bg-gradient-to-r from-[#ff9acb] to-[#a67cff]' : 
-                'bg-gradient-to-r from-[#ff6b9c] to-[#ff4d7a]'}`}></span>
-            </h2>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-              {educationData?.education?.length > 0 && (
-                <div>
-                  <h3 className={`text-2xl font-semibold mb-8 flex items-center ${isDarkMode ? 
-                    'text-white' : 
-                    'text-[#ff4d7a]'}`}>
-                    <GraduationCap className="mr-3" />
-                    {currentLang === "fr" ? "Formation" : currentLang === "en" ? "Education" : "التعليم"}
+                  <h3 className={`text-xl font-semibold mb-4 ${themeClasses.text} group-hover:${themeClasses.accent} transition-colors duration-300`}>
+                    {info.label?.[currentLang]}
                   </h3>
-                  <div className="relative">
-                    <div className={`absolute left-5 top-0 h-full w-0.5 ${isDarkMode ? 
-                      'bg-[#2a205d]' : 
-                      'bg-[#ffc2d6]'}`}></div>
-                    {educationData?.education && [...educationData.education].reverse().map((event, index) => (
-                      <div key={index} className="relative mb-10 pl-16">
-                        <div
-                          className={`absolute left-5 top-1.5 h-3 w-3 -translate-x-1/2 rounded-full ${isDarkMode ? 
-                            'bg-[#ff9acb] ring-4 ring-[#ff9acb]/20' : 
-                            'bg-[#ff6b9c] ring-4 ring-[#ff6b9c]/20'}`}
-                        ></div>
-                        <div
-                          className={`absolute left-11 top-3 h-0.5 w-6 ${isDarkMode ? 
-                            'bg-[#2a205d]' : 
-                            'bg-[#ffc2d6]'}`}
-                        ></div>
-                        <p className={`text-sm font-medium mb-1 ${isDarkMode ? 
-                          'text-[#ff9acb]' : 
-                          'text-[#ff6b9c]'}`}>
-                          {event.year?.[currentLang]}
-                        </p>
-                        <h4 className={`text-xl font-semibold mb-1 ${isDarkMode ? 
-                          'text-white' : 
-                          'text-gray-800'}`}>
-                          {event.title?.[currentLang]}
-                        </h4>
-                        <p className={`font-medium mb-2 ${isDarkMode ? 
-                          'text-gray-400' : 
-                          'text-gray-600'}`}>
-                          {event.institution?.[currentLang]}
-                        </p>
-                        {event.description && (
-                          <p className={isDarkMode ? 'text-gray-300' : 'text-gray-700'}>
-                            {event.description?.[currentLang]}
-                          </p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {educationData.experience?.length > 0 && (
-                <div>
-                  <h3 className={`text-2xl font-semibold mb-8 flex items-center ${isDarkMode ? 
-                    'text-white' : 
-                    'text-[#ff4d7a]'}`}>
-                    <Briefcase className="mr-3" />
-                    {currentLang === "fr" ? "Expérience" : currentLang === "en" ? "Experience" : "الخبرة"}
-                  </h3>
-                  <div className="relative">
-                    <div className={`absolute left-5 top-0 h-full w-0.5 ${isDarkMode ? 
-                      'bg-[#2a205d]' : 
-                      'bg-[#ffc2d6]'}`}></div>
-                    {educationData?.experience && [...educationData.experience].reverse().map((event, index) => (
-                      <div key={index} className="relative mb-10 pl-16">
-                        <div
-                          className={`absolute left-5 top-1.5 h-3 w-3 -translate-x-1/2 rounded-full ${isDarkMode ? 
-                            'bg-[#ff9acb] ring-4 ring-[#ff9acb]/20' : 
-                            'bg-[#ff6b9c] ring-4 ring-[#ff6b9c]/20'}`}
-                        ></div>
-                        <div
-                          className={`absolute left-11 top-3 h-0.5 w-6 ${isDarkMode ? 
-                            'bg-[#2a205d]' : 
-                            'bg-[#ffc2d6]'}`}
-                        ></div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <p className={`text-sm font-medium ${isDarkMode ? 
-                            'text-[#ff9acb]' : 
-                            'text-[#ff6b9c]'}`}>
-                            {event.year?.[currentLang]}
-                          </p>
-                          {event.duration && (
-                            <Badge className={isDarkMode ? 
-                              'bg-[#2a205d] text-[#ff9acb]' : 
-                              'bg-[#ffe4ec] text-[#ff6b9c]'}>
-                              {event.duration}
-                            </Badge>
-                          )}
-                        </div>
-                        <h4 className={`text-xl font-semibold mb-1 ${isDarkMode ? 
-                          'text-white' : 
-                          'text-gray-800'}`}>
-                          {event.title?.[currentLang]}
-                        </h4>
-                        <p className={`font-medium mb-2 ${isDarkMode ? 
-                          'text-gray-400' : 
-                          'text-gray-600'}`}>
-                          {event.institution?.[currentLang]}
-                        </p>
-                        {event.description && (
-                          <p className={isDarkMode ? 'text-gray-300' : 'text-gray-700'}>
-                            {event.description?.[currentLang]}
-                          </p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Projects Section */}
-      {!isProjectsEmpty && (
-        <section
-          id="projects"
-          className={`py-20 px-4 ${isDarkMode ? 
-            'bg-[#0f1029]' : 
-            'bg-[#ffecf1]'}`}
-        >
-          <div className="container mx-auto">
-            <h2 className={`text-3xl md:text-4xl font-bold text-center mb-16 ${isDarkMode ? 
-              'text-white' : 
-              'text-[#ff4d7a]'}`}>
-              {t.myProjects}
-              <span className={`block w-20 h-1 mx-auto mt-4 ${isDarkMode ? 
-                'bg-gradient-to-r from-[#ff9acb] to-[#a67cff]' : 
-                'bg-gradient-to-r from-[#ff6b9c] to-[#ff4d7a]'}`}></span>
-            </h2>
-
-            {projetsLoading ? (
-              <div className="flex justify-center">
-                <Loading />
-              </div>
-            ) : projetsData?.projects?.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {projetsData.projects.map((project: any) => (
-                  <Card
-                    key={project._id}
-                    className={`group overflow-hidden transition-all duration-500 hover:scale-105 ${isDarkMode ? 
-                      'bg-[#1a103d] border-[#2a205d]' : 
-                      'bg-white border-[#ffe4ec]'} shadow-lg`}
-                  >
-                    <div className="overflow-hidden">
-                      {project.image ? (
-                        <Image
-                          src={project.image}
-                          alt={`${project.title?.[currentLang] || project.title?.fr || project.title?.en || 'Project'}`}
-                          width={800}
-                          height={450}
-                          className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
-                        />
-                      ) : (
-                        <div className={`w-full h-48 flex items-center justify-center ${isDarkMode ? 
-                          '' : 
-                          'bg-[#ffe4ec]'}`}>
-                          <span className={isDarkMode ? 'text-gray-500' : 'text-gray-400'}>
-                            {currentLang === 'fr' ? 'Pas d\'image disponible' :
-                              currentLang === 'en' ? 'No image available' :
-                                'لا توجد صورة متاحة'}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-
-                    <CardContent className="p-6">
-                      <h3 className={`text-xl font-semibold mb-2 ${isDarkMode ? 
-                        'text-white' : 
-                        'text-[#ff4d7a]'}`}>
-                        {project.title?.[currentLang] || project.title?.fr || project.title?.en || project.title?.ar}
-                      </h3>
-                      <p
-                        className={`mb-4 ${isDarkMode ? 
-                          'text-gray-300' : 
-                          'text-gray-700'}`}
+                  <p className={`${themeClasses.textMuted}`}>
+                    {info.link ? (
+                      <a
+                        href={info.link}
+                        target={info.link.startsWith("http") ? "_blank" : "_self"}
+                        rel={info.link.startsWith("http") ? "noopener noreferrer" : ""}
+                        className={`hover:${themeClasses.accent} transition-colors duration-300`}
                       >
-                        {project.description?.[currentLang] || project.description?.fr || project.description?.en || project.description?.ar}
-                      </p>
-
-                      {project.techStack?.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mb-4">
-                          {project.techStack.map((tech: string, techIndex: number) => (
-                            <Badge
-                              key={techIndex}
-                              className={isDarkMode ? 
-                                'bg-[#2a205d] text-[#ff9acb]' : 
-                                'bg-[#ffe4ec] text-[#ff6b9c]'}
-                            >
-                              {tech}
-                            </Badge>
-                          ))}
-                        </div>
-                      )}
-
-                      {project.button && (
-                        <div className="mt-4">
-                          <Button
-                            onClick={() => window.open(project.button.link, "_blank")}
-                            className={`w-full rounded-full font-medium transition-all duration-300 hover:scale-105 ${isDarkMode ? 
-                              'bg-gradient-to-r from-[#ff9acb] to-[#a67cff] text-white hover:shadow-lg hover:shadow-[#ff9acb]/30' : 
-                              'bg-gradient-to-r from-[#ff6b9c] to-[#ff4d7a] text-white hover:shadow-lg hover:shadow-[#ff6b9c]/30'}`}
-                          >
-                            <Link className="mr-2 h-4 w-4" />
-                            {project.button.label?.[currentLang] ||
-                              project.button.label?.fr ||
-                              project.button.label?.en ||
-                              project.button.label?.ar ||
-                              (currentLang === 'fr' ? 'Voir le projet' :
-                                currentLang === 'en' ? 'View Project' :
-                                  'عرض المشروع')}
-                          </Button>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-10">
-                <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
-                  {currentLang === 'fr' ? 'Aucun projet trouvé' :
-                    currentLang === 'en' ? 'No projects found' :
-                      'لم يتم العثور على مشاريع'}
-                </p>
-              </div>
-            )}
-          </div>
-        </section>)}
-
-      {/* About Section */}
-      {!isAboutDataEmpty && (
-        <section id="about" className="py-20 px-4">
-          <div className="container mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-              <div>
-                <h2 className={`text-3xl md:text-4xl font-bold mb-8 ${isDarkMode ? 
-                  'text-white' : 
-                  'text-[#ff4d7a]'}`}>
-                  {t.aboutTitle}
-                  <span className={`block w-20 h-1 mt-4 ${isDarkMode ? 
-                    'bg-gradient-to-r from-[#ff9acb] to-[#a67cff]' : 
-                    'bg-gradient-to-r from-[#ff6b9c] to-[#ff4d7a]'}`}></span>
-                </h2>
-
-                <p className={`text-lg mb-8 ${isDarkMode ? 
-                  'text-gray-300' : 
-                  'text-gray-700'}`}>
-                  {aboutData.aboutDescription?.[currentLang]}
-                </p>
-
-                {aboutData.personalInfo && (
-                  <div className="space-y-4">
-                    {aboutData.personalInfo?.map((info, index) => {
-                      const IconComponent = getIcon(info.icon);
-                      return (
-                        <div key={index} className="flex items-start">
-                          {IconComponent && (
-                            <IconComponent className={`h-5 w-5 mt-1 mr-4 ${isDarkMode ? 
-                              'text-[#ff9acb]' : 
-                              'text-[#ff6b9c]'}`} />
-                          )}
-                          <div>
-                            <p className={`font-medium ${isDarkMode ? 
-                              'text-gray-400' : 
-                              'text-gray-600'}`}>
-                              {info.label?.[currentLang]}
-                            </p>
-                            <p className={isDarkMode ? 'text-white' : 'text-gray-800'}>
-                              {info.value?.[currentLang]}
-                            </p>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-
-              <div className="space-y-10">
-                {aboutData.languages && (
-                  <div className={`p-6 rounded-2xl ${isDarkMode ? 
-                    'bg-[#1a103d]' : 
-                    'bg-white'} shadow-lg`}>
-                    <h3 className={`text-xl font-semibold mb-6 flex items-center ${isDarkMode ? 
-                      'text-white' : 
-                      'text-[#ff4d7a]'}`}>
-                      <LanguagesIcon className="mr-3" />
-                      {aboutData.languages?.title?.[currentLang]}
-                    </h3>
-                    <div className="space-y-4">
-                      {aboutData.languages?.list?.map((lang, index) => {
-                        const levelKey = lang.level.toLowerCase();
-                        const levelText = aboutData.languages?.levels?.[levelKey]?.[currentLang] || '';
-
-                        return (
-                          <div key={index}>
-                            <div className="flex justify-between mb-1">
-                              <span className={isDarkMode ? 'text-gray-300' : 'text-gray-800'}>
-                                {lang.name?.[currentLang]}
-                              </span>
-                              <span className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
-                                {levelText}
-                              </span>
-                            </div>
-                            <div className={`h-2 rounded-full ${isDarkMode ? 
-                              '' : 
-                              'bg-[#ffe4ec]'}`}>
-                              <div 
-                                className={`h-full rounded-full ${isDarkMode ? 
-                                  'bg-gradient-to-r from-[#ff9acb] to-[#a67cff]' : 
-                                  'bg-gradient-to-r from-[#ff6b9c] to-[#ff4d7a]'}`}
-                                style={{ width: `${(['native', 'fluent', 'c2'].includes(levelKey) ? 100 : 
-                                                ['advanced', 'c1'].includes(levelKey) ? 80 :
-                                                ['intermediate', 'b1', 'b2'].includes(levelKey) ? 60 :
-                                                ['beginner', 'a1', 'a2'].includes(levelKey) ? 40 : 20)}%` }}
-                              ></div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                {aboutData.interests && (
-                  <div className={`p-6 rounded-2xl ${isDarkMode ? 
-                    'bg-[#1a103d]' : 
-                    'bg-white'} shadow-lg`}>
-                    <h3 className={`text-xl font-semibold mb-6 flex items-center ${isDarkMode ? 
-                      'text-white' : 
-                      'text-[#ff4d7a]'}`}>
-                      <Heart className="mr-3" />
-                      {t.interests}
-                    </h3>
-                    <div className="flex flex-wrap gap-3">
-                      {aboutData.interests?.map((interest, index) => {
-                        const IconComponent = getIcon(interest.icon);
-                        return (
-                          <Badge
-                            key={index}
-                            className={`py-2 px-4 rounded-full transition-all duration-300 hover:scale-105 ${isDarkMode ? 
-                              ' text-[#ff9acb] hover:bg-[#2a205d]' : 
-                              'bg-[#ffe4ec] text-[#ff6b9c] hover:bg-[#ffc2d6]'}`}
-                          >
-                            {IconComponent && (
-                              <IconComponent className="mr-2 h-4 w-4" />
-                            )}
-                            {interest.name?.[currentLang]}
-                          </Badge>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-   {/* Services Section */}
-      {!isServicesEmpty && (
-        <section id="services" className="py-20 px-4">
-          <div className="container mx-auto">
-            <h2 className={`text-3xl md:text-4xl font-bold text-center mb-16 ${isDarkMode ? 
-              'text-white' : 
-              'text-[#ff4d7a]'}`}>
-              {t.servicesTitle}
-              <span className={`block w-20 h-1 mx-auto mt-4 ${isDarkMode ? 
-                'bg-gradient-to-r from-[#ff9acb] to-[#a67cff]' : 
-                'bg-gradient-to-r from-[#ff6b9c] to-[#ff4d7a]'}`}></span>
-            </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {Array.isArray(servicesData?.servicesList) && servicesData.servicesList.length > 0 ? (
-                servicesData.servicesList.map((service, index) => {
-                  const title = service.title?.[currentLang] ||
-                    service.title?.[currentLang === 'fr' ? 'en' : currentLang === 'en' ? 'ar' : 'fr'] ||
-                    service.title?.[currentLang === 'ar' ? 'fr' : 'en'];
-                  const description = service.description?.[currentLang] ||
-                    service.description?.[currentLang === 'fr' ? 'en' : currentLang === 'en' ? 'ar' : 'fr'] ||
-                    service.description?.[currentLang === 'ar' ? 'fr' : 'en'];
-
-                  if (!title) return null;
-
-                  return (
-                    <Card
-                      key={index}
-                      className={`group transition-all duration-500 hover:scale-105 ${isDarkMode ? 
-                        'bg-[#1a103d] border-[#2a205d] hover:border-[#ff9acb]' : 
-                        'bg-white border-[#ffe4ec] hover:border-[#ff6b9c]'} overflow-hidden`}
-                    >
-                      <CardContent className="p-6">
-                        <div className="flex justify-between items-start mb-4">
-                          <span className={`text-2xl font-bold ${isDarkMode ? 
-                            'text-[#ff9acb]' : 
-                            'text-[#ff6b9c]'}`}>0{index + 1}</span>
-                          <ArrowUpRight className={`transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 ${isDarkMode ? 
-                            'text-[#a67cff]' : 
-                            'text-[#ff4d7a]'}`}
-                          />
-                        </div>
-                        <h3 className={`text-xl font-semibold mb-2 ${isDarkMode ? 
-                          'text-white' : 
-                          'text-[#ff4d7a]'}`}>{title}</h3>
-                        {description && <p className={isDarkMode ? 'text-gray-300' : 'text-gray-700'}>{description}</p>}
-                      </CardContent>
-                    </Card>
-                  );
-                })
-              ) : (
-                <p className="text-center col-span-full">No services available</p>
-              )}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Contact Section */}
-      {!isContactDataEmpty && (
-        <section id="contact" className={`py-20 px-4 ${isDarkMode ? 
-          'bg-[#0f1029]' : 
-          'bg-[#ffecf1]'}`}>
-          <div className="container mx-auto text-center">
-            <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${isDarkMode ? 
-              'text-white' : 
-              'text-[#ff4d7a]'}`}>
-              {contactData.contactTitle?.[currentLang]}
-            </h2>
-            <p className={`text-lg max-w-2xl mx-auto mb-12 ${isDarkMode ? 
-              'text-gray-300' : 
-              'text-gray-700'}`}>
-              {contactData.contactDescription?.[currentLang]}
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-              {contactData.contactInfo?.map((info, index) => {
-                const IconComponent = getIcon(info.icon);
-                return (
-                  <div key={index} className={`p-6 rounded-2xl transition-all duration-300 hover:scale-105 ${isDarkMode ? 
-                    'bg-[#1a103d]' : 
-                    'bg-white'} shadow-lg`}>
-                    <div className={`inline-flex items-center justify-center w-12 h-12 rounded-full mb-4 ${isDarkMode ? 
-                      ' text-[#ff9acb]' : 
-                      'bg-[#ffe4ec] text-[#ff6b9c]'}`}>
-                      {IconComponent && (
-                        <IconComponent className="h-6 w-6" />
-                      )}
-                    </div>
-                    <h3 className={`font-semibold mb-2 ${isDarkMode ? 
-                      'text-white' : 
-                      'text-gray-800'}`}>
-                      {info.label?.[currentLang]}
-                    </h3>
-                    <p className={isDarkMode ? 'text-gray-300' : 'text-gray-700'}>
-                      {info.link ? (
-                        <a
-                          href={info.link}
-                          target={info.link.startsWith("http") ? "_blank" : "_self"}
-                          rel={info.link.startsWith("http") ? "noopener noreferrer" : ""}
-                          className={`hover:underline ${isDarkMode ? 
-                            'text-[#ff9acb]' : 
-                            'text-[#ff6b9c]'}`}
-                        >
-                          {typeof info.value === "object"
-                            ? info.value[currentLang]
-                            : info.value}
-                        </a>
-                      ) : (
-                        typeof info.value === "object"
+                        {typeof info.value === "object"
                           ? info.value[currentLang]
-                          : info.value
-                      )}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-
-            <a
-              href={contactData.contactButton?.link || "#contact-form"}
-              className={`inline-flex items-center px-8 py-4 rounded-full font-medium transition-all duration-300 hover:scale-105 ${isDarkMode ? 
-                'bg-gradient-to-r from-[#ff9acb] to-[#a67cff] text-white hover:shadow-lg hover:shadow-[#ff9acb]/30' : 
-                'bg-gradient-to-r from-[#ff6b9c] to-[#ff4d7a] text-white hover:shadow-lg hover:shadow-[#ff6b9c]/30'}`}
-            >
-              <Send className="mr-2 h-5 w-5" />
-              {contactData.contactButton?.startProject?.[currentLang]}
-            </a>
+                          : info.value}
+                      </a>
+                    ) : (
+                      typeof info.value === "object"
+                        ? info.value[currentLang]
+                        : info.value
+                    )}
+                  </p>
+                </div>
+              );
+            })}
           </div>
-        </section>)}
+
+          <a
+            href={mockData.contact.contactButton?.link || "#contact-form"}
+            className={`inline-flex items-center ${themeClasses.accentBg} hover:bg-[#0A2647]/90 text-white px-8 py-4 rounded-2xl ${themeClasses.shadow} transition-all duration-300 hover:scale-105 text-lg font-semibold`}
+          >
+            <Send className="mr-3 h-5 w-5" />
+            {mockData.contact.contactButton?.startProject?.[currentLang]}
+          </a>
+        </div>
+      </section>
 
       {/* Footer */}
-      <footer className={`py-8 px-4 ${isDarkMode ? 
-        'bg-[#0b0c1d]' : 
-        'bg-[#ffd6e7]'}`}>
-        <div className="container mx-auto">
-          <div className="flex flex-col md:flex-row items-center justify-between">
-            <div className="flex items-center space-x-2 mb-4 md:mb-0">
-              <span className={`font-bold ${isDarkMode ? 
-                'bg-gradient-to-r from-[#ff9acb] to-[#a67cff] bg-clip-text text-transparent' : 
-                'bg-gradient-to-r from-[#ff6b9c] to-[#ff4d7a] bg-clip-text text-transparent'}`}>
-                © 2025 {usernameData?.[currentLang]}
+      <footer className={`${themeClasses.glassDark} border-t border-white/10`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="text-center">
+            <div className="flex justify-center items-center space-x-2 mb-4">
+              <span className={`text-2xl font-bold ${themeClasses.accent}`}>
+                © 2025 {mockData.username?.[currentLang]}
               </span>
             </div>
-            <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>{t.rightsReserved}</p>
+            <p className={`${themeClasses.textMuted}`}>{t.rightsReserved}</p>
           </div>
         </div>
       </footer>
-
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
-        
-        body {
-          font-family: 'Inter', 'Poppins', sans-serif;
-          scroll-behavior: smooth;
-        }
-        
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-          width: 8px;
-        }
-        
-        ::-webkit-scrollbar-track {
-          background: ${isDarkMode ? '#0b0c1d' : '#ffd6e7'};
-        }
-        
-        ::-webkit-scrollbar-thumb {
-          background: ${isDarkMode ? 
-            'linear-gradient(to bottom, #ff9acb, #a67cff)' : 
-            'linear-gradient(to bottom, #ff6b9c, #ff4d7a)'};
-          border-radius: 4px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-          background: ${isDarkMode ? 
-            'linear-gradient(to bottom, #ff7eb9, #9b5fff)' : 
-            'linear-gradient(to bottom, #ff5a8c, #ff3d70)'};
-        }
-        
-        /* Animation for section reveal */
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        section {
-          animation: fadeInUp 0.8s ease-out forwards;
-        }
-        
-        /* Gradient text animation */
-        .gradient-text {
-          background: ${isDarkMode ? 
-            'linear-gradient(45deg, #ff9acb, #a67cff, #9cecfb)' : 
-            'linear-gradient(45deg, #ff6b9c, #ff4d7a, #ff8eb4)'};
-          background-size: 200% 200%;
-          animation: gradientShift 3s ease infinite;
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
-        
-        @keyframes gradientShift {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-        
-        /* Custom navigation spacing */
-        .custom-nav-spacing > *:not(:last-child) {
-          margin-right: 20px;
-        }
-
-        @media (min-width: 1990px) {
-          .custom-nav-spacing > *:not(:last-child) {
-            margin-right: 48px;
-          }
-        }
-      `}</style>
     </div>
   )
 }
