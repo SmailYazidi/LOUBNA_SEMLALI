@@ -479,65 +479,74 @@ shadow: 'shadow-xl',
               ))}
             </nav>
 
-            {/* Desktop Controls */}
-            <div className="hidden xl:flex items-center space-x-4">
-              {/* Language Selector */}
-              <div className="relative language-menu">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
-                  className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} hover:${themeClasses.accent} rounded-2xl transition-all duration-300 sm:hover:scale-105
-`}
-                >
-                  <span>{currentLang.toUpperCase()}</span>
-                  <ChevronDown className={`ml-2 h-4 w-4 transition-transform duration-300 ${isLangMenuOpen ? 'rotate-180' : ''}`} />
-                </Button>
+        {/* Desktop Controls */}
+<div
+  className={`hidden xl:flex items-center ${
+    currentLang === "ar" ? "space-x-reverse space-x-4" : "space-x-4"
+  }`}
+>
+  {/* Language Selector */}
+  <div className="relative language-menu">
+    <Button
+      variant="outline"
+      onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
+      className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} hover:${themeClasses.accent} rounded-2xl transition-all duration-300 sm:hover:scale-105`}
+    >
+      <span>{currentLang.toUpperCase()}</span>
+      <ChevronDown
+        className={`ml-2 h-4 w-4 transition-transform duration-300 ${
+          isLangMenuOpen ? "rotate-180" : ""
+        }`}
+      />
+    </Button>
 
-                {isLangMenuOpen && (
-                  <div className={`absolute top-full right-0 mt-2 ${themeClasses.glassDark} rounded-2xl ${themeClasses.shadow} border border-white/10 min-w-[150px] z-50 transition-all duration-300 animate-in slide-in-from-top-2`}>
-                    {languageOptions.map((option) => (
-                      <button
-                        key={option.code}
-                        onClick={() => changeLanguage(option.code as "fr" | "en" | "ar")}
-                        className={`w-full px-4 py-3 text-left hover:${themeClasses.accentBg} hover:text-white rounded-2xl transition-all duration-300 flex items-center space-x-3`}
-                      >
-                        <span className="text-lg">{option.flag}</span>
-                        <span>{option.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+    {isLangMenuOpen && (
+      <div
+        className={`absolute top-full right-0 mt-2 ${themeClasses.glassDark} rounded-2xl ${themeClasses.shadow} border border-white/10 min-w-[150px] z-50 transition-all duration-300 animate-in slide-in-from-top-2`}
+      >
+        {languageOptions.map((option) => (
+          <button
+            key={option.code}
+            onClick={() => changeLanguage(option.code as "fr" | "en" | "ar")}
+            className={`w-full px-4 py-3 text-left hover:${themeClasses.accentBg} hover:text-white rounded-2xl transition-all duration-300 flex items-center ${
+              currentLang === "ar" ? "space-x-reverse space-x-3" : "space-x-3"
+            }`}
+          >
+            <span className="text-lg">{option.flag}</span>
+            <span>{option.label}</span>
+          </button>
+        ))}
+      </div>
+    )}
+  </div>
 
-              {/* Theme Toggle */}
-              <Button
-                variant="outline"
-                onClick={toggleTheme}
-                className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} hover:${themeClasses.accent} rounded-2xl transition-all duration-300 sm:hover:scale-105
-`}
-              >
-                {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-              </Button>
+  {/* Theme Toggle */}
+  <Button
+    variant="outline"
+    onClick={toggleTheme}
+    className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} hover:${themeClasses.accent} rounded-2xl transition-all duration-300 sm:hover:scale-105`}
+  >
+    {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+  </Button>
 
-              {/* Search Toggle */}
-              <Button
-                variant="outline"
-                onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} hover:${themeClasses.accent} rounded-2xl transition-all duration-300 sm:hover:scale-105
-`}
-              >
-                {isSearchOpen ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}
-              </Button>
+  {/* Search Toggle */}
+  <Button
+    variant="outline"
+    onClick={() => setIsSearchOpen(!isSearchOpen)}
+    className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} hover:${themeClasses.accent} rounded-2xl transition-all duration-300 sm:hover:scale-105`}
+  >
+    {isSearchOpen ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}
+  </Button>
 
-              {/* Hire Me Button */}
-              <Button
-                onClick={() => scrollToSection("contact")}
-                className={`${themeClasses.accentBg} hover:bg-[#0A2647]/90 text-white rounded-2xl px-6 py-2 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
-`}
-              >
-                {t.hireMe}
-              </Button>
-            </div>
+  {/* Hire Me Button */}
+  <Button
+    onClick={() => scrollToSection("contact")}
+    className={`${themeClasses.accentBg} hover:bg-[#0A2647]/90 text-white rounded-2xl px-6 py-2 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105`}
+  >
+    {t.hireMe}
+  </Button>
+</div>
+
 {/* Mobile & Tablet Controls */}
 <div
   className={`xl:hidden flex items-center ${
@@ -754,12 +763,17 @@ shadow: 'shadow-xl',
               return (
                 <div key={catIndex} className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
 `}>
-                  <h3 className={`text-2xl font-semibold mb-8 ${themeClasses.text} flex items-center`}>
-                    {CategoryIcon && (
-                      <CategoryIcon className={`mr-3 h-6 w-6 ${themeClasses.accent}`} />
-                    )}
-                    {category.title?.[currentLang]}
-                  </h3>
+               <h3 className={`text-2xl font-semibold mb-8 ${themeClasses.text} flex items-center`}>
+  {CategoryIcon && (
+    <CategoryIcon
+      className={`h-6 w-6 ${themeClasses.accent} ${
+        currentLang === "ar" ? "ml-3" : "mr-3"
+      }`}
+    />
+  )}
+  {category.title?.[currentLang]}
+</h3>
+
 
                   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {category.items.map((skill, skillIndex) => {
@@ -779,14 +793,19 @@ shadow: 'shadow-xl',
                               {skill.name?.[currentLang]}
                             </h4>
                             {skill.examples?.length > 0 && (
-                              <ul className={`space-y-1 ${themeClasses.textMuted} text-sm`}>
-                                {skill.examples.map((ex, exIndex) => (
-                                  <li key={exIndex} className="flex items-center">
-                                    <span className={`w-2 h-2 ${themeClasses.accentBg} rounded-full mr-2`}></span>
-                                    {ex?.[currentLang]}
-                                  </li>
-                                ))}
-                              </ul>
+                           <ul className={`space-y-1 ${themeClasses.textMuted} text-sm`}>
+  {skill.examples.map((ex, exIndex) => (
+    <li key={exIndex} className="flex items-center">
+      <span
+        className={`w-2 h-2 ${themeClasses.accentBg} rounded-full ${
+          currentLang === "ar" ? "ml-2" : "mr-2"
+        }`}
+      ></span>
+      {ex?.[currentLang]}
+    </li>
+  ))}
+</ul>
+
                             )}
                           </CardContent>
                         </Card>
