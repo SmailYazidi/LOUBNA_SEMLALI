@@ -594,7 +594,7 @@ accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
 
 
             {/* Desktop Navigation */}
-            <nav className="hidden xl:flex space-x-8">
+            <nav className="hidden xl:flex space-x-2">
               {navItems.map((item) => (
                 <button
                   key={item.id}
