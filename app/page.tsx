@@ -402,9 +402,8 @@ const [mockData, setMockData] = useState(baseMockData);
   ]
 
   const navItems = [
- 
+   { id: "skills", label: t.skills },
     { id: "experience", label: t.experience },
-    { id: "skills", label: t.skills },
     { id: "projects", label: t.projects },
     { id: "about", label: t.about },
        { id: "services", label: t.services },
