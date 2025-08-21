@@ -453,7 +453,7 @@ shadow: 'shadow-xl',
 </div>
 
   {/* Full username for larger screens */}
-  <div className={`hidden sm:block  ${themeClasses.accent}  `}>
+  <div className={`hidden sm:block text-xl font-bold ${themeClasses.accent}  `}>
     <span>{mockData.username[currentLang].toUpperCase()}</span>
   </div>
 </div>
