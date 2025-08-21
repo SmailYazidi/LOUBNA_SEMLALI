@@ -539,7 +539,11 @@ shadow: 'shadow-xl',
               </Button>
             </div>
 {/* Mobile & Tablet Controls */}
-<div className="xl:hidden flex items-center space-x-2 sm:space-x-2 md:space-x-3">
+<div
+  className={`xl:hidden flex items-center ${
+    currentLang === "ar" ? "space-x-reverse space-x-2 sm:space-x-2 md:space-x-3" : "space-x-2 sm:space-x-2 md:space-x-3"
+  }`}
+>
   {/* Theme Toggle */}
   <Button
     variant="outline"
@@ -570,7 +574,9 @@ shadow: 'shadow-xl',
           <button
             key={option.code}
             onClick={() => changeLanguage(option.code as "fr" | "en" | "ar")}
-            className={`w-full px-2 py-1 sm:px-3 sm:py-2 text-left hover:${themeClasses.accentBg} hover:text-white rounded-xl sm:rounded-2xl transition-all duration-300 flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm`}
+            className={`w-full px-2 py-1 sm:px-3 sm:py-2 text-left hover:${themeClasses.accentBg} hover:text-white rounded-xl sm:rounded-2xl transition-all duration-300 flex items-center ${
+              currentLang === "ar" ? "space-x-reverse space-x-1 sm:space-x-2" : "space-x-1 sm:space-x-2"
+            } text-xs sm:text-sm`}
           >
             <span>{option.flag}</span>
             <span>{option.code.toUpperCase()}</span>
@@ -701,7 +707,7 @@ shadow: 'shadow-xl',
                       key={index}
                       variant="outline"
                       onClick={handleClick}
-                      className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} hover:${themeClasses.accentBg} hover:text-white rounded-2xl px-8 py-3 transition-all duration-300 sm:hover:scale-105
+                      className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} hover:${themeClasses.accentBg} rounded-2xl px-8 py-3 transition-all duration-300 sm:hover:scale-105
  text-lg`}
                     >
                       {Icon && <Icon className="mr-2 h-5 w-5" />}
@@ -806,23 +812,42 @@ shadow: 'shadow-xl',
             {/* Education */}
             <div className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
 `}>
-              <h3 className={`text-2xl font-semibold mb-8 ${themeClasses.text} flex items-center`}>
-                <GraduationCap className={`mr-3 h-6 w-6 ${themeClasses.accent}`} />
-                {currentLang === "fr" ? "Formation" : currentLang === "en" ? "Education" : "التعليم"}
-              </h3>
+             <h3 className={`text-2xl font-semibold mb-8 ${themeClasses.text} flex items-center`}>
+  <GraduationCap
+    className={`h-6 w-6 ${themeClasses.accent} ${
+      currentLang === "ar" ? "ml-3" : "mr-3"
+    }`}
+  />
+  {currentLang === "fr"
+    ? "Formation"
+    : currentLang === "en"
+    ? "Education"
+    : "التعليم"}
+</h3>
+
               <div className="space-y-8">
                 {mockData.education.education.map((event, index) => (
-            <div
+   <div
   key={index}
-  className={`relative pl-8 border-l-2 ${
+  className={`relative ${
+    currentLang === "ar" 
+      ? "pr-8 border-r-2"   // RTL: الخط على اليمين
+      : "pl-8 border-l-2"   // LTR: الخط على اليسار
+  } ${
     isDarkMode
-      ? 'border-white/30'   // light border for dark mode
-      : 'border-[#0A2647]/30' // dark blue border for light mode
+      ? "border-white/30"
+      : "border-[#0A2647]/30"
   }`}
 >
 
-                    <div className={`absolute -left-2 top-0 w-4 h-4 ${themeClasses.accentBg} rounded-full`}></div>
-                    <div className={`absolute -left-1 top-1 w-2 h-2 bg-white rounded-full`}></div>
+                 <div
+    className={`absolute top-0 w-4 h-4 ${themeClasses.accentBg} rounded-full 
+      ${currentLang === "ar" ? "-right-2" : "-left-2"}`}
+  ></div>
+  <div
+    className={`absolute top-1 w-2 h-2 bg-white rounded-full 
+      ${currentLang === "ar" ? "-right-1" : "-left-1"}`}
+  ></div>
                     <p className={`text-sm ${themeClasses.accent} font-semibold mb-2`}>
                       {event.year?.[currentLang]}
                     </p>
@@ -846,22 +871,42 @@ shadow: 'shadow-xl',
             <div className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
 `}>
               <h3 className={`text-2xl font-semibold mb-8 ${themeClasses.text} flex items-center`}>
-                <Briefcase className={`mr-3 h-6 w-6 ${themeClasses.accent}`} />
-                {currentLang === "fr" ? "Expérience" : currentLang === "en" ? "Experience" : "الخبرة"}
-              </h3>
+  <Briefcase
+    className={`h-6 w-6 ${themeClasses.accent} ${
+      currentLang === "ar" ? "ml-3" : "mr-3"
+    }`}
+  />
+  {currentLang === "fr"
+    ? "Expérience"
+    : currentLang === "en"
+    ? "Experience"
+    : "الخبرة"}
+</h3>
+
               <div className="space-y-8">
                 {mockData.education.experience.map((event, index) => (
-              <div
+            <div
   key={index}
-  className={`relative pl-8 border-l-2 ${
+  className={`relative ${
+    currentLang === "ar" 
+      ? "pr-8 border-r-2"   // RTL: الخط على اليمين
+      : "pl-8 border-l-2"   // LTR: الخط على اليسار
+  } ${
     isDarkMode
-      ? 'border-white/30'   // light border for dark mode
-      : 'border-[#0A2647]/30' // dark blue border for light mode
+      ? "border-white/30"
+      : "border-[#0A2647]/30"
   }`}
 >
 
-                    <div className={`absolute -left-2 top-0 w-4 h-4 ${themeClasses.accentBg} rounded-full`}></div>
-                    <div className={`absolute -left-1 top-1 w-2 h-2 bg-white rounded-full`}></div>
+                 <div
+    className={`absolute top-0 w-4 h-4 ${themeClasses.accentBg} rounded-full 
+      ${currentLang === "ar" ? "-right-2" : "-left-2"}`}
+  ></div>
+  <div
+    className={`absolute top-1 w-2 h-2 bg-white rounded-full 
+      ${currentLang === "ar" ? "-right-1" : "-left-1"}`}
+  ></div>
+            
                     <div className="flex items-center gap-3 mb-2">
                       <p className={`text-sm ${themeClasses.accent} font-semibold`}>
                         {event.year?.[currentLang]}
@@ -982,21 +1027,27 @@ shadow: 'shadow-xl',
                 {mockData.about.personalInfo?.map((info, index) => {
                   const IconComponent = getIcon(info.icon);
                   return (
-                    <div key={index} className="flex items-center space-x-4">
-                      {IconComponent && (
-                        <div className={`${themeClasses.accentBg} p-3 rounded-2xl`}>
-                          <IconComponent className="h-5 w-5 text-white" />
-                        </div>
-                      )}
-                      <div>
-                        <p className={`font-medium ${themeClasses.text}`}>
-                          {info.label?.[currentLang]}
-                        </p>
-                        <p className={`${themeClasses.textMuted}`}>
-                          {info.value?.[currentLang]}
-                        </p>
-                      </div>
-                    </div>
+                 <div
+  key={index}
+  className={`flex items-center ${
+    currentLang === "ar" ? "space-x-reverse space-x-4" : "space-x-4"
+  }`}
+>
+  {IconComponent && (
+    <div className={`${themeClasses.accentBg} p-3 rounded-2xl`}>
+      <IconComponent className="h-5 w-5 text-white" />
+    </div>
+  )}
+  <div>
+    <p className={`font-medium ${themeClasses.text}`}>
+      {info.label?.[currentLang]}
+    </p>
+    <p className={`${themeClasses.textMuted}`}>
+      {info.value?.[currentLang]}
+    </p>
+  </div>
+</div>
+
                   );
                 })}
               </div>
@@ -1006,10 +1057,15 @@ shadow: 'shadow-xl',
               {/* Languages */}
               <div className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
 `}>
-                <h3 className={`text-2xl font-semibold mb-6 ${themeClasses.text} flex items-center`}>
-                  <LanguagesIcon className={`mr-3 h-6 w-6 ${themeClasses.accent}`} />
-                  {mockData.about.languages?.title?.[currentLang]}
-                </h3>
+            <h3 className={`text-2xl font-semibold mb-6 ${themeClasses.text} flex items-center`}>
+  <LanguagesIcon
+    className={`h-6 w-6 ${themeClasses.accent} ${
+      currentLang === "ar" ? "ml-3" : "mr-3"
+    }`}
+  />
+  {mockData.about.languages?.title?.[currentLang]}
+</h3>
+
                 <div className="space-y-4">
                   {mockData.about.languages?.list?.map((lang, index) => {
                     const levelKey = lang.level.toLowerCase();
@@ -1041,24 +1097,36 @@ shadow: 'shadow-xl',
               {/* Interests */}
               <div className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
 `}>
-                <h3 className={`text-2xl font-semibold mb-6 ${themeClasses.text} flex items-center`}>
-                  <Heart className={`mr-3 h-6 w-6 ${themeClasses.accent}`} />
-                  {t.interests}
-                </h3>
+  
+  
+  <h3 className={`text-2xl font-semibold mb-6 ${themeClasses.text} flex items-center`}>
+  <Heart
+    className={`h-6 w-6 ${themeClasses.accent} ${
+      currentLang === "ar" ? "ml-3" : "mr-3"
+    }`}
+  />
+  {t.interests}
+</h3>
+
                 <div className="flex flex-wrap gap-3">
                   {mockData.about.interests?.map((interest, index) => {
                     const IconComponent = getIcon(interest.icon);
                     return (
-                      <Badge
-                        key={index}
-                        className={`${themeClasses.glassDark} ${themeClasses.text} border border-white/20 px-4 py-2 rounded-2xl hover:${themeClasses.accentBg} hover:text-white transition-all duration-300 sm:hover:scale-105
+                    <Badge
+  key={index}
+  className={`${themeClasses.glassDark} ${themeClasses.text} border border-white/20 px-4 py-2 rounded-2xl hover:${themeClasses.accentBg} hover:text-white transition-all duration-300 sm:hover:scale-105
 `}
-                      >
-                        {IconComponent && (
-                          <IconComponent className="mr-2 h-4 w-4" />
-                        )}
-                        {interest.name?.[currentLang]}
-                      </Badge>
+>
+  {IconComponent && (
+    <IconComponent
+      className={`h-4 w-4 ${
+        currentLang === "ar" ? "ml-2" : "mr-2"
+      }`}
+    />
+  )}
+  {interest.name?.[currentLang]}
+</Badge>
+
                     );
                   })}
                 </div>
@@ -1160,14 +1228,17 @@ shadow: 'shadow-xl',
         );
       })}
     </div>   {/* Button */}
-    <a
-      href={mockData.contact.contactButton?.link || "#contact-form"}
-      className={`inline-flex items-center ${themeClasses.accentBg} hover:opacity-90 text-white px-8 py-4 rounded-2xl ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
- text-lg font-semibold`}
-    >
-      <Send className="mr-3 h-5 w-5" />
-      {mockData.contact.contactButton?.startProject?.[currentLang]}
-    </a>
+<a
+  href={mockData.contact.contactButton?.link || "#contact-form"}
+  className={`inline-flex items-center ${themeClasses.accentBg} hover:opacity-90 text-white px-8 py-4 rounded-2xl ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105 text-lg font-semibold`}
+>
+  <Send
+    className={`h-5 w-5 ${
+      currentLang === "ar" ? "ml-3" : "mr-3"
+    }`}
+  />
+  {mockData.contact.contactButton?.startProject?.[currentLang]}
+</a>
 
  <br /><br /><br />
   {/* Contact Form */}
