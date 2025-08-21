@@ -675,15 +675,19 @@ shadow: 'shadow-xl',
       <section id="home" className={`pt-32 pb-20 ${themeClasses.background}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8 animate-in slide-in-from-left duration-1000">
+            <div className="space-y-8 animate-in  duration-1000">
               {mockData.hero.specialist?.[currentLang] && (
-                <div className={`inline-flex items-center space-x-2 ${themeClasses.glassDark} px-4 py-2 rounded-2xl ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
-`}>
-                  <Star className={`h-5 w-5 ${themeClasses.accent}`} />
-                  <span className={`${themeClasses.textMuted} font-medium`}>
-                    {mockData.hero.specialist[currentLang]}
-                  </span>
-                </div>
+             <div
+  className={`inline-flex items-center ${
+    currentLang === "ar" ? "space-x-reverse space-x-2" : "space-x-2"
+  } ${themeClasses.glassDark} px-4 py-2 rounded-2xl ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105`}
+>
+  <Star className={`h-5 w-5 ${themeClasses.accent}`} />
+  <span className={`${themeClasses.textMuted} font-medium`}>
+    {mockData.hero.specialist[currentLang]}
+  </span>
+</div>
+
               )}
 
               {mockData.hero.heroTitle?.[currentLang] && (
@@ -727,7 +731,7 @@ shadow: 'shadow-xl',
               </div>
             </div>
 
-        <div className="flex justify-center lg:justify-end animate-in slide-in-from-right duration-1000">
+         <div className="flex justify-center lg:justify-end lg:animate-in lg:slide-in-from-right duration-1000">
   <div className={`relative ${themeClasses.glassDark} rounded-2xl p-4 sm:p-6 md:p-8 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
 `}>
     <div className="relative w-48 h-48 sm:w-60 sm:h-60 md:w-80 md:h-80 rounded-2xl overflow-hidden">
