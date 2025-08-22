@@ -319,11 +319,65 @@ useEffect(() => {
     }
   });
 
-  console.log("Search term:", searchTerm);
-  console.log("Search results:", results);
+  // Search in About Me description
+  if (
+    mockData.about.aboutDescription?.[currentLang]?.toLowerCase().includes(term)
+  ) {
+    results.push({ type: "About", item: { description: mockData.about.aboutDescription } });
+  }
+
+  // Search in personal info
+  mockData.about.personalInfo.forEach(info => {
+    if (
+      info.label?.[currentLang]?.toLowerCase().includes(term) ||
+      info.value?.[currentLang]?.toLowerCase().includes(term)
+    ) {
+      results.push({ type: "PersonalInfo", item: info });
+    }
+  });
+
+  // Search in languages
+  mockData.about.languages.list.forEach(lang => {
+    if (
+      lang.name?.[currentLang]?.toLowerCase().includes(term) ||
+      (lang.level && lang.level.toLowerCase().includes(term))
+    ) {
+      results.push({ type: "Language", item: lang });
+    }
+  });
+
+  // Search in interests
+  mockData.about.interests.forEach(interest => {
+    if (
+      interest.name?.[currentLang]?.toLowerCase().includes(term)
+    ) {
+      results.push({ type: "Interest", item: interest });
+    }
+  });
+
+  // Search in Contact
+  const contact = mockData.contact;
+  if (
+    contact.contactTitle?.[currentLang]?.toLowerCase().includes(term) ||
+    contact.contactDescription?.[currentLang]?.toLowerCase().includes(term) ||
+    contact.contactInfo?.some(info => info.label?.[currentLang]?.toLowerCase().includes(term) || info.value?.toLowerCase().includes(term))
+  ) {
+    results.push({ type: "Contact", item: contact });
+  }
+
+  // Search in Services
+  mockData.services.servicesList.forEach(service => {
+    if (
+      service.title?.[currentLang]?.toLowerCase().includes(term) ||
+      service.description?.[currentLang]?.toLowerCase().includes(term)
+    ) {
+      results.push({ type: "Service", item: service });
+    }
+  });
 
   setSearchResults(results);
 }, [searchTerm, currentLang]);
+
 
 
 
@@ -493,7 +547,7 @@ shadow: 'shadow-xl',
       {/* Header */}
       <header className={`fixed top-0 w-full z-50 ${themeClasses.glassDark} ${themeClasses.shadow} transition-all duration-500`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
+          <div className="flex justify-between items-center py-4 ">
             {/* Logo */}
             <div className="flex-shrink-0">
 
@@ -1487,6 +1541,7 @@ shadow: 'shadow-xl',
         </div>
       </footer>
 
+
 {searchTerm && (
   <div
     className="fixed top-40 inset-x-0 z-40 backdrop-blur-sm overflow-auto py-8"
@@ -1510,12 +1565,21 @@ shadow: 'shadow-xl',
                 className={`${themeClasses.glassDark} p-6 rounded-2xl ${themeClasses.shadow} transition-all duration-300`}
               >
                 <p className="font-semibold mb-2">{result.type}</p>
+
+                {/* Title / Name */}
                 <h3 className={`${themeClasses.text} font-medium mb-2`}>
-                  {result.type === "Skill"
-                    ? result.item.name?.[currentLang]
-                    : result.item.title?.[currentLang]}
+                  {result.type === "Skill" && result.item.name?.[currentLang]}
+                  {result.type === "Project" && result.item.title?.[currentLang]}
+                  {result.type === "Experience" && result.item.title?.[currentLang]}
+                  {result.type === "Service" && result.item.title?.[currentLang]}
+                  {result.type === "About" && currentLang && "About Me"}
+                  {result.type === "PersonalInfo" && result.item.label?.[currentLang]}
+                  {result.type === "Language" && result.item.name?.[currentLang]}
+                  {result.type === "Interest" && result.item.name?.[currentLang]}
+                  {result.type === "Contact" && result.item.contactTitle?.[currentLang]}
                 </h3>
 
+                {/* Description / Details */}
                 {result.type === "Skill" && result.item.examples?.length > 0 && (
                   <ul className={`${themeClasses.textMuted} text-sm mt-1 list-disc list-inside`}>
                     {result.item.examples.map((ex, i) => (
@@ -1544,6 +1608,51 @@ shadow: 'shadow-xl',
                     {result.item.description?.[currentLang]}
                   </p>
                 )}
+
+                {result.type === "Service" && result.item.description && (
+                  <p className={`${themeClasses.textMuted} text-sm mt-1`}>
+                    {result.item.description?.[currentLang]}
+                  </p>
+                )}
+
+                {result.type === "About" && result.item.description && (
+                  <p className={`${themeClasses.textMuted} text-sm mt-1`}>
+                    {result.item.description?.[currentLang]}
+                  </p>
+                )}
+
+                {result.type === "PersonalInfo" && (
+                  <p className={`${themeClasses.textMuted} text-sm mt-1`}>
+                    {result.item.value?.[currentLang]}
+                  </p>
+                )}
+
+                {result.type === "Language" && (
+                  <p className={`${themeClasses.textMuted} text-sm mt-1`}>
+                    Level: {mockData.about.languages.levels[result.item.level]?.[currentLang] || result.item.level}
+                  </p>
+                )}
+
+                {result.type === "Interest" && (
+                  <p className={`${themeClasses.textMuted} text-sm mt-1`}>
+                    {result.item.name?.[currentLang]}
+                  </p>
+                )}
+
+                {result.type === "Contact" && (
+                  <>
+                    {result.item.contactDescription && (
+                      <p className={`${themeClasses.textMuted} text-sm mt-1`}>
+                        {result.item.contactDescription?.[currentLang]}
+                      </p>
+                    )}
+                    {result.item.contactInfo?.map((info, i) => (
+                      <p key={i} className={`${themeClasses.textMuted} text-sm`}>
+                        {info.label?.[currentLang]}: {info.value}
+                      </p>
+                    ))}
+                  </>
+                )}
               </div>
             ))}
           </div>
@@ -1555,11 +1664,13 @@ shadow: 'shadow-xl',
               ? "Aucun résultat trouvé."
               : "لم يتم العثور على نتائج."}
           </p>
-        )}<br /><br /><br /><br /><br />
+        )}
+        <br /><br /><br /><br /><br />
       </div>
     </div>
   </div>
 )}
+
 
 
 
