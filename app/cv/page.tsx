@@ -127,7 +127,7 @@ shadow: 'shadow-xl',
   }
 
   return (
-     <div className={`min-h-screen transition-all duration-500 ${themeClasses.background} ${themeClasses.text} `} >
+     <div className={`min-h-screen transition-all duration-500 p-4 ${themeClasses.background} ${themeClasses.text} `} >
        {/* Top controls */}
       <div className="flex flex-row flex-wrap items-center justify-between w-full max-w-4xl gap-4 mb-6 no-print">
         <Button
