@@ -1,9 +1,7 @@
 "use client"
-
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ChevronLeft, Sun, Moon, Loader2, Download } from "lucide-react"
+import { ChevronLeft, Sun, Moon, Loader2, Download ,ChevronDown} from "lucide-react"
 import { useRouter } from "next/navigation"
 import Loading from '@/components/Loading'
 
@@ -13,56 +11,74 @@ export default function CvPage() {
   const [cvUrls, setCvUrls] = useState<{ fr?: string; en?: string }>({})
   const [loading, setLoading] = useState(true)
   const [mounted, setMounted] = useState(false)
+  const [isLangMenuOpen, setIsLangMenuOpen] = useState(false)
+// Initialize with safe defaults
+const [isDarkMode, setIsDarkMode] = useState(true)
+const [language, setLanguage] = useState<"fr" | "en">("fr") // only fr | en
 
-  const [isDarkMode, setIsDarkMode] = useState(true)
-  const [language, setLanguage] = useState<"fr" | "en">("fr")
+// Hydrate client-side state after mount
+useEffect(() => {
+  setMounted(true)
 
-  // Hydrate client-side state after mount
-  useEffect(() => {
-    setMounted(true)
+  const savedDarkMode = sessionStorage.getItem('darkMode')
+  const savedLanguage = sessionStorage.getItem('language')
 
-    const savedDarkMode = sessionStorage.getItem('darkMode')
-    const savedLanguage = sessionStorage.getItem('language')
+  setIsDarkMode(savedDarkMode ? JSON.parse(savedDarkMode) : true)
 
-    setIsDarkMode(savedDarkMode ? JSON.parse(savedDarkMode) : true)
-    setLanguage(savedLanguage === "en" ? "en" : "fr")
-  }, [])
+  // Replace "ar" with "fr"; allow only "fr" or "en"
+  if (savedLanguage === "en") {
+    setLanguage("en")
+  } else {
+    setLanguage("fr") // "ar" or anything else becomes "fr"
+  }
+}, [])
+
 
   // Persist preferences
   useEffect(() => {
     if (!mounted) return
-    sessionStorage.setItem('darkMode', JSON.stringify(isDarkMode))
+    sessionStorage.setItem('DarkMode', JSON.stringify(isDarkMode))
     document.documentElement.classList.toggle("dark", isDarkMode)
   }, [isDarkMode, mounted])
 
   useEffect(() => {
     if (!mounted) return
-    sessionStorage.setItem('language', language)
+    sessionStorage.setItem('Language', language)
   }, [language, mounted])
 
-  // Fetch CV URLs
-  useEffect(() => {
-    const fetchCvUrls = async () => {
-      try {
-        const res = await fetch('/api/cv', {
-          headers: { "x-api-key": process.env.NEXT_PUBLIC_API_SECRET || "" }
-        })
-        if (!res.ok) throw new Error("Failed to fetch CV URLs")
-        const data = await res.json()
-        setCvUrls(data)
-      } catch (err) {
-        console.error("Failed to fetch CV URLs:", err)
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchCvUrls()
-  }, [])
+// Fetch CV URLs
+useEffect(() => {
+  const fetchCvUrls = async () => {
+    try {
+      const res = await fetch('/api/cv', {
+        headers: {
+          "x-api-key": process.env.NEXT_PUBLIC_API_SECRET || ""
+        }
+      });
 
-  const toggleTheme = () => setIsDarkMode(!isDarkMode)
+      if (!res.ok) throw new Error("Failed to fetch CV URLs");
+
+      const data = await res.json();
+      setCvUrls(data);
+    } catch (err) {
+      console.error("Failed to fetch CV URLs:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchCvUrls();
+}, []);
+
+  const toggleTheme = () => {
+    const newMode = !isDarkMode;
+    setIsDarkMode(newMode);
+    sessionStorage.setItem('darkMode', JSON.stringify(newMode));
+  };
 
   const handleDownloadPdf = async () => {
     if (!cvUrls[language]) return
+    
     setIsDownloading(true)
     try {
       const link = document.createElement("a")
@@ -79,28 +95,32 @@ export default function CvPage() {
     }
   }
 
-  const getGoogleViewerUrl = (pdfUrl: string) =>
+  const getGoogleViewerUrl = (pdfUrl: string) => 
     `https://docs.google.com/gview?url=${encodeURIComponent(pdfUrl)}&embedded=true`
 
   // Theme classes
-  const themeClasses = {
-    background: isDarkMode ? 'bg-black' : 'bg-[#f5f5dc]',
-    surface: isDarkMode ? 'bg-black/40' : 'bg-white/40',
-    surfaceSolid: isDarkMode ? 'bg-black' : 'bg-white',
-    text: isDarkMode ? 'text-white' : 'text-gray-900',
-    textMuted: isDarkMode ? 'text-gray-400' : 'text-gray-600',
-    accent: isDarkMode ? 'text-[#00BFFF]' : 'text-[#0A2647]',
-    accentBg: isDarkMode ? 'bg-[#3A6EA5]' : 'bg-[#0A2647]',
-    accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
-    glassDark: isDarkMode
-      ? 'bg-black/40 backdrop-blur-lg border border-white/20 shadow-xl'
-      : 'bg-white/40 backdrop-blur-lg border border-black/20 shadow-xl',
-    shadow: 'shadow-xl',
-  }
+ const themeClasses = {
+  background: isDarkMode ? 'bg-black' : 'bg-[#f5f5dc]',
+  surface: isDarkMode ? 'bg-black/40' : 'bg-white/40',
+  surfaceSolid: isDarkMode ? 'bg-black' : 'bg-white',
+  text: isDarkMode ? 'text-white' : 'text-gray-900',
+  textMuted: isDarkMode ? 'text-gray-400' : 'text-gray-600',
+accent: isDarkMode ? 'text-[#00BFFF]' : 'text-[#0A2647]',
+accentBg: isDarkMode ? 'bg-[#3A6EA5]' : 'bg-[#0A2647]',
+accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
 
+ glassDark: isDarkMode
+  ? 'bg-black/40 backdrop-blur-lg border border-white/20 shadow-xl' 
+  : 'bg-white/40 backdrop-blur-lg border border-black/20 shadow-xl',
+shadow: 'shadow-xl',
+};
+  const languageOptions = [
+    { code: "fr", label: "Français", flag: "🇫🇷" },
+    { code: "en", label: "English", flag: "🇺🇸" },
+  ]
   if (loading) {
     return (
-      <div className={`flex items-center justify-center min-h-screen ${themeClasses.background}`}>
+      <div>
         <Loading />
       </div>
     )
@@ -114,8 +134,8 @@ export default function CvPage() {
           variant="ghost"
           size="sm"
           onClick={() => router.push("/")}
-          className="p-2 hover:bg-gray-800/10 dark:hover:bg-gray-800 flex items-center gap-2"
-        >
+                        className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} hover:${themeClasses.accentBg} rounded-2xl px-8 py-3 transition-all duration-300 sm:hover:scale-105
+ text-lg`}>
           <ChevronLeft className="w-5 h-5" />
           <span className="text-sm font-medium">
             {mounted && language === "fr" ? "Retour" : "Back"}
@@ -123,29 +143,51 @@ export default function CvPage() {
         </Button>
 
         <Button
-          variant="ghost"
-          size="sm"
-          onClick={toggleTheme}
-          className="p-2 hover:bg-gray-800/10 dark:hover:bg-gray-800"
-        >
-          {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-        </Button>
+    variant="outline"
+    onClick={toggleTheme}
+    className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} rounded-xl sm:rounded-2xl px-2 py-1 sm:px-3 sm:py-2`}
+  >
+    {isDarkMode ? <Sun className="h-4 w-4 sm:h-5 sm:w-5" /> : <Moon className="h-4 w-4 sm:h-5 sm:w-5" />}
+  </Button>
 
         <div className="flex items-center gap-4">
-          <Select value={language} onValueChange={setLanguage} disabled={!mounted}>
-            <SelectTrigger className="min-w-[135px] bg-gray-100 dark:bg-gray-800">
-              <SelectValue placeholder="Select Language" />
-            </SelectTrigger>
-            <SelectContent className="bg-white dark:bg-gray-800">
-              <SelectItem value="fr">Français</SelectItem>
-              <SelectItem value="en">English</SelectItem>
-            </SelectContent>
-          </Select>
+          {/* Language Selector */}
+  <div className="relative language-menu">
+    <Button
+      variant="outline"
+      onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
+      className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} hover:${themeClasses.accent} rounded-2xl transition-all duration-300 sm:hover:scale-105  `}
+    >
+      <span>{language.toUpperCase()}</span>
+      <ChevronDown
+        className={`ml-2 h-4 w-4 transition-transform duration-300 ${
+          isLangMenuOpen ? "rotate-180" : ""
+        }`}
+      />
+    </Button>
+
+    {isLangMenuOpen && (
+      <div
+        className={`absolute top-full right-0 mt-2 ${themeClasses.glassDark} rounded-2xl ${themeClasses.shadow} border border-white/10 min-w-[150px] z-50 transition-all duration-300 animate-in slide-in-from-top-2`}
+      >
+        {languageOptions.map((option) => (
+          <button
+            key={option.code}
+            onClick={() => setLanguage(option.code as "fr" | "en" )}
+            className={`w-full px-4 py-3 text-left  rounded-2xl transition-all duration-300 flex items-center  space-x-3`}
+          >
+            <span className="text-lg">{option.flag}</span>
+            <span>{option.label}</span>
+          </button>
+        ))}
+      </div>
+    )}
+  </div>
 
           <Button
             onClick={handleDownloadPdf}
-            className="bg-[rgb(var(--portfolio-gold))] hover:bg-[rgb(var(--portfolio-gold-hover))] text-black font-medium px-6 py-2 rounded-full"
-            disabled={isDownloading || !cvUrls[language]}
+          className={`${themeClasses.accentBg} hover:bg-[#0A2647]/90 text-white rounded-2xl px-8 py-3 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105 text-lg`}
+      disabled={isDownloading || !cvUrls[language]}
           >
             {isDownloading ? (
               <>
@@ -163,8 +205,8 @@ export default function CvPage() {
       </div>
 
       {/* PDF Viewer */}
-      <div className={`${themeClasses.surface} shadow-lg rounded-lg w-full max-w-4xl h-[70vh] md:h-[1120px] md:max-w-[794px]`}>
-        {cvUrls[language] ? (
+                <div className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
+`}>  {cvUrls[language] ? (
           <iframe
             src={getGoogleViewerUrl(cvUrls[language]!)}
             className="w-full h-full border-0"
@@ -172,8 +214,8 @@ export default function CvPage() {
             allow="fullscreen"
           />
         ) : (
-          <div className="flex items-center justify-center h-full">
-            {language === "fr" ? "CV non disponible" : "CV not available"}
+                  <div className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
+`}>  {language === "fr" ? "CV non disponible" : "CV not available"}
           </div>
         )}
       </div>
