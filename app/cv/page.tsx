@@ -127,8 +127,8 @@ shadow: 'shadow-xl',
   }
 
   return (
-    <div className={`flex flex-col items-center p-4 min-h-screen ${themeClasses.background} ${themeClasses.text}`}>
-      {/* Top controls */}
+     <div className={`min-h-screen transition-all duration-500 ${themeClasses.background} ${themeClasses.text} `} >
+       {/* Top controls */}
       <div className="flex flex-row flex-wrap items-center justify-between w-full max-w-4xl gap-4 mb-6 no-print">
         <Button
           variant="ghost"
@@ -205,8 +205,12 @@ shadow: 'shadow-xl',
       </div>
 
       {/* PDF Viewer */}
-                <div className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
-`}>  {cvUrls[language] ? (
+   <section  className={`py-20 ${themeClasses.background}`}>
+      
+             <div className="space-y-12">
+                              <div className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
+`}>
+             {cvUrls[language] ? (
           <iframe
             src={getGoogleViewerUrl(cvUrls[language]!)}
             className="w-full h-full border-0"
@@ -214,11 +218,11 @@ shadow: 'shadow-xl',
             allow="fullscreen"
           />
         ) : (
-                  <div className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
-`}>  {language === "fr" ? "CV non disponible" : "CV not available"}
-          </div>
+ <div className="space-y-12">                 <div className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
+`}> {language === "fr" ? "CV non disponible" : "CV not available"}
+          </div> </div>
         )}
-      </div>
+      </div>  </div>   </section>
     </div>
   )
 }
