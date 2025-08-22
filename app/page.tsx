@@ -1259,7 +1259,7 @@ shadow: 'shadow-xl',
                     return (
                     <Badge
   key={index}
-  className={`${themeClasses.glassDark} ${themeClasses.text} border border-white/20 px-4 py-2 rounded-2xl hover:${themeClasses.accentBg} hover:text-white transition-all duration-300 sm:hover:scale-105
+  className={`${themeClasses.glassDark} ${themeClasses.text} border border-white/20 px-4 py-2 rounded-2xl hover:${themeClasses.accentBg} transition-all duration-300 sm:hover:scale-105
 `}
 >
   {IconComponent && (
