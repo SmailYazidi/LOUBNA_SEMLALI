@@ -558,9 +558,17 @@ shadow: 'shadow-xl',
 <div className={`${themeClasses.glassDark} ${isDarkMode ? 'text-white' : 'text-[#0A2647]'} border border-white/20 min-w-[30px] w-10 h-10  hover:${themeClasses.accent} rounded-full transition-all duration-300 sm:hover:scale-105
  flex items-center justify-center text-2xl font-bold sm:hidden`}>
   {/* Show first English letter, uppercased */}
-  <span>
-    { (mockData.username[currentLang].replace(/[^A-Za-z]/g, '').charAt(0) || 'L').toUpperCase() }
-  </span>
+<span>
+  {
+    (
+      mockData.username[currentLang]
+        .trim() // remove leading/trailing spaces
+        .charAt(0) // first character
+        || 'L' // fallback
+    ).toUpperCase()
+  }
+</span>
+
 </div>
 
   {/* Full username for larger screens */}

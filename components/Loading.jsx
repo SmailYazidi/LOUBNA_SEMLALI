@@ -11,7 +11,7 @@ export default function Loading() {
   }, []);
 
   const themeClasses = {
-    bg: isDarkMode ? "bg-[#0a0a0a]" : "bg-white",
+    bg: isDarkMode ? 'bg-black' : 'bg-[#f5f5dc]',
     text: isDarkMode ? "text-white" : "text-gray-900",
     dotColor: isDarkMode ? "rgb(255, 255, 255)" : "rgb(0, 0, 0)"
   };
