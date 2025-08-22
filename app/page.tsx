@@ -1548,7 +1548,7 @@ shadow: 'shadow-xl',
 
 {searchTerm && (
   <div
-    className="fixed top-40 inset-x-0 z-40 backdrop-blur-sm overflow-auto py-8"
+    className="fixed top-40 inset-x-0 z-40 backdrop-blur overflow-auto py-8"
     style={{ maxHeight: "calc(100vh - 4rem)" }} // adjust 4rem if your header height is different
   >
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
