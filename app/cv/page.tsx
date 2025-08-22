@@ -126,143 +126,130 @@ shadow: 'shadow-xl',
     )
   }
 
-  return (
- <div
-  className={`
-    min-h-screen
-    flex flex-col sm:justify-center items-center
-    transition-all duration-500
-    p-4
-    ${themeClasses.background} ${themeClasses.text}
-  `}
->
-  {/* Top controls */}
-  <div className="flex flex-row flex-wrap items-center justify-between w-full max-w-4xl gap-4 mb-6 no-print">
-    <div>
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => router.push("/")}
-        className={`
-          ${themeClasses.glassDark} border-white/20 ${themeClasses.text} 
-          hover:${themeClasses.accentBg} rounded-2xl px-8 py-3
-          transition-all duration-300 sm:hover:scale-105 text-lg
-        `}
-      >
-        <ChevronLeft className="w-5 h-5" />
-        <span className="text-sm font-medium">
-          {mounted && language === "fr" ? "Retour" : "Back"}
-        </span>
-      </Button>
-    </div>
-
-    <div className="flex items-center gap-4">
-      {/* Language Selector */}
-      <div className="relative language-menu">
+return (
+  <div className={`flex flex-col h-screen ${themeClasses.background} ${themeClasses.text}`}>
+    
+    {/* Top controls fixed height */}
+    <div className="flex flex-row flex-wrap items-center justify-between w-full max-w-4xl mx-auto gap-4 p-4">
+      {/* Back Button */}
+      <div>
         <Button
-          variant="outline"
-          onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
+          variant="ghost"
+          size="sm"
+          onClick={() => router.push("/")}
           className={`
             ${themeClasses.glassDark} border-white/20 ${themeClasses.text} 
-            hover:${themeClasses.accent} rounded-2xl transition-all duration-300 sm:hover:scale-105
+            hover:${themeClasses.accentBg} rounded-2xl px-8 py-3
+            transition-all duration-300 sm:hover:scale-105 text-lg
           `}
         >
-          <span>{language.toUpperCase()}</span>
-          <ChevronDown
-            className={`ml-2 h-4 w-4 transition-transform duration-300 ${
-              isLangMenuOpen ? "rotate-180" : ""
-            }`}
-          />
+          <ChevronLeft className="w-5 h-5" />
+          <span className="text-sm font-medium">
+            {mounted && language === "fr" ? "Retour" : "Back"}
+          </span>
         </Button>
+      </div>
 
-        {isLangMenuOpen && (
-          <div
+      {/* Language Selector */}
+      <div className="flex items-center gap-4">
+        <div className="relative language-menu">
+          <Button
+            variant="outline"
+            onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
             className={`
-              absolute top-full right-0 mt-2 ${themeClasses.glassDark} 
-              rounded-2xl ${themeClasses.shadow} border border-white/10 
-              min-w-[150px] z-50 transition-all duration-300 animate-in slide-in-from-top-2
+              ${themeClasses.glassDark} border-white/20 ${themeClasses.text} 
+              hover:${themeClasses.accent} rounded-2xl transition-all duration-300 sm:hover:scale-105
             `}
           >
-            {languageOptions.map((option) => (
-              <button
-                key={option.code}
-                onClick={() => setLanguage(option.code as "fr" | "en")}
-                className="w-full px-4 py-3 text-left rounded-2xl transition-all duration-300 flex items-center space-x-3"
-              >
-                <span className="text-lg">{option.flag}</span>
-                <span>{option.label}</span>
-              </button>
-            ))}
-          </div>
-        )}
+            <span>{language.toUpperCase()}</span>
+            <ChevronDown
+              className={`ml-2 h-4 w-4 transition-transform duration-300 ${
+                isLangMenuOpen ? "rotate-180" : ""
+              }`}
+            />
+          </Button>
+
+          {isLangMenuOpen && (
+            <div
+              className={`
+                absolute top-full right-0 mt-2 ${themeClasses.glassDark} 
+                rounded-2xl ${themeClasses.shadow} border border-white/10 
+                min-w-[150px] z-50 transition-all duration-300 animate-in slide-in-from-top-2
+              `}
+            >
+              {languageOptions.map((option) => (
+                <button
+                  key={option.code}
+                  onClick={() => setLanguage(option.code as "fr" | "en")}
+                  className="w-full px-4 py-3 text-left rounded-2xl transition-all duration-300 flex items-center space-x-3"
+                >
+                  <span className="text-lg">{option.flag}</span>
+                  <span>{option.label}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Download & Theme Buttons */}
+      <div className="flex items-center gap-2">
+        <Button
+          onClick={handleDownloadPdf}
+          className={`
+            ${themeClasses.accentBg} hover:bg-[#0A2647]/90 text-white 
+            rounded-2xl px-8 py-3 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105 text-lg
+          `}
+          disabled={isDownloading || !cvUrls[language]}
+        >
+          {isDownloading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              {language === "fr" ? "Téléchargement..." : "Downloading..."}
+            </>
+          ) : (
+            <>
+              <Download className="mr-2 h-4 w-4" />
+              {language === "fr" ? "Télécharger" : "Download"}
+            </>
+          )}
+        </Button>
+
+        <Button
+          variant="outline"
+          onClick={toggleTheme}
+          className={`
+            ${themeClasses.glassDark} border-white/20 ${themeClasses.text} 
+            rounded-xl sm:rounded-2xl px-2 py-1 sm:px-3 sm:py-2
+          `}
+        >
+          {isDarkMode ? <Sun className="h-4 w-4 sm:h-5 sm:w-5" /> : <Moon className="h-4 w-4 sm:h-5 sm:w-5" />}
+        </Button>
       </div>
     </div>
 
-    <div>
-      <Button
-        onClick={handleDownloadPdf}
-        className={`
-          ${themeClasses.accentBg} hover:bg-[#0A2647]/90 text-white 
-          rounded-2xl px-8 py-3 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105 text-lg
-        `}
-        disabled={isDownloading || !cvUrls[language]}
-      >
-        {isDownloading ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            {language === "fr" ? "Téléchargement..." : "Downloading..."}
-          </>
-        ) : (
-          <>
-            <Download className="mr-2 h-4 w-4" />
-            {language === "fr" ? "Télécharger" : "Download"}
-          </>
-        )}
-      </Button>
-    </div>
-
-    <div>
-      <Button
-        variant="outline"
-        onClick={toggleTheme}
-        className={`
-          ${themeClasses.glassDark} border-white/20 ${themeClasses.text} 
-          rounded-xl sm:rounded-2xl px-2 py-1 sm:px-3 sm:py-2
-        `}
-      >
-        {isDarkMode ? <Sun className="h-4 w-4 sm:h-5 sm:w-5" /> : <Moon className="h-4 w-4 sm:h-5 sm:w-5" />}
-      </Button>
-    </div>
+    {/* PDF Viewer: fill remaining space */}
+    <section
+      className={`
+        flex-1
+        ${themeClasses.background}  
+        w-full max-w-4xl md:max-w-[794px] mx-auto my-2 rounded-2xl
+      `}
+    >
+      {cvUrls[language] ? (
+        <iframe
+          src={getGoogleViewerUrl(cvUrls[language])}
+          className="w-full h-full"
+          title={`CV PDF (${language})`}
+          allowFullScreen
+        />
+      ) : (
+        <div className="flex items-center justify-center w-full h-full text-center text-gray-400">
+          {language === "fr" ? "CV non disponible" : "CV not available"}
+        </div>
+      )}
+    </section>
   </div>
+);
 
-  {/* PDF Viewer */}
-  <section
-    className={`
-      relative
-      ${themeClasses.background} 
-      ${themeClasses.glassDark} 
-      ${themeClasses.shadow} 
-      transition-all duration-300 
-      rounded-2xl 
-      w-full max-w-4xl md:max-w-[794px]
-      h-[70vh] md:h-[1120px]
-      flex
-    `}
-  >
-    {cvUrls[language] ? (
-      <iframe
-        src={getGoogleViewerUrl(cvUrls[language])}
-        className="w-full h-full border-0"
-        title={`CV PDF (${language})`}
-        allowFullScreen
-      />
-    ) : (
-      <div className="flex items-center justify-center w-full h-full text-center text-gray-400">
-        {language === "fr" ? "CV non disponible" : "CV not available"}
-      </div>
-    )}
-  </section>
-</div>
-
-  )
 }
