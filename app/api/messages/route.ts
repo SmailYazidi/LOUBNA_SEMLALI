@@ -1,9 +1,12 @@
 // /app/api/messages/route.ts
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
-
+import { checkApiKey } from "@/lib/checkApiKey";
+import { notFound } from "next/navigation";
 // GET: fetch all messages
-export async function GET() {
+export async function GET(req: Request) {
+     const forbidden = checkApiKey(req);
+  if (forbidden) return notFound(); 
   try {
     const db = await connectDB();
     const messagesCollection = db.collection("messages");
@@ -19,6 +22,8 @@ export async function GET() {
 
 // POST: store a new message
 export async function POST(req: Request) {
+     const forbidden = checkApiKey(req);
+  if (forbidden) return notFound(); 
   try {
     const db = await connectDB();
     const messagesCollection = db.collection("messages");

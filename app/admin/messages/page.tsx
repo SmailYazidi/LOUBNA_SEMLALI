@@ -3,6 +3,9 @@
 import React, { useEffect, useState } from "react";
 import { Trash2, ArrowLeft, ArrowUp, ArrowDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast"
+import Loading from '@/components/LoadingAdmin';
+
+
 type Message = {
   _id: string;
   name: string;
@@ -21,25 +24,37 @@ export default function MessagesPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const { toast } = useToast()
-  const fetchMessages = async () => {
-    try {
-      const res = await fetch("/api/messages");
-      const data = await res.json();
-      const sorted = sortOrder === "newest" 
-        ? data.sort(
-            (a: Message, b: Message) =>
-              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-          )
-        : data.sort(
-            (a: Message, b: Message) =>
-              new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-          );
-      setMessages(sorted);
-      setFilteredMessages(sorted);
-    } catch (err) {
-      console.error("Failed to fetch messages:", err);
-    }
-  };
+   const [loading, setLoading] = useState(true); 
+const fetchMessages = async () => {
+    setLoading(true); // 🔹 start loading
+  try {
+    const res = await fetch("/api/messages", {
+      headers: {
+        "x-api-key": process.env.NEXT_PUBLIC_API_SECRET || ""
+      }
+    });
+
+    if (!res.ok) throw new Error("Failed to fetch messages");
+
+    const data = await res.json();
+    const sorted = sortOrder === "newest" 
+      ? data.sort(
+          (a: Message, b: Message) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        )
+      : data.sort(
+          (a: Message, b: Message) =>
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        );
+
+    setMessages(sorted);
+    setFilteredMessages(sorted);
+      setLoading(false); // 🔹 start loading
+  } catch (err) {
+    console.error("Failed to fetch messages:", err);
+  }
+};
+
 
   useEffect(() => {
     fetchMessages();
@@ -56,12 +71,16 @@ export default function MessagesPage() {
   }, [search, messages]);
 
 const handleDelete = async (id: string) => {
+  
   const confirmDelete = confirm("Are you sure you want to delete this message?");
   if (!confirmDelete) return;
 
   try {
     const res = await fetch(`/api/messages/${id}`, {
       method: "DELETE",
+      headers: {
+        "x-api-key": process.env.NEXT_PUBLIC_API_SECRET || "" // 🔹 أضف المفتاح هنا
+      }
     });
 
     if (!res.ok) {
@@ -79,11 +98,11 @@ const handleDelete = async (id: string) => {
       className: "bg-green-500 text-white border-none",
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error("Error deleting message:", err);
     toast({
       title: "Error",
-      description: "Failed to delete the message. Please try again.",
+      description: err?.message || "Failed to delete the message. Please try again.",
       className: "bg-red-500 text-white border-none",
     });
   }
@@ -99,6 +118,8 @@ const handleDelete = async (id: string) => {
     (currentPage - 1) * PAGE_SIZE,
     currentPage * PAGE_SIZE
   );
+
+    if (loading) return <Loading />;
 
   return (
     <div className="p-4 md:p-6 max-w-5xl mx-auto bg-white dark:bg-gray-900 rounded-lg shadow-md">

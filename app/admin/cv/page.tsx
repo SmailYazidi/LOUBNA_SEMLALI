@@ -16,24 +16,32 @@ export default function AdminCvPage() {
   const [uploadProgress, setUploadProgress] = useState<{ fr?: number; en?: number }>({});
  const { toast } = useToast()
 
-  // Fetch existing CV URLs
-  useEffect(() => {
-    const fetchCvUrls = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch("/api/cv");
-        if (!res.ok) throw new Error("Failed to fetch CVs");
-        const data = await res.json();
-        setCvUrls(data);
-      } catch (err) {
-        console.error("Fetch error:", err);
-        setError("Failed to load existing CVs");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCvUrls();
-  }, []);
+// Fetch existing CV URLs
+useEffect(() => {
+  const fetchCvUrls = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/cv", {
+        headers: {
+          "x-api-key": process.env.NEXT_PUBLIC_API_SECRET || ""
+        }
+      });
+
+      if (!res.ok) throw new Error("Failed to fetch CVs");
+
+      const data = await res.json();
+      setCvUrls(data);
+    } catch (err) {
+      console.error("Fetch error:", err);
+      setError("Failed to load existing CVs");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchCvUrls();
+}, []);
+
 
   const handleFileChange = (lang: "fr" | "en", file: File | null) => {
     if (file) {
@@ -76,47 +84,47 @@ export default function AdminCvPage() {
     return url.split('/').pop() || 'CV File';
   };
 
-  const handleUpload = async () => {
-    if (!cvFiles.fr && !cvFiles.en) {
-      setError("Please select at least one PDF file to upload");
-      return;
+const handleUpload = async () => {
+  if (!cvFiles.fr && !cvFiles.en) {
+    setError("Please select at least one PDF file to upload");
+    return;
+  }
+
+  setIsUploading(true);
+  setError(null);
+  setUploadProgress({});
+
+  try {
+    const formData = new FormData();
+    if (cvFiles.fr) formData.append("fr", cvFiles.fr);
+    if (cvFiles.en) formData.append("en", cvFiles.en);
+
+    const res = await fetch("/api/cv", {
+      method: "PUT",
+      headers: {
+        "x-api-key": process.env.NEXT_PUBLIC_API_SECRET || ""
+      },
+      body: formData,
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.error || "Failed to update CVs");
     }
 
-    setIsUploading(true);
-    setError(null);
+    const data = await res.json();
+    setCvUrls(data);
+    setCvFiles({}); // Clear selected files after successful upload
+    setError(null); // Clear any previous error
+  } catch (err: any) {
+    console.error("Upload error:", err);
+    setError(err.message);
+  } finally {
+    setIsUploading(false);
     setUploadProgress({});
+  }
+};
 
-    try {
-      const formData = new FormData();
-      if (cvFiles.fr) formData.append("fr", cvFiles.fr);
-      if (cvFiles.en) formData.append("en", cvFiles.en);
-
-      const res = await fetch("/api/cv", {
-        method: "PUT",
-        body: formData,
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || "Failed to update CVs");
-      }
-
-      const data = await res.json();
-      setCvUrls(data);
-      setCvFiles({}); // Clear selected files after successful upload
-      
-      // Show success message
-      setError(null);
-      // You could add a success state here if needed
-      
-    } catch (err: any) {
-      console.error("Upload error:", err);
-      setError(err.message);
-    } finally {
-      setIsUploading(false);
-      setUploadProgress({});
-    }
-  };
 
   const handlePreview = (url: string) => {
     window.open(url, '_blank');

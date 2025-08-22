@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
-export async function GET() {
+import { checkApiKey } from "@/lib/checkApiKey";
+import { notFound } from "next/navigation";
+export async function GET(req: Request) {
+     const forbidden = checkApiKey(req);
+  if (forbidden) return notFound(); 
   try {
     const db = await connectDB();
     const skills = await db.collection("skills").findOne({});
@@ -11,9 +15,11 @@ export async function GET() {
   }
 }
 // app/api/skills/route.ts
-export async function PUT(request: Request) {
+export async function PUT(req: Request) {
+     const forbidden = checkApiKey(req);
+  if (forbidden) return notFound(); 
   try {
-    const data = await request.json();
+    const data = await req.json();
     const db = await connectDB();
 
     // Remove _id from the data if it exists

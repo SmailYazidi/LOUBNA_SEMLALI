@@ -63,24 +63,29 @@ export default function SkillsAdminPage() {
     setExpandedCategories(newExpanded);
   };
 
-  const fetchSkills = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/skills");
-      if (!res.ok) throw new Error("Failed to fetch skills data");
-      const json = await res.json();
-      setData(json);
-    } catch (err: any) {
-      setError(err.message);
-      // Fallback to empty structure
-      setData({
-        skillsTitle: { fr: "", en: "", ar: "" },
-        skills: []
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+const fetchSkills = async () => {
+  setLoading(true);
+  try {
+    const res = await fetch("/api/skills", {
+      headers: {
+        "x-api-key": process.env.NEXT_PUBLIC_API_SECRET || ""
+      }
+    });
+    if (!res.ok) throw new Error("Failed to fetch skills data");
+    const json = await res.json();
+    setData(json);
+  } catch (err: any) {
+    setError(err.message);
+    // Fallback to empty structure
+    setData({
+      skillsTitle: { fr: "", en: "", ar: "" },
+      skills: []
+    });
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     fetchSkills();
@@ -216,40 +221,44 @@ export default function SkillsAdminPage() {
     setData({ ...data, skills: updated });
   };
 
-  const saveData = async () => {
-    if (!data) return;
-    try {
-      console.log("Sending data:", data);
-      const res = await fetch("/api/skills", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      
-      if (!res.ok) {
-        const errorData = await res.json();
-        console.error("Server error:", errorData);
-        throw new Error(errorData.error || "Failed to save skills data");
-      }
-      
-      const result = await res.json();
-      console.log("Save result:", result);
+const saveData = async () => {
+  if (!data) return;
+  try {
+ 
+    const res = await fetch("/api/skills", {
+      method: "PUT",
+      headers: { 
+        "Content-Type": "application/json",
+        "x-api-key": process.env.NEXT_PUBLIC_API_SECRET || ""
+      },
+      body: JSON.stringify(data),
+    });
     
-      toast({
-        title: "Success",
-        description: "Saved successfully!!",
-        className: "bg-green-500 text-white border-none",
-      })
-      fetchSkills();
-    } catch (err: any) {
-      console.error("Save error:", err);
-      toast({
-        title: "Error",
-        description: err?.message || "Something went wrong!",
-        className: "bg-red-500 text-white border-none",
-      })
+    if (!res.ok) {
+      const errorData = await res.json();
+      console.error("Server error:", errorData);
+      throw new Error(errorData.error || "Failed to save skills data");
     }
-  };
+    
+    const result = await res.json();
+
+  
+    toast({
+      title: "Success",
+      description: "Saved successfully!!",
+      className: "bg-green-500 text-white border-none",
+    });
+    fetchSkills();
+  } catch (err: any) {
+    console.error("Save error:", err);
+    toast({
+      title: "Error",
+      description: err?.message || "Something went wrong!",
+      className: "bg-red-500 text-white border-none",
+    });
+  }
+};
+
 
   if (loading) return <Loading />;
   if (error) return (

@@ -21,21 +21,27 @@ export default function ServicesAdminPage() {
   const [expandedServices, setExpandedServices] = useState<Set<number>>(new Set());
   const { toast } = useToast()
 
-  const fetchServices = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/services");
-      if (!res.ok) throw new Error("Failed to fetch services");
-      const data = await res.json();
-      setServices(data);
-    } catch (err: any) {
-      setError(err.message);
-      // Fallback to empty structure
-      setServices({ servicesList: [] });
-    } finally {
-      setLoading(false);
-    }
-  };
+const fetchServices = async () => {
+  setLoading(true);
+  try {
+    const res = await fetch("/api/services", {
+      headers: {
+        "x-api-key": process.env.NEXT_PUBLIC_API_SECRET || "" // 🔹 حماية API
+      }
+    });
+
+    if (!res.ok) throw new Error("Failed to fetch services");
+    const data = await res.json();
+    setServices(data);
+  } catch (err: any) {
+    setError(err.message);
+    // Fallback to empty structure
+    setServices({ servicesList: [] });
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     fetchServices();
@@ -88,30 +94,37 @@ export default function ServicesAdminPage() {
     setExpandedServices(newExpanded);
   };
 
-  const saveServices = async () => {
-    if (!services) return;
-    try {
-      const res = await fetch("/api/services", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(services),
-      });
-      if (!res.ok) throw new Error("Failed to save services");
+const saveServices = async () => {
+  if (!services) return;
 
-      toast({
-        title: "Success",
-        description: "Saved successfully!!",
-        className: "bg-green-500 text-white border-none",
-      })
-      fetchServices();
-    } catch (err: any) {
-      toast({
-        title: "Error",
-        description: err?.message || "Something went wrong!",
-        className: "bg-red-500 text-white border-none",
-      })
-    }
-  };
+  try {
+    const res = await fetch("/api/services", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": process.env.NEXT_PUBLIC_API_SECRET || "" // 🔹 حماية API
+      },
+      body: JSON.stringify(services),
+    });
+
+    if (!res.ok) throw new Error("Failed to save services");
+
+    toast({
+      title: "Success",
+      description: "Saved successfully!!",
+      className: "bg-green-500 text-white border-none",
+    });
+
+    await fetchServices();
+  } catch (err: any) {
+    toast({
+      title: "Error",
+      description: err?.message || "Something went wrong!",
+      className: "bg-red-500 text-white border-none",
+    });
+  }
+};
+
 
   if (loading) return <Loading />;
   if (error) return <p className="text-red-500 p-4">Error: {error}</p>;

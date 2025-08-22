@@ -1,11 +1,16 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { put, del } from "@vercel/blob";
-
+import { checkApiKey } from "@/lib/checkApiKey";
+import { notFound } from "next/navigation";
 const BLOB_TOKEN = process.env.BLOB_READ_WRITE_TOKEN || process.env.VERCEL_BLOB_TOKEN!;
 
 // GET all projects
-export async function GET() {
+export async function GET(req: Request) {
+
+  const forbidden = checkApiKey(req);
+  if (forbidden) return notFound(); 
+
   try {
     const db = await connectDB();
     const projets = await db.collection("projets").findOne({}, { projection: { _id: 0 } });
@@ -18,6 +23,8 @@ export async function GET() {
 
 // PUT - Add or Update a project
 export async function PUT(req: Request) {
+    const forbidden = checkApiKey(req);
+  if (forbidden) return notFound(); 
   try {
     const formData = await req.formData();
     const db = await connectDB();

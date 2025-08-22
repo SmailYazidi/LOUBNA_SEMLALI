@@ -14,25 +14,33 @@ export default function AdminPhotoPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
  const { toast } = useToast()
+
  
-  // Fetch existing photo URL
-  useEffect(() => {
-    const fetchPhotoUrl = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch("/api/photo");
-        if (!res.ok) throw new Error("Failed to fetch photo");
-        const data = await res.json();
-        setPhotoUrl(data.url || null);
-      } catch (err) {
-        console.error("Fetch error:", err);
-        setError("Failed to load existing photo");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchPhotoUrl();
-  }, []);
+ // Fetch existing photo URL
+useEffect(() => {
+  const fetchPhotoUrl = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/photo", {
+        headers: {
+          "x-api-key": process.env.NEXT_PUBLIC_API_SECRET || "" // 🔹 أضف المفتاح هنا
+        }
+      });
+
+      if (!res.ok) throw new Error("Failed to fetch photo");
+
+      const data = await res.json();
+      setPhotoUrl(data.url || null);
+    } catch (err) {
+      console.error("Fetch error:", err);
+      setError("Failed to load existing photo");
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchPhotoUrl();
+}, []);
+
 
   const handleFileChange = (file: File | null) => {
     if (file) {
@@ -72,43 +80,47 @@ export default function AdminPhotoPage() {
     return url.split('/').pop() || 'Profile Photo';
   };
 
-  const handleUpload = async () => {
-    if (!photoFile) {
-      setError("Please select an image file to upload");
-      return;
+const handleUpload = async () => {
+  if (!photoFile) {
+    setError("Please select an image file to upload");
+    return;
+  }
+
+  setIsUploading(true);
+  setError(null);
+
+  try {
+    const formData = new FormData();
+    formData.append("photo", photoFile);
+
+    const res = await fetch("/api/photo", {
+      method: "PUT",
+      headers: {
+        "x-api-key": process.env.NEXT_PUBLIC_API_SECRET || "" // 🔹 أضف المفتاح هنا
+      },
+      body: formData,
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.error || "Failed to update photo");
     }
 
-    setIsUploading(true);
+    const data = await res.json();
+    setPhotoUrl(data.url);
+    setPhotoFile(null); // Clear selected file after successful upload
+
+    // Show success message
     setError(null);
 
-    try {
-      const formData = new FormData();
-      formData.append("photo", photoFile);
+  } catch (err: any) {
+    console.error("Upload error:", err);
+    setError(err.message);
+  } finally {
+    setIsUploading(false);
+  }
+};
 
-      const res = await fetch("/api/photo", {
-        method: "PUT",
-        body: formData,
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || "Failed to update photo");
-      }
-
-      const data = await res.json();
-      setPhotoUrl(data.url);
-      setPhotoFile(null); // Clear selected file after successful upload
-      
-      // Show success message
-      setError(null);
-      
-    } catch (err: any) {
-      console.error("Upload error:", err);
-      setError(err.message);
-    } finally {
-      setIsUploading(false);
-    }
-  };
 
   const handlePreview = (url: string) => {
     window.open(url, '_blank');

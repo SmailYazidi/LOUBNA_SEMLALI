@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
-
-export async function GET() {
+import { checkApiKey } from "@/lib/checkApiKey";
+import { notFound } from "next/navigation";
+export async function GET(req: Request) {
+     const forbidden = checkApiKey(req);
+    if (forbidden) return notFound(); 
   try {
     const db = await connectDB();
     const contactCollection = db.collection("contact");
@@ -63,6 +66,8 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
+     const forbidden = checkApiKey(req);
+  if (forbidden) return notFound(); 
   try {
     const db = await connectDB();
     const contactCollection = db.collection("contact");

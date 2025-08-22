@@ -59,87 +59,77 @@ const [username, setUsername] = useState({
     }));
   };
 
-  const fetchData = async () => {
+const fetchData = async () => {
+  setLoading(true);
+  try {
+    // Fetch hero data
+    const heroRes = await fetch("/api/hero", {
+      headers: {
+        "x-api-key": process.env.NEXT_PUBLIC_API_SECRET || ""
+      }
+    });
+    if (!heroRes.ok) throw new Error("Failed to fetch hero data");
+    const heroData = await heroRes.json();
+    setHero(heroData);
+
+  } catch (err: any) {
+    setError(err.message);
+    // Fallback to default structure
+    setHero(defaultHero);
+  } finally {
+    setLoading(false);
+  }
+};
+
+useEffect(() => {
+  const fetchUsername = async () => {
     setLoading(true);
     try {
-      // Fetch hero data
-      const heroRes = await fetch("/api/hero");
-      if (!heroRes.ok) throw new Error("Failed to fetch hero data");
-      const heroData = await heroRes.json();
-      setHero(heroData);
+      const res = await fetch("/api/username", {
+        headers: {
+          "x-api-key": process.env.NEXT_PUBLIC_API_SECRET || ""
+        }
+      });
+      if (!res.ok) throw new Error("Failed to fetch username data");
+      const data = await res.json();
 
-    
-
-    } catch (err: any) {
-      setError(err.message);
-      // Fallback to default structure
-      setHero(defaultHero);
-    } finally {
-      setLoading(false);
-    }
-  };
-useEffect(() => {
-  fetch("/api/username")
-    .then((res) => res.json())
-    .then((data) => {
       setUsername({
         fr: data.fr || "",
         en: data.en || "",
         ar: data.ar || ""
       });
-   
-      setLoading(false);
-    })
-    .catch((err) => {
+
+    } catch (err) {
       console.error("Error fetching username data:", err);
+    } finally {
       setLoading(false);
-    });
-}, []);
-  const saveHero = async () => {
-    try {
-      const res = await fetch("/api/hero", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(hero),
-      });
-      
-      if (!res.ok) throw new Error("Failed to save hero content");
-      toast({
-        title: "Success",
-        description: "Hero content saved successfully!",
-        className: "bg-green-500 text-white border-none",
-      });
-      fetchData();
-    } catch (err: any) {
-      toast({
-        title: "Error",
-        description: err.message || "Something went wrong!",
-        className: "bg-red-500 text-white border-none",
-      });
     }
   };
 
-const saveUsername = async () => {
+  fetchUsername();
+}, []);
+
+const saveHero = async () => {
+  saveUsername(); // حفظ اسم المستخدم أولاً
   try {
-    const res = await fetch("/api/username", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ 
-        name: {
-          fr: username.fr.trim(),
-          en: username.en.trim(),
-          ar: username.ar.trim()
-        }
-      }),
+    const res = await fetch("/api/hero", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": process.env.NEXT_PUBLIC_API_SECRET || ""
+      },
+      body: JSON.stringify(hero),
     });
-    
-    if (!res.ok) throw new Error("Failed to save username");
+
+    if (!res.ok) throw new Error("Failed to save hero content");
+
     toast({
       title: "Success",
-      description: "Username saved successfully!",
+      description: "Hero content saved successfully!",
       className: "bg-green-500 text-white border-none",
     });
-    fetchData();
+
+    fetchData(); // إعادة جلب البيانات بعد الحفظ
   } catch (err: any) {
     toast({
       title: "Error",
@@ -148,6 +138,43 @@ const saveUsername = async () => {
     });
   }
 };
+
+
+const saveUsername = async () => {
+  try {
+    const res = await fetch("/api/username", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": process.env.NEXT_PUBLIC_API_SECRET || ""
+      },
+      body: JSON.stringify({ 
+        name: {
+          fr: username.fr.trim(),
+          en: username.en.trim(),
+          ar: username.ar.trim()
+        }
+      }),
+    });
+
+    if (!res.ok) throw new Error("Failed to save username");
+
+    toast({
+      title: "Success",
+      description: "Username saved successfully!",
+      className: "bg-green-500 text-white border-none",
+    });
+
+    fetchData(); // إعادة جلب البيانات بعد الحفظ
+  } catch (err: any) {
+    toast({
+      title: "Error",
+      description: err.message || "Something went wrong!",
+      className: "bg-red-500 text-white border-none",
+    });
+  }
+};
+
 
 
 
@@ -585,7 +612,7 @@ const saveUsername = async () => {
         {/* Save Button */}
         <div className="flex justify-center pt-4">
           <button
-            onClick={saveHero}
+            onClick={saveHero }
             className="flex items-center gap-2 bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition"
           >
             <LucideIcons.Save size={18} />

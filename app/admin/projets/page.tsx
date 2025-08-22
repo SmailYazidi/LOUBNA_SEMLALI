@@ -55,26 +55,32 @@ export default function ProjetsPage() {
     return <IconComponent size={size} />;
   };
 
-  const fetchProjects = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/projets");
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
+const fetchProjects = async () => {
+  setLoading(true);
+  try {
+    const res = await fetch("/api/projets", {
+      headers: {
+        "x-api-key": process.env.NEXT_PUBLIC_API_SECRET || "" // 🔹 أضف المفتاح هنا
       }
-      const data = await res.json();
-      setProjects(data.projects || []);
-    } catch (e) {
-      console.error("Fetch error:", e);
-      toast({
-        title: "Error",
-        description: "Failed to load projects!",
-        className: "bg-red-500 text-white border-none",
-      })
-    } finally {
-      setLoading(false);
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
     }
-  };
+
+    const data = await res.json();
+    setProjects(data.projects || []);
+  } catch (e) {
+    console.error("Fetch error:", e);
+    toast({
+      title: "Error",
+      description: "Failed to load projects!",
+      className: "bg-red-500 text-white border-none",
+    });
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     fetchProjects();
@@ -129,80 +135,83 @@ export default function ProjetsPage() {
     setShowAddForm(false);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsLoading(true);
 
-    if (!titleFr || !titleEn || !titleAr) {
+  if (!titleFr || !titleEn || !titleAr) {
+    toast({
+      title: "Error",
+      description: "Please provide titles in all languages",
+      className: "bg-red-500 text-white border-none",
+    });
+    setIsLoading(false);
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("titleFr", titleFr);
+  formData.append("titleEn", titleEn);
+  formData.append("titleAr", titleAr);
+  formData.append("descFr", descFr);
+  formData.append("descEn", descEn);
+  formData.append("descAr", descAr);
+  formData.append("techStack", JSON.stringify(techStack));
+
+  if (button) {
+    formData.append("buttonIcon", button.icon || "external-link");
+    formData.append("buttonLabelFr", button.labelFr);
+    formData.append("buttonLabelEn", button.labelEn);
+    formData.append("buttonLabelAr", button.labelAr);
+    formData.append("buttonLink", button.link);
+  } else {
+    formData.append("buttonIcon", "external-link");
+    formData.append("buttonLabelFr", "");
+    formData.append("buttonLabelEn", "");
+    formData.append("buttonLabelAr", "");
+    formData.append("buttonLink", "");
+  }
+
+  if (file) formData.append("image", file);
+  if (editingId) formData.append("projectId", editingId);
+
+  try {
+    const url = editingId ? `/api/projets/${editingId}` : "/api/projets";
+    const method = "PUT";
+
+    const res = await fetch(url, {
+      method,
+      body: formData,
+      headers: {
+        "x-api-key": process.env.NEXT_PUBLIC_API_SECRET || "" // 🔹 أضف المفتاح هنا
+      }
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      console.error("Save failed:", errorData);
       toast({
         title: "Error",
-        description: "Please provide titles in all languages",
+        description: errorData?.error || "Something went wrong!",
         className: "bg-red-500 text-white border-none",
       });
       setIsLoading(false);
       return;
     }
 
-    const formData = new FormData();
-    formData.append("titleFr", titleFr);
-    formData.append("titleEn", titleEn);
-    formData.append("titleAr", titleAr);
-    formData.append("descFr", descFr);
-    formData.append("descEn", descEn);
-    formData.append("descAr", descAr);
-    formData.append("techStack", JSON.stringify(techStack));
-    
-    if (button) {
-      formData.append("buttonIcon", button.icon || "external-link");
-      formData.append("buttonLabelFr", button.labelFr);
-      formData.append("buttonLabelEn", button.labelEn);
-      formData.append("buttonLabelAr", button.labelAr);
-      formData.append("buttonLink", button.link);
-    } else {
-      formData.append("buttonIcon", "external-link");
-      formData.append("buttonLabelFr", "");
-      formData.append("buttonLabelEn", "");
-      formData.append("buttonLabelAr", "");
-      formData.append("buttonLink", "");
-    }
-
-    if (file) formData.append("image", file);
-    if (editingId) formData.append("projectId", editingId);
-
-    try {
-      const url = editingId ? `/api/projets/${editingId}` : "/api/projets";
-      const method = "PUT";
-
-      const res = await fetch(url, {
-        method,
-        body: formData,
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        console.error("Save failed:", errorData);
-        toast({
-          title: "Error",
-          description: errorData?.error || "Something went wrong!",
-          className: "bg-red-500 text-white border-none",
-        });
-        setIsLoading(false);
-        return;
-      }
-
-      await fetchProjects();
-      resetForm();
-    } catch (error) {
-      console.error("Network error:", error);
-      toast({
-        title: "Error",
-        description: "Network error - check console!",
-        className: "bg-red-500 text-white border-none",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    await fetchProjects();
+    resetForm();
+  } catch (error) {
+    console.error("Network error:", error);
+    toast({
+      title: "Error",
+      description: "Network error - check console!",
+      className: "bg-red-500 text-white border-none",
+    });
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const handleEdit = (p: any) => {
     setIsLoading(false);
@@ -231,29 +240,36 @@ export default function ProjetsPage() {
     setShowAddForm(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Delete this project?")) return;
-    try {
-      const res = await fetch(`/api/projets/${id}`, { method: "DELETE" });
-      if (res.ok) {
-        await fetchProjects();
-      } else {
-        const errorData = await res.json();
-        toast({
-          title: "Error",
-          description: errorData?.error || "Something went wrong!",
-          className: "bg-red-500 text-white border-none",
-        })
+const handleDelete = async (id: string) => {
+  if (!confirm("Delete this project?")) return;
+
+  try {
+    const res = await fetch(`/api/projets/${id}`, {
+      method: "DELETE",
+      headers: {
+        "x-api-key": process.env.NEXT_PUBLIC_API_SECRET || "" // 🔹 أضف المفتاح هنا
       }
-    } catch (error) {
-      console.error("Delete error:", error);
+    });
+
+    if (res.ok) {
+      await fetchProjects();
+    } else {
+      const errorData = await res.json();
       toast({
         title: "Error",
-        description:"Delete failed - check console!",
+        description: errorData?.error || "Something went wrong!",
         className: "bg-red-500 text-white border-none",
-      })
+      });
     }
-  };
+  } catch (error) {
+    console.error("Delete error:", error);
+    toast({
+      title: "Error",
+      description: "Delete failed - check console!",
+      className: "bg-red-500 text-white border-none",
+    });
+  }
+};
 
   const toggleProject = (projectId: string) => {
     setExpandedProject(expandedProject === projectId ? null : projectId);

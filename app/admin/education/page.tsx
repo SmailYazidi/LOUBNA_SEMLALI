@@ -100,21 +100,28 @@ export default function EducationAdminPage() {
   const [expandedExperience, setExpandedExperience] = useState<Set<number>>(new Set());
   const { toast } = useToast()
 
-  const fetchEducation = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/education");
-      if (!res.ok) throw new Error("Failed to fetch education data");
-      const json = await res.json();
-      setData(normalizeEducationData(json));
-    } catch (err: any) {
-      setError(err.message);
-      // Fallback to default structure
-      setData(defaultData);
-    } finally {
-      setLoading(false);
-    }
-  };
+const fetchEducation = async () => {
+  setLoading(true);
+  try {
+    const res = await fetch("/api/education", {
+      headers: {
+        "x-api-key": process.env.NEXT_PUBLIC_API_SECRET || ""
+      }
+    });
+
+    if (!res.ok) throw new Error("Failed to fetch education data");
+
+    const json = await res.json();
+    setData(normalizeEducationData(json));
+  } catch (err: any) {
+    setError(err.message);
+    // Fallback to default structure
+    setData(defaultData);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => { fetchEducation(); }, []);
 
@@ -214,49 +221,46 @@ export default function EducationAdminPage() {
       setExpandedExperience(newExpanded);
     }
   };
+const saveData = async () => {
+  try {
 
-  const saveData = async () => {
-    try {
 
+    const res = await fetch("/api/education", {
+      method: "PUT",
+      headers: { 
+        "Content-Type": "application/json",
+        "x-api-key": process.env.NEXT_PUBLIC_API_SECRET || "" // 🔹 أضف المفتاح هنا
+      },
+      body: JSON.stringify({
+        journeyTitle: data.journeyTitle,
+        education: data.education,
+        experience: data.experience
+      }),
+    });
 
-      console.log(    data.journeyTitle,
-           data.education,
-         data.experience)
-      const res = await fetch("/api/education", {
-        method: "PUT",
-        headers: { 
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          journeyTitle: data.journeyTitle,
-          education: data.education,
-          experience: data.experience
-        }),
-      });
+    const responseData = await res.json();
 
-      const responseData = await res.json();
-      
-      if (!res.ok) {
-        throw new Error(responseData.error || "Failed to save education data");
-      }
-
-      toast({
-        title: "Success",
-        description: "Saved successfully!!",
-        className: "bg-green-500 text-white border-none",
-      });
-      
-      // Refresh data after successful save
-      await fetchEducation();
-    } catch (err: any) {
-      console.error("Save error:", err);
-      toast({
-        title: "Error",
-        description: err?.message || "Something went wrong!",
-        className: "bg-red-500 text-white border-none",
-      });
+    if (!res.ok) {
+      throw new Error(responseData.error || "Failed to save education data");
     }
-  };
+
+    toast({
+      title: "Success",
+      description: "Saved successfully!!",
+      className: "bg-green-500 text-white border-none",
+    });
+
+    // Refresh data after successful save
+    await fetchEducation();
+  } catch (err: any) {
+    console.error("Save error:", err);
+    toast({
+      title: "Error",
+      description: err?.message || "Something went wrong!",
+      className: "bg-red-500 text-white border-none",
+    });
+  }
+};
 
   const getItemDisplayTitle = (item: EducationItem | ExperienceItem, index: number, section: string) => {
     const title = item.title.en || item.title.fr || item.title.ar;

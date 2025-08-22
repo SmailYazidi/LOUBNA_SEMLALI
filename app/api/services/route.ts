@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
-
-export async function GET() {
+import { checkApiKey } from "@/lib/checkApiKey";
+import { notFound } from "next/navigation";
+export async function GET(req: Request) {
+    const forbidden = checkApiKey(req);
+    if (forbidden) return notFound(); 
   try {
     const db = await connectDB();
     const services = await db.collection("services").findOne({});
@@ -35,9 +38,12 @@ export async function GET() {
   }
 }
 
-export async function PUT(request: Request) {
+export async function PUT(req: Request) {
+
+   const forbidden = checkApiKey(req);
+  if (forbidden) return notFound(); 
   try {
-    const data = await request.json();
+    const data = await req.json();
     
     // Validate the data structure
     if (!data || typeof data !== 'object' || !Array.isArray(data.servicesList)) {

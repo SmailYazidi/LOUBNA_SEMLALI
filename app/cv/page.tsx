@@ -1,4 +1,5 @@
 "use client"
+
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -13,47 +14,42 @@ export default function CvPage() {
   const [loading, setLoading] = useState(true)
   const [mounted, setMounted] = useState(false)
 
-// Initialize with safe defaults
-const [isDarkMode, setIsDarkMode] = useState(true)
-const [language, setLanguage] = useState<"fr" | "en">("fr") // only fr | en
+  const [isDarkMode, setIsDarkMode] = useState(true)
+  const [language, setLanguage] = useState<"fr" | "en">("fr")
 
-// Hydrate client-side state after mount
-useEffect(() => {
-  setMounted(true)
+  // Hydrate client-side state after mount
+  useEffect(() => {
+    setMounted(true)
 
-  const savedDarkMode = sessionStorage.getItem('darkMode')
-  const savedLanguage = sessionStorage.getItem('language')
+    const savedDarkMode = sessionStorage.getItem('darkMode')
+    const savedLanguage = sessionStorage.getItem('language')
 
-  setIsDarkMode(savedDarkMode ? JSON.parse(savedDarkMode) : true)
-
-  // Replace "ar" with "fr"; allow only "fr" or "en"
-  if (savedLanguage === "en") {
-    setLanguage("en")
-  } else {
-    setLanguage("fr") // "ar" or anything else becomes "fr"
-  }
-}, [])
-
+    setIsDarkMode(savedDarkMode ? JSON.parse(savedDarkMode) : true)
+    setLanguage(savedLanguage === "en" ? "en" : "fr")
+  }, [])
 
   // Persist preferences
   useEffect(() => {
     if (!mounted) return
-    sessionStorage.setItem('DarkMode', JSON.stringify(isDarkMode))
+    sessionStorage.setItem('darkMode', JSON.stringify(isDarkMode))
     document.documentElement.classList.toggle("dark", isDarkMode)
   }, [isDarkMode, mounted])
 
   useEffect(() => {
     if (!mounted) return
-    sessionStorage.setItem('Language', language)
+    sessionStorage.setItem('language', language)
   }, [language, mounted])
 
   // Fetch CV URLs
   useEffect(() => {
     const fetchCvUrls = async () => {
       try {
-        const res = await fetch('/api/cv')
+        const res = await fetch('/api/cv', {
+          headers: { "x-api-key": process.env.NEXT_PUBLIC_API_SECRET || "" }
+        })
         if (!res.ok) throw new Error("Failed to fetch CV URLs")
-        setCvUrls(await res.json())
+        const data = await res.json()
+        setCvUrls(data)
       } catch (err) {
         console.error("Failed to fetch CV URLs:", err)
       } finally {
@@ -63,15 +59,10 @@ useEffect(() => {
     fetchCvUrls()
   }, [])
 
-  const toggleTheme = () => {
-    const newMode = !isDarkMode;
-    setIsDarkMode(newMode);
-    sessionStorage.setItem('darkMode', JSON.stringify(newMode));
-  };
+  const toggleTheme = () => setIsDarkMode(!isDarkMode)
 
   const handleDownloadPdf = async () => {
     if (!cvUrls[language]) return
-    
     setIsDownloading(true)
     try {
       const link = document.createElement("a")
@@ -88,25 +79,35 @@ useEffect(() => {
     }
   }
 
-  const getGoogleViewerUrl = (pdfUrl: string) => 
+  const getGoogleViewerUrl = (pdfUrl: string) =>
     `https://docs.google.com/gview?url=${encodeURIComponent(pdfUrl)}&embedded=true`
 
+  // Theme classes
   const themeClasses = {
-    bg: isDarkMode ? "bg-[#0a0a0a]" : "bg-white",
-    text: isDarkMode ? "text-white" : "text-gray-900",
-    cardBg: isDarkMode ? "bg-[#111111]" : "bg-white",
+    background: isDarkMode ? 'bg-black' : 'bg-[#f5f5dc]',
+    surface: isDarkMode ? 'bg-black/40' : 'bg-white/40',
+    surfaceSolid: isDarkMode ? 'bg-black' : 'bg-white',
+    text: isDarkMode ? 'text-white' : 'text-gray-900',
+    textMuted: isDarkMode ? 'text-gray-400' : 'text-gray-600',
+    accent: isDarkMode ? 'text-[#00BFFF]' : 'text-[#0A2647]',
+    accentBg: isDarkMode ? 'bg-[#3A6EA5]' : 'bg-[#0A2647]',
+    accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
+    glassDark: isDarkMode
+      ? 'bg-black/40 backdrop-blur-lg border border-white/20 shadow-xl'
+      : 'bg-white/40 backdrop-blur-lg border border-black/20 shadow-xl',
+    shadow: 'shadow-xl',
   }
 
   if (loading) {
     return (
-      <div className={`flex items-center justify-center min-h-screen ${themeClasses.bg}`}>
+      <div className={`flex items-center justify-center min-h-screen ${themeClasses.background}`}>
         <Loading />
       </div>
     )
   }
 
   return (
-    <div className={`flex flex-col items-center p-4 min-h-screen ${themeClasses.bg} ${themeClasses.text}`}>
+    <div className={`flex flex-col items-center p-4 min-h-screen ${themeClasses.background} ${themeClasses.text}`}>
       {/* Top controls */}
       <div className="flex flex-row flex-wrap items-center justify-between w-full max-w-4xl gap-4 mb-6 no-print">
         <Button
@@ -131,11 +132,7 @@ useEffect(() => {
         </Button>
 
         <div className="flex items-center gap-4">
-          <Select 
-            value={language} 
-            onValueChange={setLanguage}
-            disabled={!mounted}
-          >
+          <Select value={language} onValueChange={setLanguage} disabled={!mounted}>
             <SelectTrigger className="min-w-[135px] bg-gray-100 dark:bg-gray-800">
               <SelectValue placeholder="Select Language" />
             </SelectTrigger>
@@ -166,7 +163,7 @@ useEffect(() => {
       </div>
 
       {/* PDF Viewer */}
-      <div className={`${themeClasses.cardBg} shadow-lg rounded-lg w-full max-w-4xl h-[70vh] md:h-[1120px] md:max-w-[794px]`}>
+      <div className={`${themeClasses.surface} shadow-lg rounded-lg w-full max-w-4xl h-[70vh] md:h-[1120px] md:max-w-[794px]`}>
         {cvUrls[language] ? (
           <iframe
             src={getGoogleViewerUrl(cvUrls[language]!)}

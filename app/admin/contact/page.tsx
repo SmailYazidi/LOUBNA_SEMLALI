@@ -101,25 +101,32 @@ export default function ContactAdminPage() {
     return <IconComponent size={size} />;
   };
 
-  useEffect(() => {
-    async function fetchContact() {
-      setLoading(true);
-      try {
-        const res = await fetch("/api/contact");
-        if (!res.ok) throw new Error("Failed to fetch contact data");
-        
-        const data = await res.json();
-        setContact(data || defaultContactData);
-      } catch (err) {
-        console.error("Failed to fetch contact:", err);
-        setError("Failed to load contact data");
-        setContact(defaultContactData);
-      } finally {
-        setLoading(false);
-      }
+ useEffect(() => {
+  async function fetchContact() {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/contact", {
+        headers: {
+          "x-api-key": process.env.NEXT_PUBLIC_API_SECRET || ""
+        }
+      });
+
+      if (!res.ok) throw new Error("Failed to fetch contact data");
+
+      const data = await res.json();
+      setContact(data || defaultContactData);
+    } catch (err) {
+      console.error("Failed to fetch contact:", err);
+      setError("Failed to load contact data");
+      setContact(defaultContactData);
+    } finally {
+      setLoading(false);
     }
-    fetchContact();
-  }, []);
+  }
+
+  fetchContact();
+}, []);
+
 
   const handleInputChange = (
     section: string,
@@ -195,31 +202,35 @@ export default function ContactAdminPage() {
     }));
   };
 
-  const handleSave = async () => {
-    try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(contact),
-      });
+ const handleSave = async () => {
+  try {
+    const response = await fetch("/api/contact", {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json",
+        "x-api-key": process.env.NEXT_PUBLIC_API_SECRET || ""  // 🔹 أضف المفتاح هنا
+      },
+      body: JSON.stringify(contact),
+    });
 
-      if (!response.ok) {
-        throw new Error("Failed to save");
-      }
-
-      toast({
-        title: "Success",
-        description: "Saved successfully!!",
-        className: "bg-green-500 text-white border-none",
-      })
-    } catch (err) {
-      toast({
-        title: "Error",
-        description: err?.message || "Something went wrong!",
-        className: "bg-red-500 text-white border-none",
-      })
+    if (!response.ok) {
+      throw new Error("Failed to save");
     }
-  };
+
+    toast({
+      title: "Success",
+      description: "Saved successfully!!",
+      className: "bg-green-500 text-white border-none",
+    });
+  } catch (err: any) {
+    toast({
+      title: "Error",
+      description: err?.message || "Something went wrong!",
+      className: "bg-red-500 text-white border-none",
+    });
+  }
+};
+
 
   if (loading) return <Loading />;
   if (error) return (

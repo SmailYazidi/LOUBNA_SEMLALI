@@ -116,73 +116,77 @@ export default function AboutAdminPage() {
     const IconComponent = LucideIcons[iconName as keyof typeof LucideIcons];
     return <IconComponent size={size} />;
   };
-
-  useEffect(() => {
-    async function fetchAbout() {
-      setLoading(true);
-      try {
-        const res = await fetch("/api/about_me");
-        if (!res.ok) throw new Error("Failed to fetch about data");
-        
-        const data = await res.json();
-        if (data) {
-          setAbout({
-            ...defaultAboutData,
-            ...data,
-            aboutTitle: {
-              fr: data.aboutTitle?.fr || "",
-              en: data.aboutTitle?.en || "",
-              ar: data.aboutTitle?.ar || "",
-            },
-            aboutDescription: {
-              fr: data.aboutDescription?.fr || "",
-              en: data.aboutDescription?.en || "",
-              ar: data.aboutDescription?.ar || "",
-            },
-            languages: {
-              title: {
-                fr: data.languages?.title?.fr || "Langues",
-                en: data.languages?.title?.en || "Languages",
-                ar: data.languages?.title?.ar || "اللغات",
-              },
-              levels: defaultLevels,
-              list: data.languages?.list || [],
-            },
-            personalInfo: data.personalInfo?.map((info: any) => ({
-              ...info,
-              label: {
-                fr: info.label?.fr || "",
-                en: info.label?.en || "",
-                ar: info.label?.ar || "",
-              },
-              value: {
-                fr: info.value?.fr || "",
-                en: info.value?.en || "",
-                ar: info.value?.ar || "",
-              }
-            })) || [],
-            interests: data.interests?.map((interest: any) => ({
-              ...interest,
-              name: {
-                fr: interest.name?.fr || "",
-                en: interest.name?.en || "",
-                ar: interest.name?.ar || "",
-              }
-            })) || [],
-          });
-        } else {
-          setAbout(defaultAboutData);
+useEffect(() => {
+  async function fetchAbout() {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/about_me", {
+        headers: {
+          "x-api-key": process.env.NEXT_PUBLIC_API_SECRET || ""
         }
-      } catch (err) {
-        console.error("Failed to fetch about:", err);
-        setError("Failed to load about data");
+      });
+
+      if (!res.ok) throw new Error("Failed to fetch about data");
+      
+      const data = await res.json();
+      if (data) {
+        setAbout({
+          ...defaultAboutData,
+          ...data,
+          aboutTitle: {
+            fr: data.aboutTitle?.fr || "",
+            en: data.aboutTitle?.en || "",
+            ar: data.aboutTitle?.ar || "",
+          },
+          aboutDescription: {
+            fr: data.aboutDescription?.fr || "",
+            en: data.aboutDescription?.en || "",
+            ar: data.aboutDescription?.ar || "",
+          },
+          languages: {
+            title: {
+              fr: data.languages?.title?.fr || "Langues",
+              en: data.languages?.title?.en || "Languages",
+              ar: data.languages?.title?.ar || "اللغات",
+            },
+            levels: defaultLevels,
+            list: data.languages?.list || [],
+          },
+          personalInfo: data.personalInfo?.map((info: any) => ({
+            ...info,
+            label: {
+              fr: info.label?.fr || "",
+              en: info.label?.en || "",
+              ar: info.label?.ar || "",
+            },
+            value: {
+              fr: info.value?.fr || "",
+              en: info.value?.en || "",
+              ar: info.value?.ar || "",
+            }
+          })) || [],
+          interests: data.interests?.map((interest: any) => ({
+            ...interest,
+            name: {
+              fr: interest.name?.fr || "",
+              en: interest.name?.en || "",
+              ar: interest.name?.ar || "",
+            }
+          })) || [],
+        });
+      } else {
         setAbout(defaultAboutData);
-      } finally {
-        setLoading(false);
       }
+    } catch (err) {
+      console.error("Failed to fetch about:", err);
+      setError("Failed to load about data");
+      setAbout(defaultAboutData);
+    } finally {
+      setLoading(false);
     }
-    fetchAbout();
-  }, []);
+  }
+  fetchAbout();
+}, []);
 
   const handleInputChange = (
     section: string,
@@ -310,30 +314,34 @@ export default function AboutAdminPage() {
     });
   };
 
-  const handleSave = async () => {
-    try {
-      const response = await fetch("/api/about_me", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(about),
-      });
+const handleSave = async () => {
+  try {
+    const response = await fetch("/api/about_me", {
+      method: "PUT",
+      headers: { 
+        "Content-Type": "application/json",
+        "x-api-key": process.env.NEXT_PUBLIC_API_SECRET || ""  // 🔹 أضف المفتاح هنا
+      },
+      body: JSON.stringify(about),
+    });
 
-      if (!response.ok) {
-        throw new Error("Failed to save");
-      }
-      toast({
-        title: "Success",
-        description: "Saved successfully!",
-        className: "bg-green-500 text-white border-none",
-      });
-    } catch (err: any) {
-      toast({
-        title: "Error",
-        description: err?.message || "Something went wrong!",
-        className: "bg-red-500 text-white border-none",
-      });
+    if (!response.ok) {
+      throw new Error("Failed to save");
     }
-  };
+
+    toast({
+      title: "Success",
+      description: "Saved successfully!",
+      className: "bg-green-500 text-white border-none",
+    });
+  } catch (err: any) {
+    toast({
+      title: "Error",
+      description: err?.message || "Something went wrong!",
+      className: "bg-red-500 text-white border-none",
+    });
+  }
+};
 
   if (loading) return <Loading />;
   if (error) return <div className="p-6 text-red-500">{error}</div>;

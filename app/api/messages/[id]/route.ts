@@ -1,9 +1,13 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
-
+import { checkApiKey } from "@/lib/checkApiKey";
+import { notFound } from "next/navigation";
 // DELETE: delete a message by ID
 export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+   const forbidden = checkApiKey(req);
+  if (forbidden) return notFound(); 
+
   try {
     const { id } = params;
 

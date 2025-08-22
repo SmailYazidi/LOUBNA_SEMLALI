@@ -1,13 +1,20 @@
 // /app/api/hero/route.ts
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
+import { checkApiKey } from "@/lib/checkApiKey";
+import { notFound } from "next/navigation";
+export async function POST(req: Request) {
 
-export async function POST(request: Request) {
+   const forbidden = checkApiKey(req);
+  if (forbidden) return notFound(); 
+
+
+
   try {
     const db = await connectDB();
     const heroCollection = db.collection("hero");
 
-    const newHero = await request.json();
+    const newHero = await req.json();
 
     // Insert the new hero document
     const result = await heroCollection.insertOne(newHero);
@@ -19,7 +26,12 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(req: Request) {
+
+   const forbidden = checkApiKey(req);
+  if (forbidden) return notFound(); 
+
+
   try {
     const db = await connectDB();
     const heroCollection = db.collection("hero");
@@ -45,12 +57,12 @@ export async function GET() {
   }
 }
 
-export async function PUT(request: Request) {
+export async function PUT(req: Request) {
   try {
     const db = await connectDB();
     const heroCollection = db.collection("hero");
 
-    const updatedHero = await request.json();
+    const updatedHero = await req.json();
 
     // Always use upsert to create if doesn't exist
     await heroCollection.updateOne(
@@ -66,7 +78,10 @@ export async function PUT(request: Request) {
   }
 }
 
-export async function DELETE() {
+export async function DELETE(req: Request) {
+
+   const forbidden = checkApiKey(req);
+  if (forbidden) return notFound(); 
   try {
     const db = await connectDB();
     const heroCollection = db.collection("hero");

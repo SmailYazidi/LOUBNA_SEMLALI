@@ -19,19 +19,27 @@ export default function SettingsPage() {
   const router = useRouter();
  const { toast } = useToast()
  
-  useEffect(() => {
-    const checkPassword = async () => {
-      try {
-        const res = await fetch("/api/settings");
-        const data = await res.json();
-        setHasPassword(data.hasPassword);
-      } catch (err) {
-        console.error("Failed to check password status:", err);
-        setError("Failed to load settings");
-      }
-    };
-    checkPassword();
-  }, []);
+ useEffect(() => {
+  const checkPassword = async () => {
+    try {
+      const res = await fetch("/api/settings", {
+        headers: {
+          "x-api-key": process.env.NEXT_PUBLIC_API_SECRET || ""
+        }
+      });
+
+      if (!res.ok) throw new Error("Failed to fetch settings");
+
+      const data = await res.json();
+      setHasPassword(data.hasPassword);
+    } catch (err) {
+      console.error("Failed to check password status:", err);
+      setError("Failed to load settings");
+    }
+  };
+
+  checkPassword();
+}, []);
 
   const validatePassword = (password: string) => {
     const minLength = password.length >= 8;
@@ -52,52 +60,54 @@ export default function SettingsPage() {
 
   const passwordValidation = validatePassword(newPassword);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setSuccess("");
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setError("");
+  setSuccess("");
 
-    if (newPassword !== confirmPassword) {
-      setError("New passwords don't match");
-      return;
+  if (newPassword !== confirmPassword) {
+    setError("New passwords don't match");
+    return;
+  }
+
+  if (!passwordValidation.isValid) {
+    setError("Password doesn't meet the security requirements");
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    const response = await fetch("/api/settings", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": process.env.NEXT_PUBLIC_API_SECRET || ""
+      },
+      body: JSON.stringify({
+        currentPassword: hasPassword ? currentPassword : undefined,
+        newPassword,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to update password");
     }
 
-    if (!passwordValidation.isValid) {
-      setError("Password doesn't meet the security requirements");
-      return;
-    }
+    setSuccess("Password updated successfully");
+    setCurrentPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
+    setHasPassword(true);
+  } catch (err: any) {
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
-    setLoading(true);
-
-    try {
-      const response = await fetch("/api/settings", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          currentPassword: hasPassword ? currentPassword : undefined,
-          newPassword,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to update password");
-      }
-
-      setSuccess("Password updated successfully");
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
-      setHasPassword(true);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (hasPassword === null) {
     return <Loading />;
