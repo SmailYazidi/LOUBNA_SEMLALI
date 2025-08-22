@@ -210,25 +210,24 @@ shadow: 'shadow-xl',
   </div>
       </div>
 
-      {/* PDF Viewer */}
-   <section  className={`py-20 ${themeClasses.background}`}>
-      
-             <div className="space-y-12">
-                              <div className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
-`}>
-             {cvUrls[language] ? (
-          <iframe
-            src={getGoogleViewerUrl(cvUrls[language]!)}
-            className="w-full h-full border-0"
-            title="CV PDF"
-            allow="fullscreen"
-          />
-        ) : (
- <div className="space-y-12">                 <div className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
-`}> {language === "fr" ? "CV non disponible" : "CV not available"}
-          </div> </div>
-        )}
-      </div>  </div>   </section>
+ {/* PDF Viewer */}
+<section className={`py-20 ${themeClasses.background} flex justify-center md:items-center min-h-[70vh] md:min-h-screen`}>
+  <div className={`space-y-12 ${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105 max-w-4xl w-full h-[70vh] md:h-[1120px] md:max-w-[794px] flex justify-center`}>
+    {cvUrls[language] ? (
+      <iframe
+        src={getGoogleViewerUrl(cvUrls[language]!)}
+        className="w-full h-full border-0"
+        title="CV PDF"
+        allow="fullscreen"
+      />
+    ) : (
+      <div className="flex items-center justify-center w-full h-full text-center">
+        {language === "fr" ? "CV non disponible" : "CV not available"}
+      </div>
+    )}
+  </div>
+</section>
+
     </div>
   )
 }
