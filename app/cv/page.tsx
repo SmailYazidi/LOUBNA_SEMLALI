@@ -130,7 +130,7 @@ shadow: 'shadow-xl',
  <div
   className={`
     min-h-screen
-    flex flex-col justify-center items-center
+    flex flex-col sm:justify-center items-center
     transition-all duration-500
     p-4
     ${themeClasses.background} ${themeClasses.text}
@@ -242,7 +242,7 @@ shadow: 'shadow-xl',
       ${themeClasses.background} 
       ${themeClasses.glassDark} 
       ${themeClasses.shadow} 
-      transition-all duration-300 sm:hover:scale-105
+      transition-all duration-300 
       rounded-2xl 
       w-full max-w-4xl md:max-w-[794px]
       h-[70vh] md:h-[1120px]
