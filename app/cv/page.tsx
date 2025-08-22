@@ -130,6 +130,7 @@ shadow: 'shadow-xl',
      <div className={`min-h-screen transition-all duration-500 p-4 ${themeClasses.background} ${themeClasses.text} `} >
        {/* Top controls */}
       <div className="flex flex-row flex-wrap items-center justify-between w-full max-w-4xl gap-4 mb-6 no-print">
+       <div>
         <Button
           variant="ghost"
           size="sm"
@@ -141,14 +142,9 @@ shadow: 'shadow-xl',
             {mounted && language === "fr" ? "Retour" : "Back"}
           </span>
         </Button>
+        </div> 
 
-        <Button
-    variant="outline"
-    onClick={toggleTheme}
-    className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} rounded-xl sm:rounded-2xl px-2 py-1 sm:px-3 sm:py-2`}
-  >
-    {isDarkMode ? <Sun className="h-4 w-4 sm:h-5 sm:w-5" /> : <Moon className="h-4 w-4 sm:h-5 sm:w-5" />}
-  </Button>
+  
 
         <div className="flex items-center gap-4">
           {/* Language Selector */}
@@ -184,7 +180,9 @@ shadow: 'shadow-xl',
     )}
   </div>
 
-          <Button
+      
+        </div>  
+        <div>    <Button
             onClick={handleDownloadPdf}
           className={`${themeClasses.accentBg} hover:bg-[#0A2647]/90 text-white rounded-2xl px-8 py-3 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105 text-lg`}
       disabled={isDownloading || !cvUrls[language]}
@@ -200,8 +198,16 @@ shadow: 'shadow-xl',
                 {language === "fr" ? "Télécharger" : "Download"}
               </>
             )}
-          </Button>
-        </div>
+          </Button></div>
+        <div>
+            <Button
+    variant="outline"
+    onClick={toggleTheme}
+    className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} rounded-xl sm:rounded-2xl px-2 py-1 sm:px-3 sm:py-2`}
+  >
+    {isDarkMode ? <Sun className="h-4 w-4 sm:h-5 sm:w-5" /> : <Moon className="h-4 w-4 sm:h-5 sm:w-5" />}
+  </Button>
+  </div>
       </div>
 
       {/* PDF Viewer */}
