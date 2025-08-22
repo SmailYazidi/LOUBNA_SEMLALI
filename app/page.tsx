@@ -184,7 +184,7 @@ const [searchResults, setSearchResults] = useState<any[]>([]);
 
     if (count >= 8) {
       setIsLimitReached(true);
-      alert("You can only send 5 messages per day.");
+      alert("You can only send 8 messages per day. hhhhhhhhhhhhhhhhhhhh");
       return;
     }
 
@@ -216,7 +216,7 @@ const [searchResults, setSearchResults] = useState<any[]>([]);
       }
     } catch (err) {
       console.error(err);
-      alert("An error occurred.");
+   
     } finally {
       setIsSendingMessage(false);
     }
@@ -279,7 +279,7 @@ const [searchResults, setSearchResults] = useState<any[]>([]);
 useEffect(() => {
   if (!searchTerm) {
     setSearchResults([]);
-    console.log("Search term empty, cleared results.");
+
     return;
   }
 
