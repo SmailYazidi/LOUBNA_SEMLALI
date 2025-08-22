@@ -737,34 +737,40 @@ shadow: 'shadow-xl',
 
           </div>
 
-          {/* Mobile Menu */}
-          {isMenuOpen && (
-            <div className={`xl:hidden ${themeClasses.glassDark} rounded-2xl mb-4 p-4 ${themeClasses.shadow} transition-all duration-300 animate-in slide-in-from-top-2`}>
-              <nav className="flex flex-col space-y-2">
-                {navItems.map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => scrollToSection(item.id)}
-                    className={`px-4 py-3 rounded-2xl text-left transition-all duration-300 ${
-                      activeSection === item.id
-                        ? `${themeClasses.accentBg} text-white`
-                        : `${themeClasses.text} hover:${themeClasses.accentBg} hover:text-white`
-                    }`}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-                <div className="pt-2">
-                  <Button
-                    onClick={() => scrollToSection("contact")}
-                    className={`w-full ${themeClasses.accentBg} hover:bg-[#0A2647]/90 text-white rounded-2xl`}
-                  >
-                    {t.hireMe}
-                  </Button>
-                </div>
-              </nav>
-            </div>
-          )}
+{/* Mobile Menu */}
+{isMenuOpen && (
+  <div
+    className={`xl:hidden ${themeClasses.glassDark} rounded-2xl mb-4 p-4 ${themeClasses.shadow} transition-all duration-300 animate-in slide-in-from-top-2`}
+    dir={currentLang === "ar" ? "rtl" : "ltr"} // set direction
+  >
+    <nav className="flex flex-col space-y-2">
+      {navItems.map((item) => (
+        <button
+          key={item.id}
+          onClick={() => scrollToSection(item.id)}
+          className={`px-4 py-3 rounded-2xl transition-all duration-300 ${
+            currentLang === "ar" ? "text-right" : "text-left"
+          } ${
+            activeSection === item.id
+              ? `${themeClasses.accentBg} text-white`
+              : `${themeClasses.text} hover:${themeClasses.accentBg} hover-text:${themeClasses.accentBg}`
+          }`}
+        >
+          {item.label}
+        </button>
+      ))}
+      <div className="pt-2">
+        <Button
+          onClick={() => scrollToSection("contact")}
+          className={`w-full ${themeClasses.accentBg} hover:bg-[#0A2647]/90 text-white rounded-2xl`}
+        >
+          {t.hireMe}
+        </Button>
+      </div>
+    </nav>
+  </div>
+)}
+
 
           {/* Search Bar */}
           {isSearchOpen && (
