@@ -212,20 +212,20 @@ shadow: 'shadow-xl',
 {/* PDF Viewer */}
 <section
   className={`
-    py-20
+    relative
     ${themeClasses.background} 
-    flex justify-center md:items-center
-    min-h-[70vh] md:min-h-screen
-    ${themeClasses.glassDark} rounded-2xl p-8
+    ${themeClasses.glassDark} 
     ${themeClasses.shadow} 
     transition-all duration-300 sm:hover:scale-105
-    max-w-4xl w-full h-[70vh] md:h-[1120px] md:max-w-[794px]
+    rounded-2xl 
+    min-h-[70vh] md:min-h-screen
+    max-w-4xl w-full md:max-w-[794px]
   `}
 >
   {cvUrls[language] ? (
     <iframe
       src={getGoogleViewerUrl(cvUrls[language])}
-      className="w-full h-full border-0"
+      className="absolute top-0 left-0 w-full h-full border-0"
       title={`CV PDF (${language})`}
       allowFullScreen
     />
