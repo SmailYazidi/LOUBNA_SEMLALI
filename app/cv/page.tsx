@@ -180,7 +180,7 @@ return (
               {languageOptions.map((option) => (
                 <button
                   key={option.code}
-                  onClick={() => setLanguage(option.code as "fr" | "en")}
+                  onClick={() =>{  setLanguage(option.code as "fr" | "en");setIsLangMenuOpen(!isLangMenuOpen)}}
                   className="w-full px-4 py-3 text-left rounded-2xl transition-all duration-300 flex items-center space-x-3"
                 >
                   <span className="text-lg">{option.flag}</span>
