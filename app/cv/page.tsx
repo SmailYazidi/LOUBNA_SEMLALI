@@ -212,8 +212,7 @@ shadow: 'shadow-xl',
 
  {/* PDF Viewer */}
 <section className={`py-20 ${themeClasses.background} flex justify-center md:items-center min-h-[70vh] md:min-h-screen`}>
-  <div className={`space-y-12 ${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105 max-w-4xl w-full h-[70vh] md:h-[1120px] md:max-w-[794px] flex justify-center`}>
-    {cvUrls[language] ? (
+  {cvUrls[language] ? (
       <iframe
         src={getGoogleViewerUrl(cvUrls[language]!)}
         className="w-full h-full border-0"
@@ -225,7 +224,7 @@ shadow: 'shadow-xl',
         {language === "fr" ? "CV non disponible" : "CV not available"}
       </div>
     )}
-  </div>
+
 </section>
 
     </div>
