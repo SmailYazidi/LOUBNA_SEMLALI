@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import Image from "next/image"
+import FingerprintJS from "@fingerprintjs/fingerprintjs";
 
 import { useRouter } from "next/navigation";
 
@@ -134,6 +135,7 @@ export default function Portfolio() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [activeSection, setActiveSection] = useState("home")
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false)
+  const [visitors, setVisitors] = useState<number | null>(null);
 
   const [isSearchOpen, setIsSearchOpen] = useState(false)
 const [mockData, setMockData] = useState(baseMockData);
@@ -221,6 +223,69 @@ const [searchResults, setSearchResults] = useState<any[]>([]);
       setIsSendingMessage(false);
     }
   };
+
+
+useEffect(() => {
+  const trackVisit = async () => {
+    try {
+      // ✅ Load fingerprint
+      const fp = await FingerprintJS.load();
+      const result = await fp.get();
+      const visitorId = result.visitorId;
+
+      // ✅ Get IP & country
+      let ipData = {};
+      try {
+        const res = await fetch("https://ipapi.co/json/");
+        if (res.ok) ipData = await res.json();
+      } catch (err) {
+      
+      }
+
+      // ✅ If fingerprint or IP is missing, skip
+      if (!visitorId || !ipData.ip) {
+      
+        return;
+      }
+
+      // ✅ Detect device
+      const userAgent = navigator.userAgent;
+      const device = /Mobi|Android/i.test(userAgent) ? "Mobile" : "Desktop";
+
+      // ✅ Prepare data
+      const visitorData = {
+        fingerprint: visitorId,
+        ip: ipData.ip,
+        country: ipData.country_name || "",
+        userAgent,
+        device,
+        language: navigator.language,
+      };
+
+      // ✅ Send to API with API Key header
+      const res = await fetch("/api/track-visit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": process.env.NEXT_PUBLIC_API_SECRET || "",
+        },
+        body: JSON.stringify(visitorData),
+      });
+
+      if (!res.ok) return;
+
+      const data = await res.json();
+      if (data.success) setVisitors(data.totalVisitors);
+    } catch (err) {
+    
+    }
+  };
+
+  trackVisit();
+}, []);
+
+
+
 
    const [currentLang, setCurrentLang] = useState<"fr" | "en" | "ar">(() => {
       if (typeof window !== 'undefined') {
@@ -540,8 +605,8 @@ accentBg: isDarkMode ? 'bg-[#3A6EA5]' : 'bg-[#0A2647]',
 accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
 
  glassDark: isDarkMode
-  ? 'bg-black/40 backdrop-blur-lg border border-white/20 shadow-xl' 
-  : 'bg-white/40 backdrop-blur-lg border border-black/20 shadow-xl',
+  ? 'bg-black/40  border border-white/20 shadow-xl' 
+  : 'bg-white/40  border border-black/20 shadow-xl',
 shadow: 'shadow-xl',
 };
 
@@ -549,13 +614,13 @@ shadow: 'shadow-xl',
   return (
     <div className={`min-h-screen transition-all duration-500 ${themeClasses.background} ${themeClasses.text} ${currentLang === 'ar' ? 'font-arabic' : ''}`} style={{ direction: currentLang === 'ar' ? 'rtl' : 'ltr' }}>
       {/* Header */}
-      <header className={`fixed top-0 w-full z-50 ${themeClasses.glassDark} ${themeClasses.shadow} transition-all duration-500`}>
+      <header className={`fixed top-0 w-full z-50 ${themeClasses.glassDark}  backdrop-blur-lg ${themeClasses.shadow} transition-all duration-500`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4 ">
             {/* Logo */}
             <div className="flex-shrink-0">
 
-<div className={`${themeClasses.glassDark} ${isDarkMode ? 'text-white' : 'text-[#0A2647]'} border border-white/20 min-w-[30px] w-10 h-10  hover:${themeClasses.accent} rounded-full transition-all duration-300 sm:hover:scale-105
+<div className={`${themeClasses.glassDark}  backdrop-blur-lg ${isDarkMode ? 'text-white' : 'text-[#0A2647]'} border border-white/20 min-w-[30px] w-10 h-10  hover:${themeClasses.accent} rounded-full transition-all duration-300 sm:hover:scale-105
  flex items-center justify-center text-2xl font-bold sm:hidden`}>
   {/* Show first English letter, uppercased */}
 <span>
@@ -607,7 +672,7 @@ shadow: 'shadow-xl',
     <Button
       variant="outline"
       onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
-      className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} hover:${themeClasses.accent} rounded-2xl transition-all duration-300 sm:hover:scale-105`}
+      className={`${themeClasses.glassDark} backdrop-blur-lg border-white/20 ${themeClasses.text} hover:${themeClasses.accent} rounded-2xl transition-all duration-300 sm:hover:scale-105`}
     >
       <span>{currentLang.toUpperCase()}</span>
       <ChevronDown
@@ -619,7 +684,7 @@ shadow: 'shadow-xl',
 
     {isLangMenuOpen && (
       <div
-        className={`absolute top-full right-0 mt-2 ${themeClasses.glassDark} rounded-2xl ${themeClasses.shadow} border border-white/10 min-w-[150px] z-50 transition-all duration-300 animate-in slide-in-from-top-2`}
+        className={`absolute top-full right-0 mt-2 ${themeClasses.glassDark} backdrop-blur-lg rounded-2xl ${themeClasses.shadow} border border-white/10 min-w-[150px] z-50 transition-all duration-300 animate-in slide-in-from-top-2`}
       >
         {languageOptions.map((option) => (
           <button
@@ -641,7 +706,7 @@ shadow: 'shadow-xl',
   <Button
     variant="outline"
     onClick={toggleTheme}
-    className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} hover:${themeClasses.accent} rounded-2xl transition-all duration-300 sm:hover:scale-105`}
+    className={`${themeClasses.glassDark} backdrop-blur-lg border-white/20 ${themeClasses.text} hover:${themeClasses.accent} rounded-2xl transition-all duration-300 sm:hover:scale-105`}
   >
     {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
   </Button>
@@ -654,7 +719,7 @@ shadow: 'shadow-xl',
   setSearchTerm("");
 }}
 
-    className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} hover:${themeClasses.accent} rounded-2xl transition-all duration-300 sm:hover:scale-105`}
+    className={`${themeClasses.glassDark} backdrop-blur-lg border-white/20 ${themeClasses.text} hover:${themeClasses.accent} rounded-2xl transition-all duration-300 sm:hover:scale-105`}
   >
     {isSearchOpen ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}
   </Button>
@@ -678,7 +743,7 @@ shadow: 'shadow-xl',
   <Button
     variant="outline"
     onClick={toggleTheme}
-    className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} rounded-xl sm:rounded-2xl px-2 py-1 sm:px-3 sm:py-2`}
+    className={`${themeClasses.glassDark} backdrop-blur-lg border-white/20 ${themeClasses.text} rounded-xl sm:rounded-2xl px-2 py-1 sm:px-3 sm:py-2`}
   >
     {isDarkMode ? <Sun className="h-4 w-4 sm:h-5 sm:w-5" /> : <Moon className="h-4 w-4 sm:h-5 sm:w-5" />}
   </Button>
@@ -688,7 +753,7 @@ shadow: 'shadow-xl',
     <Button
       variant="outline"
       onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
-      className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} rounded-xl sm:rounded-2xl px-2 py-1 sm:px-3 sm:py-2`}
+      className={`${themeClasses.glassDark} backdrop-blur-lg border-white/20 ${themeClasses.text} rounded-xl sm:rounded-2xl px-2 py-1 sm:px-3 sm:py-2`}
     >
       <span className="text-xs sm:text-sm">{currentLang.toUpperCase()}</span>
       <ChevronDown
@@ -698,7 +763,7 @@ shadow: 'shadow-xl',
 
     {isLangMenuOpen && (
       <div
-        className={`absolute top-full right-0 mt-1 sm:mt-2 ${themeClasses.glassDark} rounded-xl sm:rounded-2xl ${themeClasses.shadow} border border-white/10 min-w-[100px] sm:min-w-[120px] z-50`}
+        className={`absolute top-full right-0 mt-1 sm:mt-2 ${themeClasses.glassDark} backdrop-blur-lg rounded-xl sm:rounded-2xl ${themeClasses.shadow} border border-white/10 min-w-[100px] sm:min-w-[120px] z-50`}
       >
         {languageOptions.map((option) => (
           <button
@@ -720,7 +785,7 @@ shadow: 'shadow-xl',
   <Button
     variant="outline"
     onClick={() => {setIsSearchOpen(!isSearchOpen);setIsMenuOpen(false); setSearchTerm("");}}
-    className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} rounded-xl sm:rounded-2xl px-2 py-1 sm:px-3 sm:py-2`}
+    className={`${themeClasses.glassDark} backdrop-blur-lg border-white/20 ${themeClasses.text} rounded-xl sm:rounded-2xl px-2 py-1 sm:px-3 sm:py-2`}
   >
     {isSearchOpen ? <X className="h-4 w-4 sm:h-5 sm:w-5" /> : <Search className="h-4 w-4 sm:h-5 sm:w-5" />}
   </Button>
@@ -740,7 +805,7 @@ shadow: 'shadow-xl',
 {/* Mobile Menu */}
 {isMenuOpen && (
   <div
-    className={`xl:hidden ${themeClasses.glassDark} rounded-2xl mb-4 p-4 ${themeClasses.shadow} transition-all duration-300 animate-in slide-in-from-top-2`}
+    className={`xl:hidden ${themeClasses.glassDark} backdrop-blur-lg rounded-2xl mb-4 p-4 ${themeClasses.shadow} transition-all duration-300 animate-in slide-in-from-top-2`}
     dir={currentLang === "ar" ? "rtl" : "ltr"} // set direction
   >
     <nav className="flex flex-col space-y-2">
@@ -772,9 +837,9 @@ shadow: 'shadow-xl',
 )}
 
 
-            {/* Search Bar */}
+          {/* Search Bar */}
           {isSearchOpen && (
-          <div className={`${themeClasses.glassDark} rounded-2xl mb-4 p-4 ${themeClasses.shadow} transition-all duration-300 animate-in slide-in-from-top-2`}>
+          <div className={`${themeClasses.glassDark} backdrop-blur-lg rounded-2xl mb-4 p-4 ${themeClasses.shadow} transition-all duration-300 animate-in slide-in-from-top-2`}>
   <div className="relative">
     <input
       type="text"
@@ -842,24 +907,29 @@ shadow: 'shadow-xl',
       {t.viewJourney}
     </Button>
 
-                {mockData.hero.heroButtons?.map((button, index) => {
-                  const Icon = getIcon(button.icon);
-                  const handleClick = () => {
-                    if (button.link) scrollToSection(button.link.replace('#', ''));
-                  };
-                  return (
-                    <Button
-                      key={index}
-                      variant="outline"
-                      onClick={handleClick}
-                      className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} hover:${themeClasses.accentBg} rounded-2xl px-8 py-3 transition-all duration-300 sm:hover:scale-105
- text-lg`}
-                    >
-                      {Icon && <Icon className="mr-2 h-5 w-5" />}
-                      {button.text?.[currentLang]}
-                    </Button>
-                  );
-                })}
+            {mockData.hero.heroButtons?.map((button, index) => {
+  const Icon = getIcon(button.icon);
+  const isExternal = button.link?.startsWith("http");
+
+  return (
+    <Button
+      key={index}
+      variant="outline"
+      asChild // 👈 allows Button to wrap an <a>
+      className={`${themeClasses.glassDark} border-white/20 ${themeClasses.text} hover:${themeClasses.accentBg} rounded-2xl px-8 py-3 transition-all duration-300 sm:hover:scale-105 text-lg`}
+    >
+      <a
+        href={button.link || "#"}
+        target={isExternal ? "_blank" : "_self"}
+        rel={isExternal ? "noopener noreferrer" : ""}
+      >
+        {Icon && <Icon className="mr-2 h-5 w-5 inline-block" />}
+        {button.text?.[currentLang]}
+      </a>
+    </Button>
+  );
+})}
+
               </div>
             </div>
 
@@ -868,7 +938,7 @@ shadow: 'shadow-xl',
 `}>
     <div className="relative w-48 h-48 sm:w-60 sm:h-60 md:w-80 md:h-80 rounded-2xl overflow-hidden">
       <Image
-        src={mockData.photoUrl || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face"}
+        src={mockData.photoUrl || "https://woxgxzelncuqwury.public.blob.vercel-storage.com/free.png"}
         alt="Profile photo"
         width={400}
         height={400}
@@ -884,77 +954,96 @@ shadow: 'shadow-xl',
         </div>
       </section>
 
-    {/* Skills Section */}
-      <section id="skills" className={`py-20 ${themeClasses.background}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className={`text-3xl md:text-4xl font-bold text-center mb-16 ${themeClasses.text}`}>
-            {t.skillsTitle}
-            <span className={`block w-20 h-1 ${themeClasses.accentBg} mx-auto mt-4 rounded-full`}></span>
-          </h2>
 
-          <div className="space-y-12">
-            {mockData.skills.skills.map((category, catIndex) => {
-              const CategoryIcon = getIcon(category.skillicon);
-
-              return (
-                <div key={catIndex} className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105
-`}>
-               <h3 className={`text-2xl font-semibold mb-8 ${themeClasses.text} flex items-center`}>
-  {CategoryIcon && (
-    <CategoryIcon
-      className={`h-6 w-6 ${themeClasses.accent} ${
-        currentLang === "ar" ? "ml-3" : "mr-3"
-      }`}
-    />
-  )}
-  {category.title?.[currentLang]}
-</h3>
-
-
-                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {category.items.map((skill, skillIndex) => {
-                      const SkillIcon = getIcon(skill.icon);
-
-                      return (
-                        <Card
-                          key={skillIndex}
-                          className={`${themeClasses.glassDark} border-white/10 rounded-2xl transition-all duration-300 sm:hover:scale-105
- hover:shadow-lg group`}
-                        >
-                          <CardContent className="p-6">
-                            {SkillIcon && (
-                              <SkillIcon className={`h-8 w-8 ${themeClasses.accent} mb-4 group-hover:scale-110 transition-transform duration-300`} />
-                            )}
-                            <h4 className={`text-lg font-semibold mb-3 ${themeClasses.text} group-hover:${themeClasses.accent} transition-colors duration-300`}>
-                              {skill.name?.[currentLang]}
-                            </h4>
-                            {skill.examples?.length > 0 && (
-                           <ul className={`space-y-1 ${themeClasses.textMuted} text-sm`}>
-  {skill.examples.map((ex, exIndex) => (
-    <li key={exIndex} className="flex items-center">
+{/* Skills Section */}
+<section id="skills" className={`py-20 ${themeClasses.background}`}>
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h2
+      className={`text-3xl md:text-4xl font-bold text-center mb-16 ${themeClasses.text}`}
+    >
+      {t.skillsTitle}
       <span
-        className={`w-2 h-2 ${themeClasses.accentBg} rounded-full ${
-          currentLang === "ar" ? "ml-2" : "mr-2"
-        }`}
+        className={`block w-20 h-1 ${themeClasses.accentBg} mx-auto mt-4 rounded-full`}
       ></span>
-      {ex?.[currentLang]}
-    </li>
-  ))}
-</ul>
+    </h2>
 
-                            )}
-                          </CardContent>
-                        </Card>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
+    {/* One container for all categories */}
+                    <div className={`${themeClasses.glassDark} rounded-2xl p-8 ${themeClasses.shadow} transition-all duration-300 sm:hover:scale-105  space-y-12
+`}>  {mockData.skills.skills.map((category, catIndex) => {
+        const CategoryIcon = getIcon(category.skillicon);
+
+        return (
+          <div key={`cat-${catIndex}`}>
+            {/* Category Title */}
+            <h3
+              className={`text-2xl font-semibold mb-8 ${themeClasses.text} flex items-center`}
+            >
+              {CategoryIcon && (
+                <CategoryIcon
+                  className={`h-6 w-6 ${themeClasses.accent} ${
+                    currentLang === "ar" ? "ml-3" : "mr-3"
+                  }`}
+                />
+              )}
+              {category.title?.[currentLang]}
+            </h3>
+
+            {/* Skills Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {category.items.map((skill, skillIndex) => {
+                const SkillIcon = getIcon(skill.icon);
+
+                return (
+                  <Card
+                    key={`cat-${catIndex}-skill-${skillIndex}`}
+                    className={`${themeClasses.glassDark} border-white/10 rounded-2xl transition-all duration-300 sm:hover:scale-105 hover:shadow-lg group${themeClasses.glassDark}${themeClasses.shadow} `}
+                  >
+                    <CardContent className="p-6 text-center">
+                      {SkillIcon && (
+                        <SkillIcon
+                          className={`h-8 w-8 mx-auto ${themeClasses.accent} mb-4 group-hover:scale-110 transition-transform duration-300`}
+                        />
+                      )}
+
+                      {/* Skill name with scrolling if too long */}
+                      <h4
+                        className={`relative overflow-hidden whitespace-nowrap text-lg font-semibold mb-3 ${themeClasses.text} group-hover:${themeClasses.accent} transition-colors duration-300`}
+                      >
+                        <span className="inline-block animate-marquee sm:animate-none">
+                          {skill.name?.[currentLang]}
+                        </span>
+                      </h4>
+
+                      {skill.examples?.length > 0 && (
+                        <ul
+                          className={`space-y-1 ${themeClasses.textMuted} text-sm text-left`}
+                        >
+                          {skill.examples.map((ex, exIndex) => (
+                            <li
+                              key={`cat-${catIndex}-skill-${skillIndex}-ex-${exIndex}`}
+                              className="flex items-center"
+                            >
+                              <span
+                                className={`w-2 h-2 ${themeClasses.accentBg} rounded-full ${
+                                  currentLang === "ar" ? "ml-2" : "mr-2"
+                                }`}
+                              ></span>
+                              {ex?.[currentLang]}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      </section>
-
+        );
+      })}
+    </div>
+  </div>
+</section>
       {/* Experience Section */}
       <section id="experience" className={`py-20 ${themeClasses.background}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

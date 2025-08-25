@@ -28,5 +28,5 @@ if (process.env.NODE_ENV === "development") {
 
 export async function connectDB() {
   const client = await clientPromise;
-  return client.db("loubna_semlali"); // Change "store" if your DB name differs
+  return client.db("smail_yazidi"); // Change "store" if your DB name differs
 }

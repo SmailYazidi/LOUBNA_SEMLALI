@@ -110,8 +110,8 @@ accentBg: isDarkMode ? 'bg-[#3A6EA5]' : 'bg-[#0A2647]',
 accentBorder: isDarkMode ? 'border-[#3A6EA5]' : 'border-[#0A2647]',
 
  glassDark: isDarkMode
-  ? 'bg-black/40 backdrop-blur-lg border border-white/20 shadow-xl' 
-  : 'bg-white/40 backdrop-blur-lg border border-black/20 shadow-xl',
+  ? 'bg-black/40  border border-white/20 shadow-xl' 
+  : 'bg-white/40  border border-black/20 shadow-xl',
 shadow: 'shadow-xl',
 };
   const languageOptions = [
@@ -227,28 +227,38 @@ return (
         </Button>
       </div>
     </div>
-
     {/* PDF Viewer: fill remaining space */}
     <section
       className={`
-        flex-1
-        ${themeClasses.background}  
+        flex-1 relative
+        ${themeClasses.background}   ${themeClasses.glassDark}  ${themeClasses.shadow}
         w-full max-w-4xl md:max-w-[794px] mx-auto my-2 rounded-2xl
       `}
     >
       {cvUrls[language] ? (
-        <iframe
-          src={getGoogleViewerUrl(cvUrls[language])}
-          className="w-full h-full"
-          title={`CV PDF (${language})`}
-          allowFullScreen
-        />
+        <>
+          {/* Loader overlay */}
+          {loading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/40 z-10 rounded-2xl">
+              <Loader2 className="w-10 h-10 animate-spin text-white" />
+            </div>
+          )}
+
+          <iframe
+            src={getGoogleViewerUrl(cvUrls[language])}
+            className="w-full h-full rounded-2xl"
+            title={`CV PDF (${language})`}
+            allowFullScreen
+            onLoad={() => setLoading(false)}  
+          />
+        </>
       ) : (
         <div className="flex items-center justify-center w-full h-full text-center text-gray-400">
           {language === "fr" ? "CV non disponible" : "CV not available"}
         </div>
       )}
     </section>
+
   </div>
 );
 
